@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <title>MedSchedule – Lịch Làm Việc Y Tế</title>
+  <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
+  <!-- PWA & Mobile -->
+  <meta name="theme-color" content="#1a56db" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MedSchedule" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===================== AUTH SCREENS ===================== -->
+<div id="auth-screen" class="auth-wrapper">
+  <!-- Login -->
+  <div id="login-view" class="auth-card active">
+    <div class="auth-logo">
+      <div class="logo-icon">⚕</div>
+      <h1>MedSchedule</h1>
+      <p>Hệ thống lịch làm việc y tế</p>
+    </div>
+    <form id="login-form" class="auth-form" autocomplete="off">
+      <div class="form-group">
+        <label for="login-username">Tên đăng nhập</label>
+        <input id="login-username" type="text" placeholder="Nhập tên đăng nhập" required />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Mật khẩu</label>
+        <div class="input-eye-wrap">
+          <input id="login-password" type="password" placeholder="Nhập mật khẩu" required />
+          <button type="button" class="eye-btn" onclick="togglePw('login-password',this)">👁</button>
+        </div>
+      </div>
+      <div id="login-error" class="form-error hidden"></div>
+      <button type="submit" class="btn-primary full" id="login-btn">Đăng nhập</button>
+    </form>
+    <p class="auth-switch">Chưa có tài khoản? <a href="#" onclick="showAuth('register-view')">Đăng ký ngay</a></p>
+  </div>
+
+  <!-- Register -->
+  <div id="register-view" class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-icon">📋</div>
+      <h1>Đăng ký tài khoản</h1>
+      <p>Tài khoản sẽ chờ admin phê duyệt</p>
+    </div>
+    <form id="register-form" class="auth-form" autocomplete="off">
+      <div class="form-group">
+        <label for="reg-fullname">Họ và tên</label>
+        <input id="reg-fullname" type="text" placeholder="Nguyễn Văn A" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-username">Tên đăng nhập</label>
+        <input id="reg-username" type="text" placeholder="nguyenvana" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Mật khẩu</label>
+        <div class="input-eye-wrap">
+          <input id="reg-password" type="password" placeholder="Tối thiểu 6 ký tự" required />
+          <button type="button" class="eye-btn" onclick="togglePw('reg-password',this)">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reg-department">Phòng ban</label>
+        <select id="reg-department" required>
+          <option value="">-- Chọn phòng ban --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reg-role">Chức vụ</label>
+        <select id="reg-role">
+          <option value="Điều dưỡng">Điều dưỡng</option>
+          <option value="Bác sĩ">Bác sĩ</option>
+          <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+          <option value="Hộ lý">Hộ lý</option>
+        </select>
+      </div>
+      <div id="reg-error" class="form-error hidden"></div>
+      <button type="submit" class="btn-primary full">Gửi đăng ký</button>
+    </form>
+    <p class="auth-switch"><a href="#" onclick="showAuth('login-view')">← Quay lại đăng nhập</a></p>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="app" class="app-wrapper hidden">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-icon-sm">⚕</span>
+        <div>
+          <strong>MedSchedule</strong>
+          <small>Hệ thống lịch làm việc</small>
+        </div>
+      </div>
+      <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar-lg" id="sidebar-avatar">A</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Người dùng</div>
+        <div class="user-dept" id="sidebar-dept">Phòng ban</div>
+        <span class="badge-role" id="sidebar-role-badge">Nhân viên</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-page="schedule" onclick="navigate('schedule')">
+        <span class="nav-icon">📅</span> Lịch làm việc
+      </a>
+      <a href="#" class="nav-item" data-page="leave" onclick="navigate('leave')">
+        <span class="nav-icon">✉️</span> Đơn nghỉ phép
+        <span class="nav-badge hidden" id="nav-leave-badge">0</span>
+      </a>
+      <a href="#" class="nav-item admin-only hidden" data-page="approvals" onclick="navigate('approvals')">
+        <span class="nav-icon">✅</span> Phê duyệt
+        <span class="nav-badge hidden" id="nav-approval-badge">0</span>
+      </a>
+      <a href="#" class="nav-item admin-only hidden" data-page="employees" onclick="navigate('employees')">
+        <span class="nav-icon">👥</span> Nhân viên
+      </a>
+      <a href="#" class="nav-item admin-only hidden" data-page="departments" onclick="navigate('departments')">
+        <span class="nav-icon">🏥</span> Phòng ban
+      </a>
+      <a href="#" class="nav-item admin-only hidden" data-page="users" onclick="navigate('users')">
+        <span class="nav-icon">🔑</span> Tài khoản
+        <span class="nav-badge hidden" id="nav-users-badge">0</span>
+      </a>
+    </nav>
+
+    <button class="btn-logout" onclick="logout()">🚪 Đăng xuất</button>
+  </aside>
+
+  <!-- Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay hidden" onclick="toggleSidebar()"></div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbar-title">Lịch làm việc</div>
+      <div class="topbar-right">
+        <span class="topbar-user" id="topbar-user">--</span>
+      </div>
+    </header>
+
+    <!-- Pages -->
+    <main class="page-container">
+
+      <!-- ===== SCHEDULE PAGE ===== -->
+      <section id="page-schedule" class="page active">
+        <div class="page-header">
+          <h2>📅 Lịch làm việc</h2>
+          <div class="schedule-controls">
+            <select id="schedule-dept-filter" onchange="renderSchedule()">
+              <option value="">Tất cả phòng</option>
+            </select>
+            <div class="month-nav">
+              <button class="btn-icon" onclick="changeMonth(-1)">‹</button>
+              <span id="current-month-label">Tháng</span>
+              <button class="btn-icon" onclick="changeMonth(1)">›</button>
+            </div>
+          </div>
+        </div>
+        <div id="schedule-calendar" class="schedule-calendar"></div>
+        <div id="day-detail-modal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <div class="modal-header">
+              <h3 id="day-detail-title">Chi tiết ngày</h3>
+              <button onclick="closeDayDetail()">✕</button>
+            </div>
+            <div id="day-detail-content" class="day-detail-content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== LEAVE PAGE ===== -->
+      <section id="page-leave" class="page">
+        <div class="page-header">
+          <h2>✉️ Đơn nghỉ phép</h2>
+          <button class="btn-primary" onclick="openLeaveModal()">+ Tạo đơn</button>
+        </div>
+        <div id="leave-list" class="leave-list"></div>
+
+        <!-- Leave modal -->
+        <div id="leave-modal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <div class="modal-header">
+              <h3>Tạo đơn nghỉ phép</h3>
+              <button onclick="closeLeaveModal()">✕</button>
+            </div>
+            <form id="leave-form" class="auth-form" onsubmit="submitLeave(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Từ ngày</label>
+                  <input type="date" id="leave-from" required />
+                </div>
+                <div class="form-group">
+                  <label>Đến ngày</label>
+                  <input type="date" id="leave-to" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Loại phép</label>
+                <select id="leave-type">
+                  <option value="Phép năm">Phép năm</option>
+                  <option value="Phép ốm">Phép ốm</option>
+                  <option value="Phép không lương">Phép không lương</option>
+                  <option value="Việc gia đình">Việc gia đình</option>
+                  <option value="Khác">Khác</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Lý do</label>
+                <textarea id="leave-reason" rows="3" placeholder="Mô tả lý do nghỉ..." required></textarea>
+              </div>
+              <div id="leave-form-error" class="form-error hidden"></div>
+              <div class="form-actions">
+                <button type="button" class="btn-outline" onclick="closeLeaveModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Gửi đơn</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== APPROVALS PAGE (Admin) ===== -->
+      <section id="page-approvals" class="page">
+        <div class="page-header">
+          <h2>✅ Phê duyệt đơn nghỉ</h2>
+          <div class="filter-tabs">
+            <button class="tab-btn active" onclick="filterApprovals('all',this)">Tất cả</button>
+            <button class="tab-btn" onclick="filterApprovals('pending',this)">Chờ duyệt</button>
+            <button class="tab-btn" onclick="filterApprovals('approved',this)">Đã duyệt</button>
+            <button class="tab-btn" onclick="filterApprovals('rejected',this)">Từ chối</button>
+          </div>
+        </div>
+        <div id="approval-list" class="leave-list"></div>
+      </section>
+
+      <!-- ===== EMPLOYEES PAGE (Admin) ===== -->
+      <section id="page-employees" class="page">
+        <div class="page-header">
+          <h2>👥 Quản lý nhân viên</h2>
+          <button class="btn-primary" onclick="openEmployeeModal()">+ Thêm nhân viên</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="emp-search" placeholder="🔍 Tìm kiếm nhân viên..." oninput="renderEmployees()" />
+          <select id="emp-dept-filter" onchange="renderEmployees()">
+            <option value="">Tất cả phòng</option>
+          </select>
+        </div>
+        <div id="employee-list" class="employee-grid"></div>
+
+        <!-- Employee modal -->
+        <div id="employee-modal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <div class="modal-header">
+              <h3 id="emp-modal-title">Thêm nhân viên</h3>
+              <button onclick="closeEmployeeModal()">✕</button>
+            </div>
+            <form id="employee-form" class="auth-form" onsubmit="saveEmployee(event)">
+              <input type="hidden" id="emp-id" />
+              <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" id="emp-name" placeholder="Nguyễn Văn A" required />
+              </div>
+              <div class="form-group">
+                <label>Chức vụ</label>
+                <select id="emp-position">
+                  <option value="Bác sĩ">Bác sĩ</option>
+                  <option value="Điều dưỡng">Điều dưỡng</option>
+                  <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+                  <option value="Hộ lý">Hộ lý</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Phòng ban</label>
+                <select id="emp-dept" required>
+                  <option value="">-- Chọn phòng --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="tel" id="emp-phone" placeholder="0901234567" />
+              </div>
+              <div class="form-group">
+                <label>Ghi chú</label>
+                <input type="text" id="emp-note" placeholder="Ghi chú thêm..." />
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-outline" onclick="closeEmployeeModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DEPARTMENTS PAGE (Admin) ===== -->
+      <section id="page-departments" class="page">
+        <div class="page-header">
+          <h2>🏥 Quản lý phòng ban</h2>
+          <button class="btn-primary" onclick="openDeptModal()">+ Thêm phòng</button>
+        </div>
+        <div id="dept-list" class="dept-grid"></div>
+
+        <!-- Department modal -->
+        <div id="dept-modal" class="modal-overlay hidden">
+          <div class="modal-box small">
+            <div class="modal-header">
+              <h3 id="dept-modal-title">Thêm phòng ban</h3>
+              <button onclick="closeDeptModal()">✕</button>
+            </div>
+            <form id="dept-form" class="auth-form" onsubmit="saveDept(event)">
+              <input type="hidden" id="dept-id" />
+              <div class="form-group">
+                <label>Tên phòng ban</label>
+                <input type="text" id="dept-name" placeholder="VD: Phòng Xquang" required />
+              </div>
+              <div class="form-group">
+                <label>Biểu tượng (emoji)</label>
+                <input type="text" id="dept-icon" placeholder="🏥" maxlength="4" />
+              </div>
+              <div class="form-group">
+                <label>Màu nhận diện</label>
+                <input type="color" id="dept-color" value="#1a73e8" />
+              </div>
+              <div class="form-group">
+                <label>Mô tả</label>
+                <input type="text" id="dept-desc" placeholder="Mô tả ngắn về phòng ban..." />
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-outline" onclick="closeDeptModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== USERS PAGE (Admin) ===== -->
+      <section id="page-users" class="page">
+        <div class="page-header">
+          <h2>🔑 Quản lý tài khoản</h2>
+        </div>
+        <div class="filter-tabs">
+          <button class="tab-btn active" onclick="filterUsers('all',this)">Tất cả</button>
+          <button class="tab-btn" onclick="filterUsers('pending',this)">Chờ duyệt</button>
+          <button class="tab-btn" onclick="filterUsers('active',this)">Hoạt động</button>
+          <button class="tab-btn" onclick="filterUsers('rejected',this)">Từ chối</button>
+        </div>
+        <div id="users-list" class="users-list" style="margin-top:16px;"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- Update Banner -->
+<div id="update-banner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:9998;
+  background:linear-gradient(135deg,#1a56db,#0ea5e9); color:#fff; padding:12px 16px;
+  display:none; align-items:center; justify-content:space-between; gap:12px;
+  font-size:13px; font-weight:500; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+  <span>🆕 Có bản cập nhật mới!</span>
+  <div style="display:flex;gap:8px;">
+    <button onclick="applyUpdate()" style="background:#fff;color:#1a56db;border:none;padding:6px 16px;
+      border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">Cập nhật ngay</button>
+    <button onclick="document.getElementById('update-banner').style.display='none'" 
+      style="background:rgba(255,255,255,0.2);color:#fff;border:none;padding:6px 10px;
+      border-radius:20px;font-size:13px;cursor:pointer;">✕</button>
+  </div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav id="bottom-nav" class="bottom-nav" style="display:none;">
+  <div class="bottom-nav-inner">
+    <button class="bn-item active" id="bn-schedule" onclick="navigate('schedule')">
+      <span class="bn-icon">📅</span>
+      <span>Lịch</span>
+    </button>
+    <button class="bn-item" id="bn-leaves" onclick="navigate('leave')">
+      <span class="bn-icon">📋</span>
+      <span class="bn-badge" id="bn-leave-badge" style="display:none">0</span>
+      <span>Nghỉ phép</span>
+    </button>
+    <button class="bn-item" id="bn-employees" onclick="navigate('employees')">
+      <span class="bn-icon">👥</span>
+      <span>Nhân viên</span>
+    </button>
+    <button class="bn-item" id="bn-departments" onclick="navigate('departments')">
+      <span class="bn-icon">🏥</span>
+      <span>Phòng ban</span>
+    </button>
+    <button class="bn-item" id="bn-users" onclick="navigate('users')">
+      <span class="bn-icon">⚙️</span>
+      <span>Tài khoản</span>
+    </button>
+  </div>
+</nav>
+
+<script src="app.js"></script>
+<script>
+// ── PWA Service Worker + Auto Update Detection ──────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => {
+      reg.update();
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            document.getElementById('update-banner').style.display = 'flex';
+          }
+        });
+      });
+      setInterval(() => reg.update(), 60 * 60 * 1000);
+    })
+    .catch(err => console.warn('[SW] Register failed:', err));
+
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; location.reload(); }
+  });
+}
+
+function applyUpdate() {
+  document.getElementById('update-banner').style.display = 'none';
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg?.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "MedSchedule – Lịch Làm Việc Y Tế",
+  "short_name": "MedSchedule",
+  "description": "Ứng dụng quản lý lịch làm việc và nghỉ phép dành cho nhân viên y tế",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f0f4fc",
+  "theme_color": "#1a56db",
+  "orientation": "portrait-primary",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "medical"],
+  "shortcuts": [
+    {
+      "name": "Lịch làm việc",
+      "short_name": "Lịch",
+      "description": "Xem lịch làm việc tháng này",
+      "url": "./#schedule",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Đăng ký nghỉ phép",
+      "short_name": "Nghỉ phép",
+      "description": "Tạo đơn nghỉ phép mới",
+      "url": "./#leave",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
