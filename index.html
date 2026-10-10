@@ -3,91 +3,1569 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <title>MedSchedule – Lịch Làm Việc Y Tế</title>
+  <title>Phòng khám Đa khoa Lam Sơn</title>
   <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
   <!-- PWA & Mobile -->
   <meta name="theme-color" content="#1a56db" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="MedSchedule" />
-  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-title" content="PKĐK Lam Sơn" />
+  <!-- manifest removed for single-file version -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  
+<style>
+/* ========================================
+   PKĐK Lam Sơn – CSS
+   Medical Blue Professional Theme
+   ======================================== */
+
+:root {
+  --primary: #1a56db;
+  --primary-dark: #1340b0;
+  --primary-light: #e8f0fe;
+  --primary-glow: rgba(26,86,219,0.18);
+
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --info: #3b82f6;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --bg-page: #f0f4fc;
+  --bg-card: #ffffff;
+  --bg-sidebar: #0d1f4c;
+  --bg-sidebar-hover: rgba(255,255,255,0.08);
+  --bg-sidebar-active: rgba(255,255,255,0.14);
+
+  --border: #e2e8f0;
+  --border-focus: #1a56db;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.18);
+
+  --sidebar-width: 260px;
+  --topbar-h: 60px;
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ============ UTILITY ============ */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.gap-2 { gap: 8px; }
+
+/* ============ TOAST ============ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text-primary);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  transition: all var(--transition);
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.warning { background: var(--warning); color: var(--text-primary); }
+
+/* ============ AUTH WRAPPER ============ */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d1f4c 0%, #1a56db 50%, #0ea5e9 100%);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.auth-wrapper::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  top: -200px; right: -150px;
+}
+.auth-wrapper::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  bottom: -100px; left: -100px;
+}
+
+.auth-card {
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-xl);
+  display: none;
+  animation: slideUp 0.35s ease;
+  position: relative;
+  z-index: 1;
+}
+.auth-card.active { display: block; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.logo-icon {
+  font-size: 44px;
+  display: inline-block;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 2px 8px rgba(26,86,219,0.3));
+}
+.auth-logo h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+.auth-logo p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: #fff;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.input-eye-wrap { position: relative; }
+.input-eye-wrap input { padding-right: 44px; }
+.eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.5;
+  padding: 4px;
+}
+.eye-btn:hover { opacity: 1; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.form-error {
+  font-size: 13px;
+  color: var(--danger);
+  background: var(--danger-light);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ============ BUTTONS ============ */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 2px 8px rgba(26,86,219,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(26,86,219,0.4);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary.full { width: 100%; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+.btn-icon {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 36px; height: 36px;
+  cursor: pointer;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.btn-icon:hover { border-color: var(--primary); background: var(--primary-light); }
+
+.btn-success { background: var(--success); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all var(--transition); }
+.btn-success:hover { background: #059669; }
+.btn-danger { background: var(--danger); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all var(--transition); }
+.btn-danger:hover { background: #dc2626; }
+.btn-warning { background: var(--warning); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all var(--transition); }
+
+/* ============ APP LAYOUT ============ */
+.app-wrapper { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  z-index: 300;
+  transform: translateX(-100%);
+  transition: transform var(--transition);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar.open { transform: translateX(0); }
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 299;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 18px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+.logo-icon-sm { font-size: 28px; }
+.sidebar-logo strong { display: block; font-size: 15px; font-weight: 700; }
+.sidebar-logo small { font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1; }
+
+.sidebar-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color var(--transition);
+}
+.sidebar-close:hover { color: #fff; }
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.user-avatar-lg {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #0ea5e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.user-name { font-size: 14px; font-weight: 600; color: #fff; }
+.user-dept { font-size: 12px; color: rgba(255,255,255,0.5); }
+.badge-role {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.8);
+  margin-top: 3px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: var(--radius-md);
+  color: rgba(255,255,255,0.65);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--transition);
+  position: relative;
+}
+.nav-item:hover { background: var(--bg-sidebar-hover); color: #fff; text-decoration: none; }
+.nav-item.active { background: var(--bg-sidebar-active); color: #fff; font-weight: 600; }
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 0 3px 3px 0;
+}
+.nav-icon { font-size: 18px; width: 24px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.btn-logout {
+  margin: 10px 14px 20px;
+  background: rgba(239,68,68,0.12);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition);
+}
+.btn-logout:hover { background: rgba(239,68,68,0.2); color: #f87171; }
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-left: 0;
+}
+
+/* TOPBAR */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all var(--transition);
+}
+.menu-btn:hover { background: var(--bg-page); color: var(--primary); }
+.topbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-user {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ===== NOTIFICATIONS ===== */
+.notif-bell-wrap {
+  position: relative;
+}
+.notif-bell-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 40px; height: 40px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all var(--transition);
+  background: var(--bg-card);
+}
+.notif-bell-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+.notif-bell-count {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px; height: 18px;
+  border-radius: 9px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #fff;
+}
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(360px, calc(100vw - 24px));
+  max-height: 420px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 400;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.notif-panel.open { display: flex; }
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 14px;
+}
+.notif-panel-header button {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.notif-list {
+  overflow-y: auto;
+  flex: 1;
+  max-height: 360px;
+}
+.notif-item {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.notif-item:hover { background: var(--bg-page); }
+.notif-item.unread { background: #eff6ff; }
+.notif-item.unread:hover { background: #dbeafe; }
+.notif-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.notif-item-msg {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.notif-item-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.notif-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* PAGE CONTAINER */
+.page-container { flex: 1; overflow-y: auto; }
+
+.page { display: none; padding: 20px 16px; animation: fadeIn 0.22s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.page-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* ============ SCHEDULE ============ */
+.schedule-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.schedule-controls select {
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  background: #fff;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+}
+#current-month-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 120px;
+  text-align: center;
+}
+
+.schedule-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-header {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 8px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cal-day {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  min-height: 72px;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.cal-day:hover { border-color: var(--primary); box-shadow: 0 2px 8px var(--primary-glow); }
+.cal-day.today { border-color: var(--primary); background: var(--primary-light); }
+.cal-day.other-month { opacity: 0.4; }
+.cal-day.has-leave { border-color: var(--warning); }
+.cal-day.has-shift { border-color: var(--primary); border-style: dashed; }
+.cal-day.has-leave.has-shift { border-color: var(--warning); border-style: solid; }
+.cal-day.weekend .day-num { color: var(--danger); }
+
+.day-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.cal-day.today .day-num {
+  background: var(--primary);
+  color: #fff;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+.cal-chips { display: flex; flex-direction: column; gap: 2px; }
+.cal-chip {
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+/* ============ DAY DETAIL ============ */
+.day-detail-content { padding: 4px 0; }
+.day-staff-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.day-staff-item:last-child { border-bottom: none; }
+.staff-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.staff-info { flex: 1; }
+.staff-name { font-size: 14px; font-weight: 600; }
+.staff-dept { font-size: 12px; color: var(--text-muted); }
+.staff-status {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.status-working { background: var(--success-light); color: var(--success); }
+.status-leave { background: var(--warning-light); color: #b45309; }
+
+/* ============ LEAVE LIST ============ */
+.leave-list { display: flex; flex-direction: column; gap: 6px; }
+
+.leave-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  box-shadow: none;
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+  animation: fadeIn 0.22s ease;
+}
+.leave-card:hover { box-shadow: var(--shadow-sm); border-color: #cbd5e1; }
+
+.leave-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.leave-person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.leave-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.leave-person-info .person-name { font-size: 13px; font-weight: 650; line-height: 1.25; }
+.leave-person-info .person-dept { font-size: 11px; color: var(--text-muted); line-height: 1.2; }
+
+.leave-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-pending { background: var(--warning-light); color: #92400e; }
+.badge-approved { background: var(--success-light); color: #065f46; }
+.badge-rejected { background: var(--danger-light); color: #991b1b; }
+
+.leave-card-body {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.leave-date-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+.leave-type-tag {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+.leave-reason {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 11px;
+  flex: 1 1 auto;
+  min-width: 80px;
+}
+
+.leave-card-footer {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.leave-card-footer .btn-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+.leave-card-footer .leave-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  align-self: center;
+}
+
+/* ============ EMPLOYEES ============ */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.search-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--bg-card);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.search-bar select {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--bg-card);
+}
+
+.employee-grid { display: flex; flex-direction: column; gap: 10px; }
+
+.employee-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all var(--transition);
+  animation: fadeIn 0.22s ease;
+}
+.employee-card:hover { box-shadow: var(--shadow-md); border-color: #cbd5e1; }
+
+.emp-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.emp-info { flex: 1; min-width: 0; }
+.emp-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.emp-position { font-size: 12px; color: var(--text-muted); }
+.emp-dept-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 3px;
+}
+.emp-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-sm {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+}
+.btn-sm.edit { background: var(--primary-light); color: var(--primary); }
+.btn-sm.edit:hover { background: var(--primary); color: #fff; }
+.btn-sm.del { background: var(--danger-light); color: var(--danger); }
+.btn-sm.del:hover { background: var(--danger); color: #fff; }
+
+/* ============ DEPARTMENTS ============ */
+.dept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+@media (min-width: 500px) {
+  .dept-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.dept-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  border: 1.5px solid var(--border);
+  text-align: center;
+  transition: all var(--transition);
+  animation: fadeIn 0.22s ease;
+  position: relative;
+}
+.dept-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+.dept-icon-big {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 8px;
+}
+.dept-card-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.dept-card-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.dept-count { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+.dept-card-actions { display: flex; gap: 6px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.dept-card { cursor: default; }
+.dept-card .dept-count { cursor: pointer; }
+.dept-card .dept-count:hover { text-decoration: underline; }
+
+.dept-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.dept-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 6px;
+}
+.dept-check-item:hover { background: var(--primary-light); }
+.dept-check-item input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+.dept-tags-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+
+/* ============ USERS ============ */
+.users-list { display: flex; flex-direction: column; gap: 6px; }
+
+.user-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all var(--transition);
+  animation: fadeIn 0.22s ease;
+  flex-wrap: nowrap;
+}
+.user-card:hover { box-shadow: var(--shadow-sm); border-color: #cbd5e1; }
+.user-card .user-avatar-sm {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #0ea5e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.user-card-info { flex: 1; min-width: 0; }
+.user-card-name { font-size: 13px; font-weight: 650; color: var(--text-primary); line-height: 1.3; }
+.user-card-meta { font-size: 11px; color: var(--text-muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-card-actions { display: flex; gap: 4px; flex-wrap: nowrap; flex-shrink: 0; }
+.user-card-actions .btn-sm { padding: 4px 8px; font-size: 11px; }
+.user-card .leave-badge { padding: 2px 8px; font-size: 10px; }
+.user-card-pw {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.user-card-pw code {
+  background: #f1f5f9;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  user-select: all;
+}
+
+/* ============ FILTER TABS ============ */
+.filter-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.tab-btn {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.tab-btn:hover { border-color: var(--primary); color: var(--primary); }
+.tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ============ MODAL ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.18s ease;
+}
+.modal-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.22s ease;
+}
+.modal-box.small { max-width: 360px; }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-header h3 { font-size: 18px; font-weight: 800; }
+.modal-header button {
+  background: var(--bg-page);
+  border: none;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.modal-header button:hover { background: var(--danger-light); color: var(--danger); }
+
+/* ============ EMPTY STATE ============ */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 56px; display: block; margin-bottom: 12px; opacity: 0.5; }
+.empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
+.empty-state p { font-size: 13px; }
+
+/* ============ RESPONSIVE DESKTOP ============ */
+@media (min-width: 768px) {
+  .sidebar {
+    transform: translateX(0);
+    position: fixed;
+  }
+  .sidebar-close { display: none; }
+  .sidebar-overlay { display: none !important; }
+  .main-content { padding-left: var(--sidebar-width); }
+  .page { padding: 24px; }
+  .dept-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .dept-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ============ LOADING SPINNER ============ */
+.spinner {
+  width: 24px; height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ============ CONFIRM DIALOG ============ */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+.confirm-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  animation: slideUp 0.18s ease;
+}
+.confirm-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.confirm-box p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+/* ============ PULSE ANIMATION ============ */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(26,86,219,0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(26,86,219,0); }
+  100% { box-shadow: 0 0 0 0 rgba(26,86,219,0); }
+}
+.pulse { animation: pulse 2s infinite; }
+
+/* ============ MOBILE BOTTOM NAV ============ */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  z-index: 200;
+  padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+}
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  gap: 3px;
+  transition: color var(--transition);
+  min-height: 56px;
+  position: relative;
+}
+.bn-item:active { transform: scale(0.95); }
+.bn-item.active { color: var(--primary); }
+.bn-item.active .bn-icon::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%; transform: translateX(-50%);
+  width: 20px; height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+.bn-icon {
+  font-size: 22px;
+  position: relative;
+  display: block;
+}
+.bn-badge {
+  position: absolute;
+  top: -2px; right: -6px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px; height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+/* ============ MOBILE-ONLY OVERRIDES ============ */
+@media (max-width: 767px) {
+  .bottom-nav { display: block; }
+  
+  /* Push content up so bottom nav doesn't overlap */
+  .page-container {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  }
+  
+  /* Larger touch targets */
+  .btn-primary, .btn-outline { 
+    min-height: 44px; 
+    padding: 12px 20px;
+  }
+  .btn-icon { width: 44px; height: 44px; }
+  
+  /* Calendar smaller on mobile */
+  .cal-day { min-height: 52px; padding: 4px; }
+  .cal-chip { display: none; }
+  .cal-day.has-shift .day-num::after,
+  .cal-day.has-leave .day-num::after {
+    content: '•';
+    color: var(--warning);
+    display: block;
+    font-size: 14px;
+    line-height: 1;
+  }
+  
+  /* Full width selects */
+  .schedule-controls { flex-direction: column; align-items: stretch; }
+  .schedule-controls select { width: 100%; }
+  
+  /* Auth card padding */
+  .auth-card { padding: 28px 20px; }
+  
+  /* Form row single column on very small */
+  .form-row { grid-template-columns: 1fr; }
+  
+  /* Modal full-width on mobile */
+  .modal-overlay { padding: 8px; align-items: flex-end; }
+  .modal-box {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 85vh;
+    padding: 20px 16px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+  
+  /* Topbar safe area */
+  .topbar { padding-top: env(safe-area-inset-top); }
+  
+  /* Page header stacked */
+  .page-header { flex-direction: column; align-items: flex-start; }
+  
+  /* Department grid 2 col on mobile */
+  .dept-grid { grid-template-columns: 1fr 1fr; }
+  
+  /* Employee card tap-friendly */
+  .employee-card { flex-wrap: wrap; }
+  .emp-actions { width: 100%; justify-content: flex-end; }
+  
+  /* Leave card footer full-width buttons */
+  .leave-card-footer { justify-content: stretch; }
+  .leave-card-footer button { flex: 1; }
+  
+  /* Toast higher on mobile (above bottom nav) */
+  .toast { bottom: calc(72px + env(safe-area-inset-bottom)); }
+}
+
+/* ============ SAFE AREA (iPhone notch etc) ============ */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .auth-wrapper { padding-top: calc(16px + env(safe-area-inset-top)); }
+  .sidebar { padding-top: env(safe-area-inset-top); }
+}
+
+
+
+/* ===== Staff Login UI ===== */
+.login-role-hint {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+.role-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #eef2ff;
+  color: #3730a3;
+}
+.role-chip.admin-chip {
+  background: #fef3c7;
+  color: #92400e;
+}
+.input-icon-wrap {
+  position: relative;
+}
+.input-icon-wrap .input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+.input-icon-wrap input {
+  padding-left: 38px !important;
+}
+.input-icon-wrap.input-eye-wrap input {
+  padding-right: 42px !important;
+}
+.auth-footer {
+  margin-top: 22px;
+  text-align: center;
+}
+.auth-help {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.help-item {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.auth-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.auth-note strong {
+  color: var(--primary);
+}
+.staff-logo {
+  background: linear-gradient(135deg, #1a56db, #3b82f6) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(26, 86, 219, 0.35);
+}
+
+
+.day-lunar {
+  font-size: 9px;
+  color: var(--text-muted);
+  line-height: 1.1;
+  margin-top: -1px;
+  margin-bottom: 2px;
+}
+.cal-day.today .day-lunar { color: var(--primary); font-weight: 600; }
+.cal-day.weekend .day-lunar { color: #f87171; }
+
+
+.btn-change-pw {
+  margin: 8px 16px 0;
+  width: calc(100% - 32px);
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.btn-change-pw:hover { background: rgba(255,255,255,0.15); }
+
+
+/* Bottom nav – icon căn giữa, đều */
+.bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px 6px;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  position: relative;
+}
+.bn-item .bn-icon {
+  font-size: 22px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  position: relative;
+}
+.bn-item span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+
+.auth-phone {
+  margin: 4px 0 0 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--primary) !important;
+}
+.sidebar-logo small.sidebar-phone {
+  display: block;
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.sidebar-logo small {
+  display: block;
+}
+
+</style>
 </head>
 <body>
 
 <!-- ===================== AUTH SCREENS ===================== -->
 <div id="auth-screen" class="auth-wrapper">
-  <!-- Login -->
+  <!-- Login dành cho nhân viên & admin -->
   <div id="login-view" class="auth-card active">
     <div class="auth-logo">
-      <div class="logo-icon">⚕</div>
-      <h1>MedSchedule</h1>
-      <p>Hệ thống lịch làm việc y tế</p>
+      <div class="logo-icon staff-logo">⚕</div>
+      <h1>PKĐK Lam Sơn</h1>
+      <p>Lịch làm việc</p>
+      <p class="auth-phone">LH. 0966255685</p>
     </div>
+
+    <div class="login-role-hint">
+      <span class="role-chip">👤 Nhân viên</span>
+      <span class="role-chip admin-chip">👑 Quản trị</span>
+    </div>
+
     <form id="login-form" class="auth-form" autocomplete="off">
       <div class="form-group">
         <label for="login-username">Tên đăng nhập</label>
-        <input id="login-username" type="text" placeholder="Nhập tên đăng nhập" required />
+        <div class="input-icon-wrap">
+          <span class="input-icon">👤</span>
+          <input id="login-username" type="text" placeholder="Nhập tên đăng nhập được cấp" required />
+        </div>
       </div>
       <div class="form-group">
         <label for="login-password">Mật khẩu</label>
-        <div class="input-eye-wrap">
+        <div class="input-eye-wrap input-icon-wrap">
+          <span class="input-icon">🔒</span>
           <input id="login-password" type="password" placeholder="Nhập mật khẩu" required />
-          <button type="button" class="eye-btn" onclick="togglePw('login-password',this)">👁</button>
+          <button type="button" class="eye-btn" onclick="togglePw('login-password',this)" title="Hiện/ẩn mật khẩu">👁</button>
         </div>
       </div>
       <div id="login-error" class="form-error hidden"></div>
-      <button type="submit" class="btn-primary full" id="login-btn">Đăng nhập</button>
+      <button type="submit" class="btn-primary full" id="login-btn">
+        Đăng nhập
+      </button>
     </form>
-    <p class="auth-switch">Chưa có tài khoản? <a href="#" onclick="showAuth('register-view')">Đăng ký ngay</a></p>
+
+    <div class="auth-footer">
+      <div class="auth-help">
+        <div class="help-item">📋 Xem lịch làm việc</div>
+        <div class="help-item">✉️ Tạo đơn nghỉ phép</div>
+      </div>
+      <p class="auth-note">Chưa có tài khoản? Liên hệ <strong>quản trị viên</strong> để được cấp.</p>
+    </div>
   </div>
 
-  <!-- Register -->
-  <div id="register-view" class="auth-card">
-    <div class="auth-logo">
-      <div class="logo-icon">📋</div>
-      <h1>Đăng ký tài khoản</h1>
-      <p>Tài khoản sẽ chờ admin phê duyệt</p>
-    </div>
-    <form id="register-form" class="auth-form" autocomplete="off">
-      <div class="form-group">
-        <label for="reg-fullname">Họ và tên</label>
-        <input id="reg-fullname" type="text" placeholder="Nguyễn Văn A" required />
-      </div>
-      <div class="form-group">
-        <label for="reg-username">Tên đăng nhập</label>
-        <input id="reg-username" type="text" placeholder="nguyenvana" required />
-      </div>
-      <div class="form-group">
-        <label for="reg-password">Mật khẩu</label>
-        <div class="input-eye-wrap">
-          <input id="reg-password" type="password" placeholder="Tối thiểu 6 ký tự" required />
-          <button type="button" class="eye-btn" onclick="togglePw('reg-password',this)">👁</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="reg-department">Phòng ban</label>
-        <select id="reg-department" required>
-          <option value="">-- Chọn phòng ban --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="reg-role">Chức vụ</label>
-        <select id="reg-role">
-          <option value="Điều dưỡng">Điều dưỡng</option>
-          <option value="Bác sĩ">Bác sĩ</option>
-          <option value="Kỹ thuật viên">Kỹ thuật viên</option>
-          <option value="Hộ lý">Hộ lý</option>
-        </select>
-      </div>
-      <div id="reg-error" class="form-error hidden"></div>
-      <button type="submit" class="btn-primary full">Gửi đăng ký</button>
-    </form>
-    <p class="auth-switch"><a href="#" onclick="showAuth('login-view')">← Quay lại đăng nhập</a></p>
+  <!-- Register hidden (chỉ admin cấp tài khoản) -->
+  <div id="register-view" class="auth-card" style="display:none !important;">
+    <form id="register-form" class="auth-form"></form>
   </div>
 </div>
 
@@ -99,8 +1577,9 @@
       <div class="sidebar-logo">
         <span class="logo-icon-sm">⚕</span>
         <div>
-          <strong>MedSchedule</strong>
-          <small>Hệ thống lịch làm việc</small>
+          <strong>PKĐK Lam Sơn</strong>
+          <small>Lịch làm việc</small>
+          <small class="sidebar-phone">LH. 0966255685</small>
         </div>
       </div>
       <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
@@ -120,8 +1599,12 @@
         <span class="nav-icon">📅</span> Lịch làm việc
       </a>
       <a href="#" class="nav-item" data-page="leave" onclick="navigate('leave')">
-        <span class="nav-icon">✉️</span> Đơn nghỉ phép
+        <span class="nav-icon">🗓️</span> Đơn nghỉ phép
         <span class="nav-badge hidden" id="nav-leave-badge">0</span>
+      </a>
+      <a href="#" class="nav-item" data-page="profile" onclick="navigate('profile')">
+        <span class="nav-icon">👤</span> Hồ sơ của tôi
+        <span class="nav-badge hidden" id="nav-profile-badge">0</span>
       </a>
       <a href="#" class="nav-item admin-only hidden" data-page="approvals" onclick="navigate('approvals')">
         <span class="nav-icon">✅</span> Phê duyệt
@@ -139,6 +1622,7 @@
       </a>
     </nav>
 
+    <button class="btn-change-pw" onclick="openChangePassword()">🔐 Đổi mật khẩu</button>
     <button class="btn-logout" onclick="logout()">🚪 Đăng xuất</button>
   </aside>
 
@@ -152,6 +1636,19 @@
       <button class="menu-btn" onclick="toggleSidebar()">☰</button>
       <div class="topbar-title" id="topbar-title">Lịch làm việc</div>
       <div class="topbar-right">
+        <div class="notif-bell-wrap">
+          <button type="button" class="notif-bell-btn" id="notif-bell-btn" onclick="toggleNotifPanel(event)" title="Thông báo">
+            🔔
+            <span class="notif-bell-count" id="notif-bell-count">0</span>
+          </button>
+          <div class="notif-panel" id="notif-panel">
+            <div class="notif-panel-header">
+              <span>🔔 Thông báo</span>
+              <button type="button" onclick="markAllNotifsRead()">Đánh dấu đã đọc</button>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+          </div>
+        </div>
         <span class="topbar-user" id="topbar-user">--</span>
       </div>
     </header>
@@ -176,7 +1673,7 @@
         </div>
         <div id="schedule-calendar" class="schedule-calendar"></div>
         <div id="day-detail-modal" class="modal-overlay hidden">
-          <div class="modal-box">
+          <div class="modal-box" style="max-width:560px;">
             <div class="modal-header">
               <h3 id="day-detail-title">Chi tiết ngày</h3>
               <button onclick="closeDayDetail()">✕</button>
@@ -189,8 +1686,11 @@
       <!-- ===== LEAVE PAGE ===== -->
       <section id="page-leave" class="page">
         <div class="page-header">
-          <h2>✉️ Đơn nghỉ phép</h2>
-          <button class="btn-primary" onclick="openLeaveModal()">+ Tạo đơn</button>
+          <h2>🗓️ Đơn nghỉ phép</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-primary" onclick="openLeaveModal()">+ Tạo đơn</button>
+            <button class="btn-outline admin-only" onclick="exportLeavesExcel()">📥 Xuất ngày nghỉ</button>
+          </div>
         </div>
         <div id="leave-list" class="leave-list"></div>
 
@@ -236,25 +1736,102 @@
         </div>
       </section>
 
+      <!-- ===== PROFILE PAGE (Staff + Admin) ===== -->
+      <section id="page-profile" class="page">
+        <div class="page-header">
+          <h2>👤 Hồ sơ của tôi</h2>
+          <button class="btn-primary" id="btn-edit-profile" onclick="openProfileEditModal()">✏️ Sửa thông tin</button>
+        </div>
+        <div id="profile-info-card" class="leave-card" style="margin-bottom:16px;"></div>
+        <div id="profile-pending-notice" class="hidden" style="background:var(--warning-light);border:1.5px solid var(--warning);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;font-size:13px;color:#92400e;"></div>
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--text-secondary);">Lịch sử yêu cầu sửa hồ sơ</h3>
+        <div id="profile-request-list" class="leave-list"></div>
+
+        <!-- Profile edit modal -->
+        <div id="profile-edit-modal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <div class="modal-header">
+              <h3>Sửa thông tin nhân viên</h3>
+              <button onclick="closeProfileEditModal()">✕</button>
+            </div>
+            <form id="profile-edit-form" class="auth-form" onsubmit="submitProfileRequest(event)">
+              <p style="font-size:13px;color:var(--text-muted);margin:0 0 12px;">Thay đổi sẽ được gửi đến quản trị viên phê duyệt trước khi cập nhật chính thức.</p>
+              <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" id="pf-name" placeholder="Nguyễn Văn A" required />
+              </div>
+              <div class="form-group">
+                <label>Chức vụ</label>
+                <select id="pf-position">
+                  <option value="Bác sĩ">Bác sĩ</option>
+                  <option value="Điều dưỡng">Điều dưỡng</option>
+                  <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+                  <option value="Hộ lý">Hộ lý</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Phòng ban <span style="font-weight:400;color:var(--text-muted);">(có thể chọn nhiều)</span></label>
+                <div id="pf-dept-checks" class="dept-check-list"></div>
+              </div>
+              <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="tel" id="pf-phone" placeholder="0901234567" />
+              </div>
+              <div class="form-group">
+                <label>Ghi chú</label>
+                <input type="text" id="pf-note" placeholder="Ghi chú thêm..." />
+              </div>
+              <div class="form-group">
+                <label>Ảnh đại diện</label>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                  <div id="pf-avatar-preview" style="width:56px;height:56px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:22px;font-weight:700;color:#64748b;border:2px solid var(--border);">?</div>
+                  <div style="flex:1;min-width:140px;">
+                    <input type="file" id="pf-avatar-file" accept="image/*" style="font-size:13px;width:100%;" onchange="previewPfAvatar(this)" />
+                    <button type="button" class="btn-outline btn-sm" style="margin-top:6px;" onclick="clearPfAvatar()">Xóa ảnh</button>
+                  </div>
+                </div>
+                <input type="hidden" id="pf-avatar-data" value="" />
+              </div>
+              <div class="form-group">
+                <label>Lý do chỉnh sửa (tùy chọn)</label>
+                <textarea id="pf-reason" rows="2" placeholder="Ví dụ: Cập nhật số điện thoại mới..."></textarea>
+              </div>
+              <div id="pf-form-error" class="form-error hidden"></div>
+              <div class="form-actions">
+                <button type="button" class="btn-outline" onclick="closeProfileEditModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Gửi yêu cầu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
       <!-- ===== APPROVALS PAGE (Admin) ===== -->
       <section id="page-approvals" class="page">
         <div class="page-header">
-          <h2>✅ Phê duyệt đơn nghỉ</h2>
+          <h2>✅ Phê duyệt</h2>
           <div class="filter-tabs">
-            <button class="tab-btn active" onclick="filterApprovals('all',this)">Tất cả</button>
-            <button class="tab-btn" onclick="filterApprovals('pending',this)">Chờ duyệt</button>
-            <button class="tab-btn" onclick="filterApprovals('approved',this)">Đã duyệt</button>
-            <button class="tab-btn" onclick="filterApprovals('rejected',this)">Từ chối</button>
+            <button class="tab-btn active" onclick="filterApprovals('all',this)">Tất cả nghỉ</button>
+            <button class="tab-btn" onclick="filterApprovals('pending',this)">Chờ duyệt nghỉ</button>
+            <button class="tab-btn" onclick="filterApprovals('approved',this)">Đã duyệt nghỉ</button>
+            <button class="tab-btn" onclick="filterApprovals('rejected',this)">Từ chối nghỉ</button>
+            <button class="tab-btn" onclick="filterApprovals('profile',this)">Hồ sơ 👤</button>
           </div>
         </div>
         <div id="approval-list" class="leave-list"></div>
+        <div id="profile-approval-list" class="leave-list" style="margin-top:12px;"></div>
       </section>
 
       <!-- ===== EMPLOYEES PAGE (Admin) ===== -->
       <section id="page-employees" class="page">
         <div class="page-header">
           <h2>👥 Quản lý nhân viên</h2>
-          <button class="btn-primary" onclick="openEmployeeModal()">+ Thêm nhân viên</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-primary" onclick="openEmployeeModal()">+ Thêm nhân viên</button>
+            <button class="btn-outline" onclick="exportEmployeesExcel()">📥 Xuất NV</button>
+            <button class="btn-outline" onclick="exportLeavesExcel()">📥 Xuất ngày nghỉ</button>
+            <button class="btn-danger" onclick="deleteAllEmployees()">🗑 Xóa tất cả</button>
+          </div>
         </div>
         <div class="search-bar">
           <input type="text" id="emp-search" placeholder="🔍 Tìm kiếm nhân viên..." oninput="renderEmployees()" />
@@ -287,10 +1864,19 @@
                 </select>
               </div>
               <div class="form-group">
-                <label>Phòng ban</label>
-                <select id="emp-dept" required>
-                  <option value="">-- Chọn phòng --</option>
-                </select>
+                <label>Phòng ban <span style="font-weight:400;color:var(--text-muted);">(có thể chọn nhiều)</span></label>
+                <div id="emp-dept-checks" class="dept-check-list"></div>
+                <p style="font-size:11px;color:var(--text-muted);margin:4px 0 0;">Một nhân viên có thể làm việc ở nhiều phòng ban.</p>
+              </div>
+              <div class="form-group">
+                <label>Nhóm làm việc</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                  <select id="emp-group" style="flex:1;min-width:120px;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;background:#fff;">
+                    <option value="">-- Chọn nhóm --</option>
+                  </select>
+                  <input type="text" id="emp-group-custom" placeholder="Hoặc nhập nhóm mới (VD: SA)" maxlength="20" style="flex:1;min-width:120px;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;" />
+                </div>
+                <p style="font-size:11px;color:var(--text-muted);margin:4px 0 0;">VD: SA, XQ… Khi người trong cùng nhóm nghỉ trùng ngày sẽ có cảnh báo.</p>
               </div>
               <div class="form-group">
                 <label>Số điện thoại</label>
@@ -300,6 +1886,31 @@
                 <label>Ghi chú</label>
                 <input type="text" id="emp-note" placeholder="Ghi chú thêm..." />
               </div>
+              <div class="form-group">
+                <label>Ảnh đại diện</label>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                  <div id="emp-avatar-preview" style="width:56px;height:56px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:22px;font-weight:700;color:#64748b;border:2px solid var(--border);">?</div>
+                  <div style="flex:1;min-width:140px;">
+                    <input type="file" id="emp-avatar-file" accept="image/*" style="font-size:13px;width:100%;" onchange="previewEmpAvatar(this)" />
+                    <button type="button" class="btn-outline btn-sm" style="margin-top:6px;" onclick="clearEmpAvatar()">Xóa ảnh</button>
+                  </div>
+                </div>
+                <input type="hidden" id="emp-avatar-data" value="" />
+              </div>
+              <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;" />
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">🔑 Cấp tài khoản đăng nhập</div>
+              <div class="form-group">
+                <label>Tên đăng nhập</label>
+                <input type="text" id="emp-username" placeholder="Để trống nếu không cấp tài khoản" autocomplete="off" />
+              </div>
+              <div class="form-group">
+                <label>Mật khẩu</label>
+                <div class="input-eye-wrap">
+                  <input type="password" id="emp-password" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" />
+                  <button type="button" class="eye-btn" onclick="togglePw('emp-password',this)">👁</button>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--text-muted);margin:0 0 8px;">Tài khoản nhân viên chỉ được xem lịch và tạo đơn nghỉ phép.</p>
               <div class="form-actions">
                 <button type="button" class="btn-outline" onclick="closeEmployeeModal()">Hủy</button>
                 <button type="submit" class="btn-primary">Lưu</button>
@@ -349,6 +1960,17 @@
             </form>
           </div>
         </div>
+
+        <!-- Xem nhân viên theo phòng -->
+        <div id="dept-staff-modal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <div class="modal-header">
+              <h3 id="dept-staff-title">Nhân viên phòng</h3>
+              <button onclick="closeDeptStaffModal()">✕</button>
+            </div>
+            <div id="dept-staff-content" class="day-detail-content"></div>
+          </div>
+        </div>
       </section>
 
       <!-- ===== USERS PAGE (Admin) ===== -->
@@ -387,6 +2009,45 @@
   </div>
 </div>
 
+
+<!-- Change Password Modal -->
+<div id="change-pw-modal" class="modal-overlay hidden">
+  <div class="modal-box small">
+    <div class="modal-header">
+      <h3>🔐 Đổi mật khẩu</h3>
+      <button onclick="closeChangePassword()">✕</button>
+    </div>
+    <form id="change-pw-form" class="auth-form" onsubmit="submitChangePassword(event)">
+      <div class="form-group">
+        <label>Mật khẩu hiện tại</label>
+        <div class="input-eye-wrap">
+          <input type="password" id="pw-current" required placeholder="Nhập mật khẩu hiện tại" />
+          <button type="button" class="eye-btn" onclick="togglePw('pw-current',this)">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Mật khẩu mới</label>
+        <div class="input-eye-wrap">
+          <input type="password" id="pw-new" required placeholder="Tối thiểu 6 ký tự" />
+          <button type="button" class="eye-btn" onclick="togglePw('pw-new',this)">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Xác nhận mật khẩu mới</label>
+        <div class="input-eye-wrap">
+          <input type="password" id="pw-confirm" required placeholder="Nhập lại mật khẩu mới" />
+          <button type="button" class="eye-btn" onclick="togglePw('pw-confirm',this)">👁</button>
+        </div>
+      </div>
+      <div id="pw-error" class="form-error hidden"></div>
+      <div class="form-actions">
+        <button type="button" class="btn-outline" onclick="closeChangePassword()">Hủy</button>
+        <button type="submit" class="btn-primary">Lưu mật khẩu</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Mobile Bottom Navigation -->
 <nav id="bottom-nav" class="bottom-nav" style="display:none;">
   <div class="bottom-nav-inner">
@@ -395,9 +2056,14 @@
       <span>Lịch</span>
     </button>
     <button class="bn-item" id="bn-leaves" onclick="navigate('leave')">
-      <span class="bn-icon">📋</span>
+      <span class="bn-icon">🗓️</span>
       <span class="bn-badge" id="bn-leave-badge" style="display:none">0</span>
       <span>Nghỉ phép</span>
+    </button>
+    <button class="bn-item" id="bn-profile" onclick="navigate('profile')">
+      <span class="bn-icon">👤</span>
+      <span class="bn-badge" id="bn-profile-badge" style="display:none">0</span>
+      <span>Hồ sơ</span>
     </button>
     <button class="bn-item" id="bn-employees" onclick="navigate('employees')">
       <span class="bn-icon">👥</span>
@@ -414,11 +2080,2623 @@
   </div>
 </nav>
 
-<script src="app.js"></script>
+
+<script>
+/* ====================================================
+   PKĐK Lam Sơn – Application Logic
+   LocalStorage-based, no backend required
+   ==================================================== */
+
+// ============================================================
+//  DATA LAYER – LocalStorage helpers
+// ============================================================
+const DB = {
+  get: (key) => { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } },
+  set: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+  getObj: (key, def = {}) => { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } },
+  setObj: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+};
+
+// ============================================================
+//  INITIAL SEED DATA
+// ============================================================
+function seedData() {
+  if (localStorage.getItem('med_seeded')) return;
+
+  // Không tạo phòng ban / nhân viên / đơn nghỉ mẫu
+  DB.set('med_depts', []);
+  DB.set('med_employees', []);
+  DB.set('med_leaves', []);
+  DB.set('med_profile_requests', []);
+  DB.set('med_groups', ['SA', 'XQ']);
+  DB.set('med_day_shifts', []);
+  DB.set('med_notifications', []);
+
+  // Chỉ tạo tài khoản Admin
+  const users = [
+    {
+      id: 'u0',
+      username: 'admin',
+      password: 'admin123',
+      fullname: 'Quản trị viên',
+      role: 'admin',
+      deptId: '',
+      position: 'Quản trị',
+      status: 'active',
+      createdAt: new Date().toISOString(),
+    }
+  ];
+  DB.set('med_users', users);
+
+  localStorage.setItem('med_seeded', '1');
+}
+// Đảm bảo key profile requests tồn tại cho bản đã seed trước đó
+if (!localStorage.getItem('med_profile_requests')) {
+  DB.set('med_profile_requests', []);
+}
+if (!localStorage.getItem('med_groups')) {
+  DB.set('med_groups', ['SA', 'XQ']);
+}
+if (!localStorage.getItem('med_day_shifts')) {
+  DB.set('med_day_shifts', []);
+}
+if (!localStorage.getItem('med_notifications')) {
+  DB.set('med_notifications', []);
+}
+
+function fmtDate(d) {
+  // Dùng local date (tránh lệch timezone UTC)
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function genId() {
+  return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
+
+/** Escape HTML để chống XSS khi render dữ liệu người dùng */
+function esc(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/** Lấy danh sách deptIds của nhân viên (hỗ trợ dữ liệu cũ deptId đơn) */
+function getEmpDeptIds(emp) {
+  if (!emp) return [];
+  if (Array.isArray(emp.deptIds) && emp.deptIds.length) return emp.deptIds.filter(Boolean);
+  if (emp.deptId) return [emp.deptId];
+  return [];
+}
+function empInDept(emp, deptId) {
+  if (!deptId) return true;
+  return getEmpDeptIds(emp).includes(deptId);
+}
+function primaryDeptId(emp) {
+  const ids = getEmpDeptIds(emp);
+  return ids[0] || '';
+}
+/** Chuẩn hóa dữ liệu cũ: deptId → deptIds */
+function migrateEmployeeDepts() {
+  const employees = DB.get('med_employees');
+  let changed = false;
+  employees.forEach(e => {
+    if (!Array.isArray(e.deptIds)) {
+      e.deptIds = e.deptId ? [e.deptId] : [];
+      changed = true;
+    }
+    // Giữ deptId = phòng chính (đầu tiên) để tương thích code cũ
+    e.deptId = e.deptIds[0] || '';
+  });
+  if (changed) DB.set('med_employees', employees);
+}
+function getCheckedDeptIds(containerId) {
+  const box = document.getElementById(containerId);
+  if (!box) return [];
+  return Array.from(box.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
+}
+function renderDeptCheckboxes(containerId, selectedIds) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  const depts = DB.get('med_depts');
+  const selected = new Set(selectedIds || []);
+  if (!depts.length) {
+    box.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Chưa có phòng ban. Hãy thêm phòng trước.</div>';
+    return;
+  }
+  box.innerHTML = depts.map(d => `
+    <label class="dept-check-item">
+      <input type="checkbox" value="${esc(d.id)}" ${selected.has(d.id) ? 'checked' : ''} />
+      <span>${esc(d.icon || '🏥')} ${esc(d.name)}</span>
+    </label>
+  `).join('');
+}
+function empDeptTagsHTML(emp, depts) {
+  const ids = getEmpDeptIds(emp);
+  if (!ids.length) return '<span class="emp-dept-tag" style="background:#f1f5f9;color:#64748b">Chưa phân phòng</span>';
+  return `<div class="dept-tags-wrap">${ids.map(id => {
+    const d = depts.find(x => x.id === id);
+    const color = d?.color || '#1a56db';
+    return `<span class="emp-dept-tag" style="background:${esc(color)}22;color:${esc(color)}">${esc(d?.icon || '🏥')} ${esc(d?.name || '?')}</span>`;
+  }).join('')}</div>`;
+}
+
+/** Nhóm làm việc (SA, XQ...) */
+function getAllGroups() {
+  const stored = DB.get('med_groups');
+  const fromEmps = DB.get('med_employees').map(e => e.group).filter(Boolean);
+  const set = new Set([...(Array.isArray(stored) ? stored : []), ...fromEmps, 'SA', 'XQ']);
+  return Array.from(set).filter(Boolean).sort((a, b) => a.localeCompare(b, 'vi'));
+}
+function ensureGroupSaved(name) {
+  if (!name) return;
+  const groups = DB.get('med_groups');
+  const list = Array.isArray(groups) ? groups : [];
+  if (!list.includes(name)) {
+    list.push(name);
+    DB.set('med_groups', list);
+  }
+}
+function populateGroupSelect(selected) {
+  const sel = document.getElementById('emp-group');
+  if (!sel) return;
+  const groups = getAllGroups();
+  const cur = selected || '';
+  sel.innerHTML = '<option value="">-- Chọn nhóm --</option>' +
+    groups.map(g => `<option value="${esc(g)}" ${g === cur ? 'selected' : ''}>${esc(g)}</option>`).join('');
+  if (cur && !groups.includes(cur)) {
+    const opt = document.createElement('option');
+    opt.value = cur;
+    opt.textContent = cur;
+    opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+/** Cảnh báo khi trong cùng nhóm có người nghỉ trùng ngày */
+function getGroupLeaveConflicts(emp, fromDate, toDate, excludeLeaveId) {
+  if (!emp?.group) return [];
+  const employees = DB.get('med_employees');
+  const leaves = DB.get('med_leaves');
+  const sameGroup = employees.filter(e => e.group === emp.group && e.id !== emp.id);
+  const conflicts = [];
+  leaves.forEach(l => {
+    if (excludeLeaveId && l.id === excludeLeaveId) return;
+    if (l.status !== 'pending' && l.status !== 'approved') return;
+    if (!sameGroup.some(e => e.id === l.employeeId || e.userId === l.userId)) return;
+    // Trùng khoảng ngày
+    if (l.fromDate <= toDate && l.toDate >= fromDate) {
+      const statusText = l.status === 'pending' ? 'chờ duyệt' : 'đã duyệt';
+      conflicts.push({
+        name: l.employeeName,
+        fromDate: l.fromDate,
+        toDate: l.toDate,
+        status: statusText,
+        type: l.type,
+      });
+    }
+  });
+  return conflicts;
+}
+function formatGroupConflictMsg(conflicts, groupName) {
+  if (!conflicts.length) return '';
+  const lines = conflicts.map(c =>
+    `${c.name}: ${formatDateVN(c.fromDate)}→${formatDateVN(c.toDate)} (${c.status})`
+  ).join('; ');
+  return `Nhóm ${groupName} đã có người nghỉ trùng ngày: ${lines}. Bạn vẫn muốn tiếp tục?`;
+}
+
+// ============================================================
+//  CURRENT STATE
+// ============================================================
+
+// ============================================================
+//  AUTO LOGOUT – 15 phút không hoạt động
+// ============================================================
+const IDLE_LIMIT_MS = 15 * 60 * 1000; // 15 phút
+let _lastActivity = Date.now();
+let _idleTimer = null;
+
+function _resetIdleTimer() {
+  _lastActivity = Date.now();
+}
+
+function _startIdleWatcher() {
+  ['click', 'keydown', 'mousemove', 'touchstart', 'scroll'].forEach(evt => {
+    document.addEventListener(evt, _resetIdleTimer, { passive: true });
+  });
+  if (_idleTimer) clearInterval(_idleTimer);
+  _idleTimer = setInterval(() => {
+    if (!currentUser) return;
+    if (Date.now() - _lastActivity > IDLE_LIMIT_MS) {
+      showToast('Đã tự động đăng xuất do không hoạt động quá 15 phút.', 'warning');
+      logout();
+    }
+  }, 30000); // kiểm tra mỗi 30 giây
+}
+
+function _stopIdleWatcher() {
+  if (_idleTimer) { clearInterval(_idleTimer); _idleTimer = null; }
+}
+
+
+// ============================================================
+//  ÂM LỊCH VIỆT NAM (thuật toán Hồ Ngọc Đức – rút gọn)
+// ============================================================
+function jdFromDate(dd, mm, yy) {
+  const a = Math.floor((14 - mm) / 12);
+  const y = yy + 4800 - a;
+  const m = mm + 12 * a - 3;
+  let jd = dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+  return jd;
+}
+function getLunarDate(dd, mm, yy) {
+  // Trả về { day, month, leap } âm lịch
+  const PI = Math.PI;
+  function INT(d) { return Math.floor(d); }
+  function jdF(dd, mm, yy) {
+    const a = INT((14 - mm) / 12);
+    const y = yy + 4800 - a;
+    const m = mm + 12 * a - 3;
+    return dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+  }
+  function SunLongitude(jdn) {
+    const T = (jdn - 2451545.0) / 36525;
+    const T2 = T * T;
+    const dr = PI / 180;
+    let M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+    const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+    let DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+    DL += (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+    let L = L0 + DL;
+    L = L * dr;
+    L = L - PI * 2 * INT(L / (PI * 2));
+    return L;
+  }
+  function NewMoon(k) {
+    const T = k / 1236.85;
+    const T2 = T * T;
+    const T3 = T2 * T;
+    let dr = PI / 180;
+    let Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+    Jd1 += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+    const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+    const Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+    const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+    let C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+    C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
+    C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr) + 0.0104 * Math.sin(dr * 2 * F);
+    C1 = C1 - 0.0051 * Math.sin(dr * (M + Mpr)) - 0.0074 * Math.sin(dr * (M - Mpr));
+    C1 = C1 + 0.0004 * Math.sin(dr * (2 * F + M)) - 0.0004 * Math.sin(dr * (2 * F - M));
+    C1 = C1 - 0.0006 * Math.sin(dr * (2 * F + Mpr)) + 0.0010 * Math.sin(dr * (2 * F - Mpr));
+    C1 = C1 + 0.0005 * Math.sin(dr * (2 * Mpr + M));
+    let deltat;
+    if (T < -11) {
+      deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3;
+    } else {
+      deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
+    }
+    return Jd1 + C1 - deltat;
+  }
+  function getLunarMonth11(yy, timeZone) {
+    const off = jdF(31, 12, yy) - 2415021.076998695;
+    const k = INT(off / 29.530588853);
+    let nm = NewMoon(k);
+    const sunLong = INT(SunLongitude(nm) * 180 / PI / 30);
+    if (sunLong >= 9) nm = NewMoon(k - 1);
+    return INT(nm + 0.5 + timeZone / 24);
+  }
+  function getNewMoonDay(k, timeZone) {
+    return INT(NewMoon(k) + 0.5 + timeZone / 24);
+  }
+  function getSunLongitude(jdn, timeZone) {
+    return INT(SunLongitude(jdn - 0.5 - timeZone / 24) * 180 / PI / 30);
+  }
+  function getLunar(dd, mm, yy, timeZone) {
+    const dayNumber = jdF(dd, mm, yy);
+    const k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+    let monthStart = getNewMoonDay(k + 1, timeZone);
+    if (monthStart > dayNumber) monthStart = getNewMoonDay(k, timeZone);
+    let a11 = getLunarMonth11(yy, timeZone);
+    let b11 = a11;
+    let lunarYear;
+    if (a11 >= monthStart) {
+      lunarYear = yy;
+      a11 = getLunarMonth11(yy - 1, timeZone);
+    } else {
+      lunarYear = yy + 1;
+      b11 = getLunarMonth11(yy + 1, timeZone);
+    }
+    const lunarDay = dayNumber - monthStart + 1;
+    const diff = INT((monthStart - a11) / 29);
+    let lunarLeap = 0;
+    let lunarMonth = diff + 11;
+    if (b11 - a11 > 365) {
+      const leap = INT((a11 + INT((b11 - a11) / 59) * 29 - a11) / 29) + 1;
+      // simplified leap handling
+    }
+    if (lunarMonth > 12) lunarMonth -= 12;
+    if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+    return { day: lunarDay, month: lunarMonth, year: lunarYear };
+  }
+  try {
+    return getLunar(dd, mm, yy, 7);
+  } catch (e) {
+    return { day: 0, month: 0, year: 0 };
+  }
+}
+function lunarLabel(date) {
+  const L = getLunarDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
+  if (!L.day) return '';
+  if (L.day === 1) return L.day + '/' + L.month;
+  return String(L.day);
+}
+
+let currentUser = null;
+let currentPage = 'schedule';
+let calendarMonth = new Date();
+let approvalFilter = 'all';
+let userFilter = 'all';
+
+// ============================================================
+//  INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  seedData();
+  migrateEmployeeDepts();
+  const savedUser = DB.getObj('med_current_user', null);
+  if (savedUser && savedUser.id) {
+    // Re-validate from DB
+    const users = DB.get('med_users');
+    const user = users.find(u => u.id === savedUser.id && u.status === 'active');
+    if (user) {
+      loginSuccess(user);
+    } else {
+      showAuth('login-view');
+    }
+  } else {
+    showAuth('login-view');
+  }
+  populateDeptSelects();
+});
+
+// ============================================================
+//  AUTH
+// ============================================================
+function showAuth(view) {
+  document.querySelectorAll('.auth-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(view).classList.add('active');
+  populateDeptSelects();
+}
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+document.getElementById('login-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+
+  btn.disabled = true; btn.textContent = 'Đang đăng nhập...';
+
+  setTimeout(() => {
+    const users = DB.get('med_users');
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (!user) {
+      errEl.textContent = 'Tên đăng nhập hoặc mật khẩu không đúng.';
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Đăng nhập';
+      return;
+    }
+    if (user.status === 'pending') {
+      errEl.textContent = 'Tài khoản đang chờ admin phê duyệt. Vui lòng chờ.';
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Đăng nhập';
+      return;
+    }
+    if (user.status === 'rejected') {
+      errEl.textContent = 'Tài khoản đã bị từ chối. Vui lòng liên hệ quản trị viên.';
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Đăng nhập';
+      return;
+    }
+    errEl.classList.add('hidden');
+    loginSuccess(user);
+    btn.disabled = false; btn.textContent = 'Đăng nhập';
+  }, 500);
+});
+
+// Public registration disabled – only admin can create staff accounts
+const regForm = document.getElementById('register-form');
+if (regForm) {
+  regForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    showToast('Đăng ký công khai đã tắt. Liên hệ quản trị viên.', 'warning');
+  });
+}
+
+function loginSuccess(user) {
+  currentUser = user;
+  DB.setObj('med_current_user', user);
+  _resetIdleTimer();
+  _startIdleWatcher();
+
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+
+  // Set user info
+  const initials = user.fullname.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('sidebar-avatar').textContent = initials;
+  document.getElementById('sidebar-name').textContent = user.fullname;
+  document.getElementById('topbar-user').textContent = user.fullname;
+
+  const depts = DB.get('med_depts');
+  const dept = depts.find(d => d.id === user.deptId);
+  document.getElementById('sidebar-dept').textContent = dept ? dept.name : (user.role === 'admin' ? 'Quản trị hệ thống' : '--');
+  document.getElementById('sidebar-role-badge').textContent = user.role === 'admin' ? '👑 Admin' : user.position || 'Nhân viên';
+
+  // Show/hide admin menu items (sidebar)
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.classList.toggle('hidden', user.role !== 'admin');
+  });
+
+  // Bottom nav: hiện khi đăng nhập, ẩn mục admin nếu không phải admin
+  const bn = document.getElementById('bottom-nav');
+  if (bn) bn.style.display = 'block';
+  ['bn-employees', 'bn-departments', 'bn-users'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = user.role === 'admin' ? '' : 'none';
+  });
+  // Staff: hiện "Nghỉ phép"; Admin cũng hiện
+  const bnLeave = document.getElementById('bn-leaves');
+  if (bnLeave) bnLeave.style.display = '';
+
+  navigate('schedule');
+  updateBadges();
+  updateNotifBadge();
+}
+
+
+function openChangePassword() {
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  document.getElementById('pw-error').classList.add('hidden');
+  document.getElementById('change-pw-modal').classList.remove('hidden');
+}
+function closeChangePassword() {
+  document.getElementById('change-pw-modal').classList.add('hidden');
+}
+function submitChangePassword(e) {
+  e.preventDefault();
+  const cur = document.getElementById('pw-current').value;
+  const neu = document.getElementById('pw-new').value;
+  const conf = document.getElementById('pw-confirm').value;
+  const err = document.getElementById('pw-error');
+  if (!currentUser) return;
+  if (cur !== currentUser.password) {
+    err.textContent = 'Mật khẩu hiện tại không đúng.';
+    err.classList.remove('hidden');
+    return;
+  }
+  if (neu.length < 6) {
+    err.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+    err.classList.remove('hidden');
+    return;
+  }
+  if (neu !== conf) {
+    err.textContent = 'Xác nhận mật khẩu không khớp.';
+    err.classList.remove('hidden');
+    return;
+  }
+  const users = DB.get('med_users');
+  const u = users.find(x => x.id === currentUser.id);
+  if (u) {
+    u.password = neu;
+    DB.set('med_users', users);
+    currentUser.password = neu;
+    DB.setObj('med_current_user', currentUser);
+  }
+  closeChangePassword();
+  showToast('Đã đổi mật khẩu thành công!', 'success');
+}
+
+function logout() {
+  _stopIdleWatcher();
+  currentUser = null;
+  DB.setObj('med_current_user', {});
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-error').classList.add('hidden');
+  const bn = document.getElementById('bottom-nav');
+  if (bn) bn.style.display = 'none';
+  showAuth('login-view');
+  closeSidebarIfMobile();
+}
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page)?.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === page);
+  });
+
+  // Sync bottom nav active state
+  const bnMap = {
+    schedule: 'bn-schedule',
+    leave: 'bn-leaves',
+    profile: 'bn-profile',
+    employees: 'bn-employees',
+    departments: 'bn-departments',
+    users: 'bn-users',
+  };
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  const bnEl = document.getElementById(bnMap[page]);
+  if (bnEl) bnEl.classList.add('active');
+
+  const titles = {
+    schedule: '📅 Lịch làm việc',
+    leave: '🗓️ Đơn nghỉ phép',
+    profile: '👤 Hồ sơ của tôi',
+    approvals: '✅ Phê duyệt',
+    employees: '👥 Nhân viên',
+    departments: '🏥 Phòng ban',
+    users: '🔑 Tài khoản',
+  };
+  document.getElementById('topbar-title').textContent = titles[page] || '';
+  closeSidebarIfMobile();
+
+  // Render page
+  switch (page) {
+    case 'schedule': renderSchedule(); break;
+    case 'leave': renderLeaveList(); break;
+    case 'profile': renderProfile(); break;
+    case 'approvals': renderApprovals(); break;
+    case 'employees': renderEmployees(); break;
+    case 'departments': renderDepartments(); break;
+    case 'users': renderUsers(); break;
+  }
+}
+
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('sidebar-overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('hidden', !s.classList.contains('open'));
+}
+
+function closeSidebarIfMobile() {
+  if (window.innerWidth < 768) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.add('hidden');
+  }
+}
+
+// ============================================================
+//  BADGES
+// ============================================================
+function updateBadges() {
+  const leaves = DB.get('med_leaves');
+  const users = DB.get('med_users');
+  const profileReqs = DB.get('med_profile_requests');
+
+  const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
+  const pendingUsers = users.filter(u => u.status === 'pending').length;
+  const pendingProfiles = profileReqs.filter(r => r.status === 'pending').length;
+
+  setBadge('nav-approval-badge', pendingLeaves + pendingProfiles);
+  setBadge('nav-users-badge', pendingUsers);
+
+  // My pending leaves (sidebar + bottom nav)
+  if (currentUser) {
+    const myPending = leaves.filter(l => l.userId === currentUser.id && l.status === 'pending').length;
+    setBadge('nav-leave-badge', myPending);
+    // Bottom nav badge
+    const bnBadge = document.getElementById('bn-leave-badge');
+    if (bnBadge) {
+      if (myPending > 0) {
+        bnBadge.textContent = myPending;
+        bnBadge.style.display = 'inline-flex';
+      } else {
+        bnBadge.style.display = 'none';
+      }
+    }
+    // My pending profile requests
+    const myPfPending = profileReqs.filter(r => r.userId === currentUser.id && r.status === 'pending').length;
+    setBadge('nav-profile-badge', myPfPending);
+    const bnPf = document.getElementById('bn-profile-badge');
+    if (bnPf) {
+      if (myPfPending > 0) {
+        bnPf.textContent = myPfPending;
+        bnPf.style.display = 'inline-flex';
+      } else {
+        bnPf.style.display = 'none';
+      }
+    }
+  }
+  updateNotifBadge();
+}
+
+function setBadge(id, count) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (count > 0) { el.textContent = count; el.classList.remove('hidden'); }
+  else { el.classList.add('hidden'); }
+}
+
+// ============================================================
+//  NOTIFICATIONS
+// ============================================================
+function pushNotification(userId, type, title, message, meta) {
+  if (!userId) return;
+  const notifs = DB.get('med_notifications');
+  notifs.unshift({
+    id: genId(),
+    userId,
+    type: type || 'info',
+    title: title || 'Thông báo',
+    message: message || '',
+    meta: meta || {},
+    read: false,
+    createdAt: new Date().toISOString(),
+  });
+  // Giữ tối đa 200 thông báo
+  if (notifs.length > 200) notifs.length = 200;
+  DB.set('med_notifications', notifs);
+  updateNotifBadge();
+}
+
+function notifyAdmins(type, title, message, meta) {
+  const admins = DB.get('med_users').filter(u => u.role === 'admin' && u.status === 'active');
+  admins.forEach(a => pushNotification(a.id, type, title, message, meta));
+}
+
+function getMyNotifications() {
+  if (!currentUser) return [];
+  return DB.get('med_notifications')
+    .filter(n => n.userId === currentUser.id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+function updateNotifBadge() {
+  const countEl = document.getElementById('notif-bell-count');
+  if (!countEl || !currentUser) return;
+  const unread = getMyNotifications().filter(n => !n.read).length;
+  if (unread > 0) {
+    countEl.textContent = unread > 99 ? '99+' : String(unread);
+    countEl.style.display = 'flex';
+  } else {
+    countEl.style.display = 'none';
+  }
+}
+
+function toggleNotifPanel(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  const open = panel.classList.toggle('open');
+  if (open) renderNotifList();
+}
+
+function closeNotifPanel() {
+  document.getElementById('notif-panel')?.classList.remove('open');
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  const notifs = getMyNotifications();
+  if (!notifs.length) {
+    list.innerHTML = '<div class="notif-empty">Chưa có thông báo nào</div>';
+    return;
+  }
+  list.innerHTML = notifs.map(n => {
+    const time = n.createdAt
+      ? formatDateVN(n.createdAt.slice(0, 10)) + ' ' + n.createdAt.slice(11, 16)
+      : '';
+    const icon = {
+      leave_submit: '🗓️',
+      leave_approved: '✅',
+      leave_rejected: '❌',
+      dept_assign: '🏥',
+      info: '🔔',
+    }[n.type] || '🔔';
+    return `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}')">
+        <div class="notif-item-title">${icon} ${esc(n.title)}</div>
+        <div class="notif-item-msg">${esc(n.message)}</div>
+        <div class="notif-item-time">${esc(time)}</div>
+      </div>`;
+  }).join('');
+}
+
+function markNotifRead(id) {
+  const notifs = DB.get('med_notifications');
+  const n = notifs.find(x => x.id === id);
+  if (n && !n.read) {
+    n.read = true;
+    DB.set('med_notifications', notifs);
+    updateNotifBadge();
+    renderNotifList();
+  }
+}
+
+function markAllNotifsRead() {
+  if (!currentUser) return;
+  const notifs = DB.get('med_notifications');
+  let changed = false;
+  notifs.forEach(n => {
+    if (n.userId === currentUser.id && !n.read) {
+      n.read = true;
+      changed = true;
+    }
+  });
+  if (changed) {
+    DB.set('med_notifications', notifs);
+    updateNotifBadge();
+    renderNotifList();
+    showToast('Đã đánh dấu tất cả đã đọc.', 'success');
+  }
+}
+
+// Đóng panel khi click ra ngoài
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.notif-bell-wrap');
+  if (wrap && !wrap.contains(e.target)) closeNotifPanel();
+});
+
+// ============================================================
+//  POPULATE DEPT SELECTS
+// ============================================================
+function populateDeptSelects() {
+  const depts = DB.get('med_depts');
+
+  const selects = ['reg-department', 'schedule-dept-filter', 'emp-dept-filter'];
+  selects.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const currentVal = sel.value;
+
+    // Keep only first option
+    while (sel.options.length > 1) sel.remove(1);
+
+    depts.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = d.icon + ' ' + d.name;
+      sel.appendChild(opt);
+    });
+    if (currentVal) sel.value = currentVal;
+  });
+}
+
+// ============================================================
+//  SCHEDULE PAGE
+// ============================================================
+function changeMonth(dir) {
+  calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + dir, 1);
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const depts = DB.get('med_depts');
+  const employees = DB.get('med_employees');
+  const leaves = DB.get('med_leaves');
+  const filterDept = document.getElementById('schedule-dept-filter')?.value || '';
+
+  const y = calendarMonth.getFullYear();
+  const m = calendarMonth.getMonth();
+  const monthNames = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
+                      'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  document.getElementById('current-month-label').textContent = `${monthNames[m]} ${y}`;
+
+  const cal = document.getElementById('schedule-calendar');
+  cal.innerHTML = '';
+
+  // Day headers
+  const dayNames = ['CN','T2','T3','T4','T5','T6','T7'];
+  dayNames.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-header'; h.textContent = d;
+    cal.appendChild(h);
+  });
+
+  const firstDay = new Date(y, m, 1).getDay();
+  const totalDays = new Date(y, m + 1, 0).getDate();
+  const today = new Date();
+
+  // Prev month padding
+  const prevMonthDays = new Date(y, m, 0).getDate();
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const cell = createDayCell(new Date(y, m - 1, prevMonthDays - i), employees, leaves, depts, filterDept, true);
+    cal.appendChild(cell);
+  }
+
+  // Current month
+  for (let d = 1; d <= totalDays; d++) {
+    const date = new Date(y, m, d);
+    const cell = createDayCell(date, employees, leaves, depts, filterDept, false);
+    // Mark today
+    if (date.toDateString() === today.toDateString()) cell.classList.add('today');
+    // Mark weekend
+    const dow = date.getDay();
+    if (dow === 0 || dow === 6) cell.classList.add('weekend');
+    cal.appendChild(cell);
+  }
+
+  // Next month padding to fill grid
+  const total = firstDay + totalDays;
+  const remaining = 7 - (total % 7 === 0 ? 7 : total % 7);
+  for (let d = 1; d <= remaining && remaining < 7; d++) {
+    const cell = createDayCell(new Date(y, m + 1, d), employees, leaves, depts, filterDept, true);
+    cal.appendChild(cell);
+  }
+}
+
+function createDayCell(date, employees, leaves, depts, filterDept, isOtherMonth) {
+  const dateStr = fmtDate(date);
+  const cell = document.createElement('div');
+  cell.className = 'cal-day' + (isOtherMonth ? ' other-month' : '');
+
+  const dayLeaves = leaves.filter(l => {
+    const from = l.fromDate; const to = l.toDate;
+    if (!(l.status === 'approved' && dateStr >= from && dateStr <= to)) return false;
+    if (!filterDept) return true;
+    if (l.deptId === filterDept) return true;
+    const emp = employees.find(e => e.id === l.employeeId);
+    return emp ? empInDept(emp, filterDept) : false;
+  });
+
+  if (dayLeaves.length > 0) cell.classList.add('has-leave');
+  const dayShifts = DB.get('med_day_shifts').filter(s => s.date === dateStr);
+  if (dayShifts.length > 0) cell.classList.add('has-shift');
+
+  // Day number + âm lịch
+  const numEl = document.createElement('div');
+  numEl.className = 'day-num';
+  const inner = document.createElement('span');
+  inner.textContent = date.getDate();
+  numEl.appendChild(inner);
+  cell.appendChild(numEl);
+  const lunarEl = document.createElement('div');
+  lunarEl.className = 'day-lunar';
+  lunarEl.textContent = lunarLabel(date);
+  cell.appendChild(lunarEl);
+
+  // Chips: nghỉ phép + gợi ý phân phòng
+  const chips = document.createElement('div');
+  chips.className = 'cal-chips';
+  dayLeaves.slice(0, 2).forEach(l => {
+    const dept = depts.find(d => d.id === l.deptId);
+    const chip = document.createElement('div');
+    chip.className = 'cal-chip';
+    chip.style.background = (dept?.color || '#f59e0b') + '22';
+    chip.style.color = dept?.color || '#b45309';
+    chip.textContent = '🚫 ' + (l.employeeName.split(' ').slice(-1)[0] || l.employeeName);
+    chips.appendChild(chip);
+  });
+  if (dayLeaves.length > 2) {
+    const more = document.createElement('div');
+    more.className = 'cal-chip';
+    more.style.background = '#f1f5f9';
+    more.style.color = '#64748b';
+    more.textContent = `+${dayLeaves.length - 2} nghỉ`;
+    chips.appendChild(more);
+  } else if (dayShifts.length && dayLeaves.length < 2) {
+    const chip = document.createElement('div');
+    chip.className = 'cal-chip';
+    chip.style.background = '#e8f0fe';
+    chip.style.color = '#1a56db';
+    chip.textContent = `📋 ${dayShifts.length} phân phòng`;
+    chips.appendChild(chip);
+  }
+  cell.appendChild(chips);
+
+  cell.onclick = () => openDayDetail(date, employees, leaves, depts, filterDept);
+  return cell;
+}
+
+/** Phân phòng làm việc theo ngày – med_day_shifts: {date, employeeId, deptId} */
+let _dayDetailDateStr = '';
+let _dayDetailFilterDept = '';
+
+function getDayShiftDeptId(employeeId, dateStr) {
+  const shifts = DB.get('med_day_shifts');
+  const s = shifts.find(x => x.date === dateStr && x.employeeId === employeeId);
+  return s ? s.deptId : null;
+}
+
+/** Phòng làm việc thực tế trong ngày: ưu tiên phân công ngày → phòng chính */
+function getWorkDeptIdForDay(emp, dateStr) {
+  if (!emp) return '';
+  const override = getDayShiftDeptId(emp.id, dateStr);
+  if (override) return override;
+  return primaryDeptId(emp);
+}
+
+function setDayShift(employeeId, dateStr, deptId) {
+  let shifts = DB.get('med_day_shifts');
+  const idx = shifts.findIndex(x => x.date === dateStr && x.employeeId === employeeId);
+  const emp = DB.get('med_employees').find(e => e.id === employeeId);
+  const defaultDept = primaryDeptId(emp);
+  // Nếu chọn đúng phòng mặc định → xóa override
+  if (!deptId || deptId === defaultDept) {
+    if (idx >= 0) {
+      shifts.splice(idx, 1);
+      DB.set('med_day_shifts', shifts);
+    }
+    return;
+  }
+  if (idx >= 0) {
+    shifts[idx].deptId = deptId;
+  } else {
+    shifts.push({ id: genId(), date: dateStr, employeeId, deptId });
+  }
+  DB.set('med_day_shifts', shifts);
+}
+
+function openDayDetail(date, employees, leaves, depts, filterDept) {
+  const dateStr = fmtDate(date);
+  _dayDetailDateStr = dateStr;
+  _dayDetailFilterDept = filterDept || '';
+  const dayNames = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+
+  const L = getLunarDate(date.getDate(), date.getMonth()+1, date.getFullYear());
+  const lunarStr = L.day ? ` (AL ${L.day}/${L.month})` : '';
+  document.getElementById('day-detail-title').textContent =
+    `${dayNames[date.getDay()]}, ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}${lunarStr}`;
+
+  renderDayDetailContent(dateStr, employees, leaves, depts, filterDept);
+  document.getElementById('day-detail-modal').classList.remove('hidden');
+}
+
+function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
+  if (!employees) employees = DB.get('med_employees');
+  if (!leaves) leaves = DB.get('med_leaves');
+  if (!depts) depts = DB.get('med_depts');
+  if (filterDept === undefined) filterDept = _dayDetailFilterDept;
+
+  const isAdmin = currentUser?.role === 'admin';
+  const filteredEmps = filterDept ? employees.filter(e => empInDept(e, filterDept)) : employees;
+
+  const dayLeaves = leaves.filter(l => {
+    if (!(l.status === 'approved' && dateStr >= l.fromDate && dateStr <= l.toDate)) return false;
+    if (!filterDept) return true;
+    if (l.deptId === filterDept) return true;
+    const emp = employees.find(e => e.id === l.employeeId);
+    return emp ? empInDept(emp, filterDept) : false;
+  });
+  const leaveEmpIds = new Set(dayLeaves.map(l => l.employeeId));
+
+  let html = '';
+
+  // ===== Nghỉ phép =====
+  html += `<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">🚫 Nghỉ phép (${dayLeaves.length})</div>`;
+  if (!dayLeaves.length) {
+    html += `<div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;padding:8px 0;">Không có ai nghỉ ngày này.</div>`;
+  } else {
+    dayLeaves.forEach(l => {
+      const emp = employees.find(e => e.id === l.employeeId);
+      const dept = depts.find(d => d.id === l.deptId) || depts.find(d => d.id === primaryDeptId(emp));
+      html += `
+        <div class="day-staff-item">
+          <div class="staff-avatar" style="background:${esc(dept?.color||'#f59e0b')};overflow:hidden;">
+            ${emp?.avatar ? `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="" />` : esc((l.employeeName || '?').charAt(0))}
+          </div>
+          <div class="staff-info">
+            <div class="staff-name">${esc(l.employeeName)}${emp?.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(emp.group)}</span>` : ''}</div>
+            <div class="staff-dept">${esc(l.type)} · ${formatDateVN(l.fromDate)} → ${formatDateVN(l.toDate)}</div>
+          </div>
+          <span class="staff-status status-leave">Nghỉ phép</span>
+        </div>`;
+    });
+  }
+
+  // ===== Đang làm việc + phân phòng =====
+  const working = filteredEmps.filter(e => !leaveEmpIds.has(e.id));
+  html += `<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin:16px 0 8px;">✅ Đang làm việc (${working.length})</div>`;
+
+  if (!working.length) {
+    html += `<div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Không có nhân viên làm việc ngày này.</div>`;
+  } else {
+    working.forEach(e => {
+      const workDeptId = getWorkDeptIdForDay(e, dateStr);
+      const workDept = depts.find(d => d.id === workDeptId);
+      const isOverride = !!getDayShiftDeptId(e.id, dateStr);
+      const defaultIds = getEmpDeptIds(e);
+      const color = workDept?.color || '#1a56db';
+
+      let deptControl = '';
+      if (isAdmin) {
+        // Admin: chọn phòng làm việc ngày này
+        const opts = depts.map(d =>
+          `<option value="${esc(d.id)}" ${d.id === workDeptId ? 'selected' : ''}>${esc(d.icon || '')} ${esc(d.name)}</option>`
+        ).join('');
+        deptControl = `
+          <select class="day-dept-select" data-emp="${esc(e.id)}" onchange="onDayDeptChange('${esc(e.id)}','${esc(dateStr)}',this.value)"
+            style="margin-top:4px;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;max-width:100%;background:#fff;">
+            <option value="">— Phòng mặc định —</option>
+            ${opts}
+          </select>
+          ${isOverride ? '<div style="font-size:10px;color:#b45309;margin-top:2px;">⚡ Phân công riêng ngày này</div>' : '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Mặc định theo hồ sơ</div>'}`;
+      } else {
+        deptControl = `<div class="staff-dept">${esc(workDept?.name || 'Chưa phân phòng')} · ${esc(e.position || '')}${isOverride ? ' · (đã phân công)' : ''}</div>`;
+      }
+
+      html += `
+        <div class="day-staff-item" style="align-items:flex-start;">
+          <div class="staff-avatar" style="background:${esc(color)};overflow:hidden;margin-top:2px;">
+            ${e.avatar ? `<img src="${e.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="" />` : esc((e.name || '?').charAt(0))}
+          </div>
+          <div class="staff-info" style="min-width:0;">
+            <div class="staff-name">${esc(e.name)}${e.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(e.group)}</span>` : ''}</div>
+            ${!isAdmin ? deptControl : `<div class="staff-dept">${esc(e.position || '')}${defaultIds.length ? ' · Phòng mặc định: ' + esc(defaultIds.map(id => depts.find(d => d.id === id)?.name).filter(Boolean).join(', ')) : ''}</div>${deptControl}`}
+          </div>
+          <span class="staff-status status-working" style="flex-shrink:0;">Làm việc</span>
+        </div>`;
+    });
+  }
+
+  // ===== Admin: sao chép lịch =====
+  if (isAdmin && working.length) {
+    html += `
+      <div style="margin-top:18px;padding-top:14px;border-top:1.5px solid var(--border);">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">📋 Sao chép lịch phân phòng</div>
+        <p style="font-size:12px;color:var(--text-muted);margin:0 0 10px;">Sao chép phân phòng làm việc ngày này sang các ngày khác (không ảnh hưởng đơn nghỉ phép).</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;">
+          <div class="form-group" style="margin:0;flex:1;min-width:120px;">
+            <label style="font-size:11px;">Từ ngày</label>
+            <input type="date" id="copy-shift-from" value="${esc(dateStr)}" style="padding:8px 10px;font-size:13px;" />
+          </div>
+          <div class="form-group" style="margin:0;flex:1;min-width:120px;">
+            <label style="font-size:11px;">Đến ngày</label>
+            <input type="date" id="copy-shift-to" value="${esc(dateStr)}" style="padding:8px 10px;font-size:13px;" />
+          </div>
+          <button type="button" class="btn-primary btn-sm" onclick="copyDayShifts('${esc(dateStr)}')">📋 Sao chép</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+          <button type="button" class="btn-outline btn-sm" onclick="copyDayShiftsToOffset('${esc(dateStr)}',1)">→ Ngày mai</button>
+          <button type="button" class="btn-outline btn-sm" onclick="copyDayShiftsToOffset('${esc(dateStr)}',7)">→ +7 ngày</button>
+          <button type="button" class="btn-outline btn-sm" onclick="clearDayShifts('${esc(dateStr)}')">🗑 Xóa phân công ngày này</button>
+        </div>
+      </div>`;
+  }
+
+  if (!dayLeaves.length && !working.length) {
+    html = '<div class="empty-state"><span class="empty-icon">📭</span><h3>Không có dữ liệu</h3><p>Chưa có nhân viên hoặc đơn nghỉ cho ngày này.</p></div>';
+  }
+
+  document.getElementById('day-detail-content').innerHTML = html;
+}
+
+function onDayDeptChange(employeeId, dateStr, deptId) {
+  if (currentUser?.role !== 'admin') return;
+  const emp = DB.get('med_employees').find(e => e.id === employeeId);
+  const depts = DB.get('med_depts');
+  const prevDeptId = getWorkDeptIdForDay(emp, dateStr);
+  setDayShift(employeeId, dateStr, deptId);
+
+  // Thông báo nhân viên khi được phân phòng mới
+  const newDeptId = deptId || primaryDeptId(emp);
+  if (emp?.userId && newDeptId && newDeptId !== prevDeptId) {
+    const dept = depts.find(d => d.id === newDeptId);
+    const deptName = dept ? `${dept.icon || ''} ${dept.name}`.trim() : 'phòng mới';
+    pushNotification(
+      emp.userId,
+      'dept_assign',
+      'Phân phòng làm việc mới',
+      `Bạn được phân làm tại ${deptName} vào ngày ${formatDateVN(dateStr)}.`,
+      { date: dateStr, deptId: newDeptId, employeeId }
+    );
+  }
+
+  showToast(deptId ? 'Đã phân phòng cho ngày này.' : 'Đã về phòng mặc định.', 'success');
+  renderDayDetailContent(dateStr);
+  renderSchedule();
+}
+
+function copyDayShifts(sourceDate) {
+  if (currentUser?.role !== 'admin') return;
+  const fromEl = document.getElementById('copy-shift-from');
+  const toEl = document.getElementById('copy-shift-to');
+  const rangeFrom = fromEl?.value || sourceDate;
+  const rangeTo = toEl?.value || sourceDate;
+  if (rangeFrom > rangeTo) {
+    showToast('Ngày bắt đầu không được sau ngày kết thúc.', 'error');
+    return;
+  }
+  const shifts = DB.get('med_day_shifts');
+  const sourceShifts = shifts.filter(s => s.date === sourceDate);
+  // Nếu chưa có override, tạo snapshot từ phòng mặc định của NV đang làm
+  const employees = DB.get('med_employees');
+  const leaves = DB.get('med_leaves');
+  const leaveIds = new Set(
+    leaves.filter(l => l.status === 'approved' && sourceDate >= l.fromDate && sourceDate <= l.toDate)
+      .map(l => l.employeeId)
+  );
+  const snapshot = [];
+  if (sourceShifts.length) {
+    sourceShifts.forEach(s => snapshot.push({ employeeId: s.employeeId, deptId: s.deptId }));
+  } else {
+    employees.filter(e => !leaveIds.has(e.id)).forEach(e => {
+      const d = primaryDeptId(e);
+      if (d) snapshot.push({ employeeId: e.id, deptId: d });
+    });
+  }
+  if (!snapshot.length) {
+    showToast('Không có phân phòng để sao chép.', 'info');
+    return;
+  }
+
+  let count = 0;
+  const from = new Date(rangeFrom + 'T00:00:00');
+  const to = new Date(rangeTo + 'T00:00:00');
+  let shiftsAll = DB.get('med_day_shifts').filter(s => !(s.date >= rangeFrom && s.date <= rangeTo && snapshot.some(x => x.employeeId === s.employeeId)));
+
+  for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+    const ds = fmtDate(d);
+    if (ds === sourceDate) continue; // bỏ qua chính ngày nguồn nếu nằm trong khoảng? vẫn copy được
+    snapshot.forEach(item => {
+      shiftsAll.push({ id: genId(), date: ds, employeeId: item.employeeId, deptId: item.deptId });
+      count++;
+    });
+  }
+  DB.set('med_day_shifts', shiftsAll);
+  showToast(`Đã sao chép phân phòng sang ${count} lượt phân công.`, 'success');
+  renderDayDetailContent(sourceDate);
+  renderSchedule();
+}
+
+function copyDayShiftsToOffset(sourceDate, days) {
+  if (currentUser?.role !== 'admin') return;
+  const base = new Date(sourceDate + 'T00:00:00');
+  base.setDate(base.getDate() + days);
+  const target = fmtDate(base);
+  // set range inputs if present
+  const fromEl = document.getElementById('copy-shift-from');
+  const toEl = document.getElementById('copy-shift-to');
+  if (fromEl) fromEl.value = target;
+  if (toEl) toEl.value = target;
+
+  const shifts = DB.get('med_day_shifts');
+  const sourceShifts = shifts.filter(s => s.date === sourceDate);
+  const employees = DB.get('med_employees');
+  const leaves = DB.get('med_leaves');
+  const leaveIds = new Set(
+    leaves.filter(l => l.status === 'approved' && sourceDate >= l.fromDate && sourceDate <= l.toDate)
+      .map(l => l.employeeId)
+  );
+  let snapshot = sourceShifts.map(s => ({ employeeId: s.employeeId, deptId: s.deptId }));
+  if (!snapshot.length) {
+    employees.filter(e => !leaveIds.has(e.id)).forEach(e => {
+      const d = primaryDeptId(e);
+      if (d) snapshot.push({ employeeId: e.id, deptId: d });
+    });
+  }
+  if (!snapshot.length) {
+    showToast('Không có phân phòng để sao chép.', 'info');
+    return;
+  }
+  let shiftsAll = shifts.filter(s => s.date !== target || !snapshot.some(x => x.employeeId === s.employeeId));
+  // remove existing for target employees then add
+  shiftsAll = shiftsAll.filter(s => !(s.date === target && snapshot.some(x => x.employeeId === s.employeeId)));
+  snapshot.forEach(item => {
+    shiftsAll.push({ id: genId(), date: target, employeeId: item.employeeId, deptId: item.deptId });
+  });
+  DB.set('med_day_shifts', shiftsAll);
+  showToast(`Đã sao chép lịch sang ${formatDateVN(target)}.`, 'success');
+  renderSchedule();
+}
+
+function clearDayShifts(dateStr) {
+  if (currentUser?.role !== 'admin') return;
+  confirmDialog('Xóa phân công ngày này?', 'Tất cả phân phòng riêng trong ngày sẽ bị xóa, nhân viên về phòng mặc định.', () => {
+    const shifts = DB.get('med_day_shifts').filter(s => s.date !== dateStr);
+    DB.set('med_day_shifts', shifts);
+    showToast('Đã xóa phân công ngày này.', 'warning');
+    renderDayDetailContent(dateStr);
+    renderSchedule();
+  });
+}
+
+function closeDayDetail() {
+  document.getElementById('day-detail-modal').classList.add('hidden');
+  _dayDetailDateStr = '';
+}
+
+// ============================================================
+//  PROFILE PAGE – Nhân viên sửa thông tin (chờ admin duyệt)
+// ============================================================
+function getMyEmployee() {
+  if (!currentUser) return null;
+  const employees = DB.get('med_employees');
+  return employees.find(e => e.userId === currentUser.id)
+    || employees.find(e => e.name === currentUser.fullname)
+    || null;
+}
+
+function renderProfile() {
+  const emp = getMyEmployee();
+  const depts = DB.get('med_depts');
+  const card = document.getElementById('profile-info-card');
+  const notice = document.getElementById('profile-pending-notice');
+  const listEl = document.getElementById('profile-request-list');
+
+  if (!emp && currentUser.role === 'admin') {
+    card.innerHTML = `
+      <div class="empty-state" style="padding:24px;">
+        <span class="empty-icon">👑</span>
+        <h3>Tài khoản Quản trị viên</h3>
+        <p>Admin không gắn với hồ sơ nhân viên. Bạn có thể quản lý nhân viên ở mục Nhân viên.</p>
+      </div>`;
+    notice.classList.add('hidden');
+    listEl.innerHTML = '';
+    document.getElementById('btn-edit-profile').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('btn-edit-profile').style.display = '';
+
+  if (!emp) {
+    card.innerHTML = `
+      <div class="empty-state" style="padding:24px;">
+        <span class="empty-icon">👤</span>
+        <h3>Chưa có hồ sơ nhân viên</h3>
+        <p>Liên hệ quản trị viên để được thêm vào danh sách nhân viên.</p>
+      </div>`;
+    notice.classList.add('hidden');
+  } else {
+    const ids = getEmpDeptIds(emp);
+    const dept = depts.find(d => d.id === ids[0]);
+    const color = dept?.color || '#1a56db';
+    const deptNames = ids.map(id => {
+      const d = depts.find(x => x.id === id);
+      return d ? `${d.icon || '🏥'} ${d.name}` : '';
+    }).filter(Boolean).join(', ') || '—';
+    card.innerHTML = `
+      <div class="leave-card-header">
+        <div class="leave-person">
+          <div class="leave-avatar" style="background:${esc(color)};overflow:hidden;width:52px;height:52px;font-size:20px;">
+            ${emp.avatar ? `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="" />` : esc((emp.name || '?').charAt(0))}
+          </div>
+          <div class="leave-person-info">
+            <div class="person-name">${esc(emp.name)}</div>
+            <div class="person-dept">${esc(emp.position || '')}</div>
+          </div>
+        </div>
+      </div>
+      <div class="leave-card-body" style="margin-top:10px;">
+        <div style="display:grid;gap:6px;font-size:13px;">
+          <div>📞 <strong>SĐT:</strong> ${esc(emp.phone || '—')}</div>
+          <div>🏥 <strong>Phòng ban:</strong> ${esc(deptNames)}</div>
+          <div>💼 <strong>Chức vụ:</strong> ${esc(emp.position || '—')}</div>
+          ${emp.note ? `<div>📝 <strong>Ghi chú:</strong> ${esc(emp.note)}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  // Pending notice
+  const reqs = DB.get('med_profile_requests')
+    .filter(r => r.userId === currentUser.id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const pending = reqs.find(r => r.status === 'pending');
+  if (pending) {
+    notice.classList.remove('hidden');
+    notice.innerHTML = `⏳ Bạn đang có yêu cầu sửa hồ sơ <strong>chờ duyệt</strong> (gửi lúc ${formatDateVN(pending.createdAt.slice(0,10))} ${pending.createdAt.slice(11,16)}). Vui lòng chờ quản trị viên phê duyệt.`;
+    document.getElementById('btn-edit-profile').disabled = true;
+    document.getElementById('btn-edit-profile').style.opacity = '0.6';
+  } else {
+    notice.classList.add('hidden');
+    document.getElementById('btn-edit-profile').disabled = false;
+    document.getElementById('btn-edit-profile').style.opacity = '1';
+  }
+
+  // Request history
+  if (!reqs.length) {
+    listEl.innerHTML = emptyState('📋', 'Chưa có yêu cầu nào', 'Nhấn "Sửa thông tin" để gửi yêu cầu thay đổi hồ sơ.');
+  } else {
+    listEl.innerHTML = reqs.map(r => profileRequestCardHTML(r, depts, false)).join('');
+  }
+}
+
+function profileRequestCardHTML(r, depts, isAdmin) {
+  const badgeClass = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected' }[r.status];
+  const badgeText = { pending: '⏳ Chờ duyệt', approved: '✅ Đã duyệt', rejected: '❌ Từ chối' }[r.status];
+  const fmtDepts = (ids) => {
+    const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
+    if (!arr.length) return '—';
+    return arr.map(id => depts.find(d => d.id === id)?.name || '?').join(', ');
+  };
+  const oldDeptIds = r.oldData?.deptIds || (r.oldData?.deptId ? [r.oldData.deptId] : []);
+  const newDeptIds = r.newData?.deptIds || (r.newData?.deptId ? [r.newData.deptId] : []);
+
+  const changes = [];
+  if (r.oldData) {
+    if (r.oldData.name !== r.newData.name) changes.push(`Họ tên: <s>${esc(r.oldData.name)}</s> → <strong>${esc(r.newData.name)}</strong>`);
+    if (r.oldData.position !== r.newData.position) changes.push(`Chức vụ: <s>${esc(r.oldData.position)}</s> → <strong>${esc(r.newData.position)}</strong>`);
+    if (JSON.stringify(oldDeptIds) !== JSON.stringify(newDeptIds)) changes.push(`Phòng: <s>${esc(fmtDepts(oldDeptIds))}</s> → <strong>${esc(fmtDepts(newDeptIds))}</strong>`);
+    if ((r.oldData.phone || '') !== (r.newData.phone || '')) changes.push(`SĐT: <s>${esc(r.oldData.phone || '—')}</s> → <strong>${esc(r.newData.phone || '—')}</strong>`);
+    if ((r.oldData.note || '') !== (r.newData.note || '')) changes.push(`Ghi chú: <s>${esc(r.oldData.note || '—')}</s> → <strong>${esc(r.newData.note || '—')}</strong>`);
+    if ((r.oldData.avatar || '') !== (r.newData.avatar || '')) changes.push(`Ảnh đại diện: đã thay đổi`);
+  } else {
+    changes.push(`Họ tên: <strong>${esc(r.newData.name)}</strong>`);
+    changes.push(`Chức vụ: <strong>${esc(r.newData.position)}</strong>`);
+    changes.push(`Phòng: <strong>${esc(fmtDepts(newDeptIds))}</strong>`);
+    if (r.newData.phone) changes.push(`SĐT: <strong>${esc(r.newData.phone)}</strong>`);
+  }
+
+  let actions = '';
+  if (isAdmin && r.status === 'pending') {
+    actions = `
+      <button class="btn-success btn-sm" onclick="approveProfileRequest('${esc(r.id)}')">✅ Duyệt</button>
+      <button class="btn-danger btn-sm" onclick="rejectProfileRequest('${esc(r.id)}')">❌ Từ chối</button>`;
+  }
+  if (!isAdmin && r.status === 'pending') {
+    actions = `<button class="btn-outline btn-sm" onclick="cancelProfileRequest('${esc(r.id)}')">🗑 Hủy yêu cầu</button>`;
+  }
+  if (r.note) {
+    actions += `<span style="font-size:12px;color:var(--text-muted);align-self:center;">💬 ${esc(r.note)}</span>`;
+  }
+
+  return `
+    <div class="leave-card">
+      <div class="leave-card-header">
+        <div class="leave-person">
+          <div class="leave-avatar" style="background:#1a56db">${esc((r.employeeName || 'U').charAt(0))}</div>
+          <div class="leave-person-info">
+            <div class="person-name">${esc(r.employeeName)}</div>
+            <div class="person-dept">Yêu cầu sửa hồ sơ · ${formatDateVN(r.createdAt.slice(0,10))}</div>
+          </div>
+        </div>
+        <span class="leave-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="leave-card-body">
+        <div style="font-size:13px;line-height:1.7;">${changes.map(c => '• ' + c).join('<br>')}</div>
+        ${r.reason ? `<div class="leave-reason" style="margin-top:6px;">💬 ${esc(r.reason)}</div>` : ''}
+      </div>
+      ${actions ? `<div class="leave-card-footer">${actions}</div>` : ''}
+    </div>`;
+}
+
+function openProfileEditModal() {
+  const emp = getMyEmployee();
+  if (!emp) {
+    showToast('Bạn chưa có hồ sơ nhân viên. Liên hệ admin.', 'warning');
+    return;
+  }
+  // Chặn nếu đang có request pending
+  const pending = DB.get('med_profile_requests').find(r => r.userId === currentUser.id && r.status === 'pending');
+  if (pending) {
+    showToast('Bạn đang có yêu cầu chờ duyệt. Hãy hủy hoặc chờ admin xử lý.', 'warning');
+    return;
+  }
+
+  populateDeptSelects();
+  document.getElementById('pf-name').value = emp.name || '';
+  document.getElementById('pf-position').value = emp.position || 'Bác sĩ';
+  renderDeptCheckboxes('pf-dept-checks', getEmpDeptIds(emp));
+  document.getElementById('pf-phone').value = emp.phone || '';
+  document.getElementById('pf-note').value = emp.note || '';
+  document.getElementById('pf-reason').value = '';
+  document.getElementById('pf-form-error').classList.add('hidden');
+
+  if (emp.avatar) {
+    document.getElementById('pf-avatar-data').value = emp.avatar;
+    document.getElementById('pf-avatar-preview').innerHTML =
+      `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="avatar" />`;
+  } else {
+    clearPfAvatar();
+  }
+  document.getElementById('profile-edit-modal').classList.remove('hidden');
+}
+
+function closeProfileEditModal() {
+  document.getElementById('profile-edit-modal').classList.add('hidden');
+}
+
+function previewPfAvatar(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  if (file.size > 500 * 1024) {
+    showToast('Ảnh quá lớn. Vui lòng chọn ảnh dưới 500KB.', 'error');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target.result;
+    document.getElementById('pf-avatar-data').value = data;
+    document.getElementById('pf-avatar-preview').innerHTML =
+      `<img src="${data}" style="width:100%;height:100%;object-fit:cover;" alt="avatar" />`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPfAvatar() {
+  document.getElementById('pf-avatar-data').value = '';
+  document.getElementById('pf-avatar-file').value = '';
+  document.getElementById('pf-avatar-preview').innerHTML = '?';
+}
+
+function submitProfileRequest(e) {
+  e.preventDefault();
+  const emp = getMyEmployee();
+  if (!emp) {
+    showToast('Không tìm thấy hồ sơ nhân viên.', 'error');
+    return;
+  }
+  const pending = DB.get('med_profile_requests').find(r => r.userId === currentUser.id && r.status === 'pending');
+  if (pending) {
+    showToast('Bạn đang có yêu cầu chờ duyệt.', 'warning');
+    return;
+  }
+
+  const deptIds = getCheckedDeptIds('pf-dept-checks');
+  const newData = {
+    name: document.getElementById('pf-name').value.trim(),
+    position: document.getElementById('pf-position').value,
+    deptIds,
+    deptId: deptIds[0] || '',
+    phone: document.getElementById('pf-phone').value.trim(),
+    note: document.getElementById('pf-note').value.trim(),
+    avatar: document.getElementById('pf-avatar-data').value || '',
+  };
+  const reason = document.getElementById('pf-reason').value.trim();
+  const errEl = document.getElementById('pf-form-error');
+
+  if (!newData.name) {
+    errEl.textContent = 'Họ và tên không được để trống.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const oldDeptIds = getEmpDeptIds(emp);
+  // Kiểm tra có thay đổi không
+  const changed =
+    newData.name !== (emp.name || '') ||
+    newData.position !== (emp.position || '') ||
+    JSON.stringify(deptIds) !== JSON.stringify(oldDeptIds) ||
+    newData.phone !== (emp.phone || '') ||
+    newData.note !== (emp.note || '') ||
+    newData.avatar !== (emp.avatar || '');
+
+  if (!changed) {
+    errEl.textContent = 'Bạn chưa thay đổi thông tin nào.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const req = {
+    id: genId(),
+    userId: currentUser.id,
+    employeeId: emp.id,
+    employeeName: emp.name,
+    oldData: {
+      name: emp.name,
+      position: emp.position,
+      deptIds: oldDeptIds,
+      deptId: oldDeptIds[0] || '',
+      phone: emp.phone || '',
+      note: emp.note || '',
+      avatar: emp.avatar || '',
+    },
+    newData,
+    reason,
+    status: 'pending',
+    note: '',
+    createdAt: new Date().toISOString(),
+  };
+
+  const reqs = DB.get('med_profile_requests');
+  reqs.push(req);
+  DB.set('med_profile_requests', reqs);
+
+  closeProfileEditModal();
+  renderProfile();
+  updateBadges();
+  showToast('Đã gửi yêu cầu sửa hồ sơ! Chờ admin phê duyệt.', 'success');
+}
+
+function cancelProfileRequest(id) {
+  confirmDialog('Hủy yêu cầu?', 'Yêu cầu sửa hồ sơ sẽ bị xóa.', () => {
+    const reqs = DB.get('med_profile_requests').filter(r => r.id !== id);
+    DB.set('med_profile_requests', reqs);
+    renderProfile();
+    updateBadges();
+    showToast('Đã hủy yêu cầu.', 'warning');
+  });
+}
+
+function approveProfileRequest(id) {
+  if (currentUser.role !== 'admin') return;
+  const reqs = DB.get('med_profile_requests');
+  const r = reqs.find(x => x.id === id);
+  if (!r || r.status !== 'pending') return;
+
+  // Cập nhật employee
+  const newDeptIds = r.newData.deptIds || (r.newData.deptId ? [r.newData.deptId] : []);
+  const employees = DB.get('med_employees');
+  const empIdx = employees.findIndex(e => e.id === r.employeeId);
+  if (empIdx >= 0) {
+    employees[empIdx] = {
+      ...employees[empIdx],
+      name: r.newData.name,
+      position: r.newData.position,
+      deptIds: newDeptIds,
+      deptId: newDeptIds[0] || '',
+      phone: r.newData.phone,
+      note: r.newData.note,
+      avatar: r.newData.avatar,
+    };
+    DB.set('med_employees', employees);
+  }
+
+  // Đồng bộ user liên kết
+  const users = DB.get('med_users');
+  const uIdx = users.findIndex(u => u.id === r.userId);
+  if (uIdx >= 0) {
+    users[uIdx].fullname = r.newData.name;
+    users[uIdx].position = r.newData.position;
+    users[uIdx].deptId = newDeptIds[0] || '';
+    DB.set('med_users', users);
+  }
+
+  r.status = 'approved';
+  r.note = 'Đã được quản trị viên phê duyệt';
+  DB.set('med_profile_requests', reqs);
+
+  renderApprovals();
+  updateBadges();
+  showToast('✅ Đã phê duyệt yêu cầu sửa hồ sơ!', 'success');
+}
+
+function rejectProfileRequest(id) {
+  if (currentUser.role !== 'admin') return;
+  promptDialog('Lý do từ chối', 'Nhập lý do từ chối yêu cầu sửa hồ sơ (tùy chọn):', (note) => {
+    const reqs = DB.get('med_profile_requests');
+    const r = reqs.find(x => x.id === id);
+    if (!r) return;
+    r.status = 'rejected';
+    r.note = note || 'Không được phê duyệt';
+    DB.set('med_profile_requests', reqs);
+    renderApprovals();
+    updateBadges();
+    showToast('❌ Đã từ chối yêu cầu sửa hồ sơ.', 'error');
+  });
+}
+
+// ============================================================
+//  LEAVE PAGE
+// ============================================================
+function renderLeaveList() {
+  const leaves = DB.get('med_leaves');
+  const depts = DB.get('med_depts');
+  const container = document.getElementById('leave-list');
+
+  let myLeaves = currentUser.role === 'admin'
+    ? leaves
+    : leaves.filter(l => l.userId === currentUser.id);
+
+  myLeaves = myLeaves.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  if (!myLeaves.length) {
+    container.innerHTML = emptyState('🗓️', 'Chưa có đơn nghỉ phép', 'Nhấn "+ Tạo đơn" để tạo đơn nghỉ mới.');
+    return;
+  }
+  container.innerHTML = myLeaves.map(l => leaveCardHTML(l, depts, false)).join('');
+}
+
+function leaveCardHTML(l, depts, isApproval) {
+  const dept = depts.find(d => d.id === l.deptId);
+  const color = dept?.color || '#1a56db';
+  const badgeClass = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected' }[l.status];
+  const badgeText = { pending: '⏳ Chờ', approved: '✅ Duyệt', rejected: '❌ Từ chối' }[l.status];
+
+  const days = Math.ceil((new Date(l.toDate) - new Date(l.fromDate)) / 86400000) + 1;
+
+  let actions = '';
+  if (isApproval && l.status === 'pending') {
+    actions = `
+      <button class="btn-success btn-sm" onclick="approveLeave('${esc(l.id)}')">Duyệt</button>
+      <button class="btn-danger btn-sm" onclick="rejectLeave('${esc(l.id)}')">Từ chối</button>`;
+  }
+  if (!isApproval && l.status === 'pending' && currentUser.role !== 'admin') {
+    actions = `<button class="btn-outline btn-sm" onclick="cancelLeave('${esc(l.id)}')">Hủy</button>`;
+  }
+  // Admin can delete any leave
+  if (currentUser.role === 'admin') {
+    actions += `<button class="btn-danger btn-sm" onclick="adminDeleteLeave('${esc(l.id)}')">Xóa</button>`;
+  }
+  if (l.note) {
+    actions += `<span class="leave-note">💬 ${esc(l.note)}</span>`;
+  }
+
+  return `
+    <div class="leave-card" id="lc-${esc(l.id)}">
+      <div class="leave-card-header">
+        <div class="leave-person">
+          <div class="leave-avatar" style="background:${esc(color)}">${esc(l.employeeName.charAt(0))}</div>
+          <div class="leave-person-info">
+            <div class="person-name">${esc(l.employeeName)}</div>
+            <div class="person-dept">${esc(dept?.name || '')}</div>
+          </div>
+        </div>
+        <span class="leave-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="leave-card-body">
+        <span class="leave-date-range">📅 ${formatDateVN(l.fromDate)} → ${formatDateVN(l.toDate)} (${days}n)</span>
+        <span class="leave-type-tag">${esc(l.type)}</span>
+        <span class="leave-reason">${esc(l.reason)}</span>
+      </div>
+      ${actions ? `<div class="leave-card-footer">${actions}</div>` : ''}
+    </div>`;
+}
+
+function openLeaveModal() {
+  const today = fmtDate(new Date());
+  document.getElementById('leave-from').value = today;
+  document.getElementById('leave-to').value = today;
+  document.getElementById('leave-reason').value = '';
+  document.getElementById('leave-form-error').classList.add('hidden');
+  document.getElementById('leave-modal').classList.remove('hidden');
+}
+function closeLeaveModal() { document.getElementById('leave-modal').classList.add('hidden'); }
+
+function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId) {
+  const leave = {
+    id: genId(),
+    userId: currentUser.id,
+    employeeId: emp?.id || currentUser.id,
+    employeeName: empName,
+    deptId,
+    group: emp?.group || '',
+    fromDate, toDate, type, reason,
+    status: 'pending',
+    note: '',
+    createdAt: new Date().toISOString(),
+  };
+  const leaves = DB.get('med_leaves');
+  leaves.push(leave);
+  DB.set('med_leaves', leaves);
+
+  // Thông báo cho admin
+  notifyAdmins(
+    'leave_submit',
+    'Đơn nghỉ phép mới',
+    `${empName} đăng ký nghỉ ${type}: ${formatDateVN(fromDate)} → ${formatDateVN(toDate)}. Lý do: ${reason || '—'}`,
+    { leaveId: leave.id }
+  );
+
+  closeLeaveModal();
+  renderLeaveList();
+  updateBadges();
+  showToast('Đơn nghỉ đã được gửi! Chờ admin phê duyệt.', 'success');
+}
+
+function submitLeave(e) {
+  e.preventDefault();
+  const fromDate = document.getElementById('leave-from').value;
+  const toDate = document.getElementById('leave-to').value;
+  const type = document.getElementById('leave-type').value;
+  const reason = document.getElementById('leave-reason').value.trim();
+  const errEl = document.getElementById('leave-form-error');
+
+  if (fromDate > toDate) {
+    errEl.textContent = 'Ngày bắt đầu không được sau ngày kết thúc.';
+    errEl.classList.remove('hidden'); return;
+  }
+
+  const employees = DB.get('med_employees');
+
+  // Ưu tiên tìm employee theo userId (đồng bộ), sau đó theo tên
+  let emp = employees.find(em => em.userId === currentUser.id)
+    || employees.find(em => em.name === currentUser.fullname);
+  let empName = emp?.name || currentUser.fullname;
+  let deptId = primaryDeptId(emp) || currentUser.deptId || '';
+
+  // Cảnh báo nếu trong cùng nhóm đã có người nghỉ trùng ngày
+  const conflicts = getGroupLeaveConflicts(emp, fromDate, toDate);
+  if (conflicts.length && emp?.group) {
+    confirmDialog('Cảnh báo nhóm ' + emp.group, formatGroupConflictMsg(conflicts, emp.group), () => {
+      doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId);
+    });
+    return;
+  }
+
+  doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId);
+}
+
+function cancelLeave(id) {
+  confirmDialog('Hủy đơn nghỉ?', 'Đơn này sẽ bị xóa và không thể khôi phục.', () => {
+    const leaves = DB.get('med_leaves').filter(l => l.id !== id);
+    DB.set('med_leaves', leaves);
+    renderLeaveList();
+    updateBadges();
+    showToast('Đã hủy đơn nghỉ.', 'warning');
+  });
+}
+
+function adminDeleteLeave(id) {
+  if (currentUser.role !== 'admin') return;
+  confirmDialog('Xóa đơn nghỉ?', 'Admin xóa đơn này. Thao tác không thể hoàn tác.', () => {
+    const leaves = DB.get('med_leaves').filter(l => l.id !== id);
+    DB.set('med_leaves', leaves);
+    if (typeof renderLeaveList === 'function') renderLeaveList();
+    if (typeof renderApprovals === 'function') renderApprovals();
+    updateBadges();
+    showToast('Đã xóa đơn nghỉ.', 'warning');
+  });
+}
+
+// ============================================================
+//  APPROVALS PAGE (Admin)
+// ============================================================
+function filterApprovals(filter, btn) {
+  approvalFilter = filter;
+  document.querySelectorAll('#page-approvals .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderApprovals();
+}
+
+function renderApprovals() {
+  const leaves = DB.get('med_leaves');
+  const depts = DB.get('med_depts');
+  const profileReqs = DB.get('med_profile_requests');
+  const leaveContainer = document.getElementById('approval-list');
+  const profileContainer = document.getElementById('profile-approval-list');
+
+  if (approvalFilter === 'profile') {
+    // Chỉ hiện yêu cầu sửa hồ sơ
+    leaveContainer.innerHTML = '';
+    let filtered = profileReqs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (!filtered.length) {
+      profileContainer.innerHTML = emptyState('👤', 'Không có yêu cầu hồ sơ', 'Chưa có yêu cầu sửa thông tin nhân viên nào.');
+    } else {
+      profileContainer.innerHTML = '<h3 style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text-secondary);">Yêu cầu sửa hồ sơ</h3>' +
+        filtered.map(r => profileRequestCardHTML(r, depts, true)).join('');
+    }
+    return;
+  }
+
+  // Đơn nghỉ phép
+  let filtered = approvalFilter === 'all' ? leaves : leaves.filter(l => l.status === approvalFilter);
+  filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (!filtered.length) {
+    leaveContainer.innerHTML = emptyState('📋', 'Không có đơn nào', 'Không có đơn nghỉ phép trong mục này.');
+  } else {
+    leaveContainer.innerHTML = filtered.map(l => leaveCardHTML(l, depts, true)).join('');
+  }
+
+  // Khi tab "Tất cả nghỉ" hoặc "Chờ duyệt nghỉ" cũng hiện profile pending ở dưới
+  if (approvalFilter === 'all' || approvalFilter === 'pending') {
+    const pendingPf = profileReqs.filter(r => r.status === 'pending')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (pendingPf.length) {
+      profileContainer.innerHTML = '<h3 style="font-size:14px;font-weight:700;margin:16px 0 10px;color:var(--text-secondary);">👤 Yêu cầu sửa hồ sơ đang chờ (' + pendingPf.length + ')</h3>' +
+        pendingPf.map(r => profileRequestCardHTML(r, depts, true)).join('');
+    } else {
+      profileContainer.innerHTML = '';
+    }
+  } else {
+    profileContainer.innerHTML = '';
+  }
+}
+
+function doApproveLeave(id) {
+  const leaves = DB.get('med_leaves');
+  const l = leaves.find(x => x.id === id);
+  if (!l) return;
+  l.status = 'approved';
+  l.note = 'Đã được quản trị viên phê duyệt';
+  DB.set('med_leaves', leaves);
+
+  // Thông báo cho nhân viên
+  if (l.userId) {
+    pushNotification(
+      l.userId,
+      'leave_approved',
+      'Đơn nghỉ đã được duyệt',
+      `Đơn nghỉ ${l.type} từ ${formatDateVN(l.fromDate)} → ${formatDateVN(l.toDate)} đã được phê duyệt.`,
+      { leaveId: l.id }
+    );
+  }
+
+  renderApprovals();
+  updateBadges();
+  showToast('✅ Đã phê duyệt đơn nghỉ!', 'success');
+}
+
+function approveLeave(id) {
+  const leaves = DB.get('med_leaves');
+  const l = leaves.find(x => x.id === id);
+  if (!l) return;
+  const employees = DB.get('med_employees');
+  const emp = employees.find(e => e.id === l.employeeId)
+    || employees.find(e => e.userId === l.userId);
+  const conflicts = getGroupLeaveConflicts(emp || { group: l.group, id: l.employeeId }, l.fromDate, l.toDate, l.id);
+  const groupName = emp?.group || l.group;
+  if (conflicts.length && groupName) {
+    confirmDialog('Cảnh báo nhóm ' + groupName, formatGroupConflictMsg(conflicts, groupName), () => {
+      doApproveLeave(id);
+    });
+    return;
+  }
+  doApproveLeave(id);
+}
+
+function rejectLeave(id) {
+  promptDialog('Lý do từ chối', 'Nhập lý do từ chối đơn nghỉ (tùy chọn):', (note) => {
+    const leaves = DB.get('med_leaves');
+    const l = leaves.find(x => x.id === id);
+    if (!l) return;
+    l.status = 'rejected';
+    l.note = note || 'Không được phê duyệt';
+    DB.set('med_leaves', leaves);
+
+    // Thông báo cho nhân viên
+    if (l.userId) {
+      pushNotification(
+        l.userId,
+        'leave_rejected',
+        'Đơn nghỉ bị từ chối',
+        `Đơn nghỉ ${l.type} từ ${formatDateVN(l.fromDate)} → ${formatDateVN(l.toDate)} đã bị từ chối. ${note ? 'Lý do: ' + note : ''}`,
+        { leaveId: l.id }
+      );
+    }
+
+    renderApprovals();
+    updateBadges();
+    showToast('❌ Đã từ chối đơn nghỉ.', 'error');
+  });
+}
+
+// ============================================================
+//  EMPLOYEES PAGE (Admin)
+// ============================================================
+
+function previewEmpAvatar(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  if (file.size > 500 * 1024) {
+    showToast('Ảnh quá lớn. Vui lòng chọn ảnh dưới 500KB.', 'error');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target.result;
+    document.getElementById('emp-avatar-data').value = data;
+    const prev = document.getElementById('emp-avatar-preview');
+    prev.innerHTML = `<img src="${data}" style="width:100%;height:100%;object-fit:cover;" alt="avatar" />`;
+  };
+  reader.readAsDataURL(file);
+}
+function clearEmpAvatar() {
+  document.getElementById('emp-avatar-data').value = '';
+  document.getElementById('emp-avatar-file').value = '';
+  document.getElementById('emp-avatar-preview').innerHTML = '?';
+}
+function empAvatarHTML(emp, color) {
+  if (emp.avatar) {
+    return `<img src="${emp.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+  }
+  return esc((emp.name || '?').charAt(0));
+}
+
+function renderEmployees() {
+  const employees = DB.get('med_employees');
+  const depts = DB.get('med_depts');
+  const search = (document.getElementById('emp-search')?.value || '').toLowerCase();
+  const deptFilter = document.getElementById('emp-dept-filter')?.value || '';
+
+  let list = employees.filter(e => {
+    const matchSearch = !search || e.name.toLowerCase().includes(search) || e.position.toLowerCase().includes(search);
+    const matchDept = !deptFilter || empInDept(e, deptFilter);
+    return matchSearch && matchDept;
+  });
+
+  const container = document.getElementById('employee-list');
+  if (!list.length) {
+    container.innerHTML = emptyState('👥', 'Không có nhân viên', 'Thêm nhân viên mới để bắt đầu.');
+    return;
+  }
+
+  container.innerHTML = list.map(e => {
+    const ids = getEmpDeptIds(e);
+    const dept = depts.find(d => d.id === ids[0]);
+    const color = dept?.color || '#1a56db';
+    return `
+      <div class="employee-card">
+        <div class="emp-avatar" style="background:${esc(color)};overflow:hidden;">${e.avatar ? `<img src="${e.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="" />` : esc(e.name.charAt(0))}</div>
+        <div class="emp-info">
+          <div class="emp-name">${esc(e.name)}${e.group ? ` <span class="emp-dept-tag" style="background:#fef3c7;color:#92400e;vertical-align:middle;">👥 ${esc(e.group)}</span>` : ''}</div>
+          <div class="emp-position">${esc(e.position)}${e.phone ? ' · 📞 ' + esc(e.phone) : ''}</div>
+          ${empDeptTagsHTML(e, depts)}
+          ${(() => {
+            if (!e.userId) return '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">🔒 Chưa có tài khoản</div>';
+            const u = DB.get('med_users').find(x => x.id === e.userId);
+            if (!u) return '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">🔒 Chưa có tài khoản</div>';
+            return `<div style="font-size:11px;color:#059669;margin-top:3px;">🔑 @${esc(u.username)} · ${u.status === 'active' ? 'Hoạt động' : u.status}</div>`;
+          })()}
+          ${e.note ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">📝 ${esc(e.note)}</div>` : ''}
+        </div>
+        <div class="emp-actions">
+          <button class="btn-sm edit" onclick="openEmployeeModal('${esc(e.id)}')">✏️ Sửa</button>
+          <button class="btn-sm del" onclick="deleteEmployee('${esc(e.id)}')">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openEmployeeModal(id) {
+  populateDeptSelects();
+  document.getElementById('emp-modal-title').textContent = id ? 'Sửa nhân viên' : 'Thêm nhân viên';
+  document.getElementById('emp-id').value = id || '';
+  document.getElementById('emp-username').value = '';
+  document.getElementById('emp-password').value = '';
+  document.getElementById('emp-password').placeholder = 'Tối thiểu 6 ký tự';
+  document.getElementById('emp-group-custom').value = '';
+  clearEmpAvatar();
+
+  if (id) {
+    const emp = DB.get('med_employees').find(e => e.id === id);
+    if (emp) {
+      document.getElementById('emp-name').value = emp.name;
+      document.getElementById('emp-position').value = emp.position;
+      renderDeptCheckboxes('emp-dept-checks', getEmpDeptIds(emp));
+      populateGroupSelect(emp.group || '');
+      document.getElementById('emp-phone').value = emp.phone || '';
+      document.getElementById('emp-note').value = emp.note || '';
+      if (emp.avatar) {
+        document.getElementById('emp-avatar-data').value = emp.avatar;
+        document.getElementById('emp-avatar-preview').innerHTML =
+          `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="avatar" />`;
+      }
+      // Load linked account if any
+      if (emp.userId) {
+        const user = DB.get('med_users').find(u => u.id === emp.userId);
+        if (user) {
+          document.getElementById('emp-username').value = user.username || '';
+          document.getElementById('emp-password').placeholder = 'Để trống nếu không đổi mật khẩu';
+        }
+      }
+    }
+  } else {
+    document.getElementById('employee-form').reset();
+    clearEmpAvatar();
+    renderDeptCheckboxes('emp-dept-checks', []);
+    populateGroupSelect('');
+    document.getElementById('emp-group-custom').value = '';
+  }
+  document.getElementById('employee-modal').classList.remove('hidden');
+}
+function closeEmployeeModal() { document.getElementById('employee-modal').classList.add('hidden'); }
+
+function saveEmployee(e) {
+  e.preventDefault();
+  const id = document.getElementById('emp-id').value;
+  const username = document.getElementById('emp-username').value.trim();
+  const password = document.getElementById('emp-password').value;
+  const deptIds = getCheckedDeptIds('emp-dept-checks');
+  if (!deptIds.length) {
+    showToast('Vui lòng chọn ít nhất một phòng ban.', 'error');
+    return;
+  }
+  const customGroup = (document.getElementById('emp-group-custom')?.value || '').trim().toUpperCase();
+  const selectGroup = document.getElementById('emp-group')?.value || '';
+  const group = customGroup || selectGroup;
+  if (group) ensureGroupSaved(group);
+  const data = {
+    name: document.getElementById('emp-name').value.trim(),
+    position: document.getElementById('emp-position').value,
+    deptIds,
+    deptId: deptIds[0],
+    group: group || '',
+    phone: document.getElementById('emp-phone').value.trim(),
+    note: document.getElementById('emp-note').value.trim(),
+    avatar: document.getElementById('emp-avatar-data').value || '',
+  };
+
+  // Validate account if provided
+  if (username) {
+    if (password && password.length < 6) {
+      showToast('Mật khẩu phải có ít nhất 6 ký tự.', 'error');
+      return;
+    }
+    const users = DB.get('med_users');
+    const employees = DB.get('med_employees');
+    const currentEmp = id ? employees.find(e => e.id === id) : null;
+    // Check username uniqueness (exclude current linked user)
+    const conflict = users.find(u => u.username === username && u.id !== currentEmp?.userId);
+    if (conflict) {
+      showToast('Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.', 'error');
+      return;
+    }
+    if (!currentEmp?.userId && !password) {
+      showToast('Vui lòng nhập mật khẩu khi cấp tài khoản mới.', 'error');
+      return;
+    }
+  }
+
+  const employees = DB.get('med_employees');
+  let empId = id;
+  if (id) {
+    const idx = employees.findIndex(e => e.id === id);
+    if (idx >= 0) employees[idx] = { ...employees[idx], ...data };
+  } else {
+    empId = genId();
+    employees.push({ id: empId, ...data, createdAt: new Date().toISOString() });
+  }
+
+  // Create / update linked staff account
+  if (username) {
+    const users = DB.get('med_users');
+    const emp = employees.find(e => e.id === empId);
+    if (emp.userId) {
+      // Update existing user
+      const uIdx = users.findIndex(u => u.id === emp.userId);
+      if (uIdx >= 0) {
+        users[uIdx].username = username;
+        users[uIdx].fullname = data.name;
+        users[uIdx].position = data.position;
+        users[uIdx].deptId = data.deptId;
+        users[uIdx].role = 'staff';
+        users[uIdx].status = 'active';
+        if (password) users[uIdx].password = password;
+      }
+    } else {
+      // Create new staff account
+      const newUserId = genId();
+      users.push({
+        id: newUserId,
+        username,
+        password,
+        fullname: data.name,
+        role: 'staff',
+        deptId: data.deptId,
+        position: data.position,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+      });
+      emp.userId = newUserId;
+    }
+    DB.set('med_users', users);
+  }
+
+  DB.set('med_employees', employees);
+  closeEmployeeModal();
+  renderEmployees();
+  showToast(id ? 'Đã cập nhật nhân viên!' : 'Đã thêm nhân viên mới!', 'success');
+}
+
+function deleteEmployee(id) {
+  confirmDialog('Xóa nhân viên?', 'Thao tác này không thể hoàn tác. Tài khoản liên kết (nếu có) cũng sẽ bị xóa.', () => {
+    const employees = DB.get('med_employees');
+    const emp = employees.find(e => e.id === id);
+    if (emp?.userId) {
+      const users = DB.get('med_users').filter(u => u.id !== emp.userId || u.role === 'admin');
+      DB.set('med_users', users);
+    }
+    DB.set('med_employees', employees.filter(e => e.id !== id));
+    renderEmployees();
+    showToast('Đã xóa nhân viên.', 'warning');
+  });
+}
+
+function deleteAllEmployees() {
+  const employees = DB.get('med_employees');
+  if (!employees.length) {
+    showToast('Không có nhân viên nào để xóa.', 'info');
+    return;
+  }
+  confirmDialog(
+    'Xóa tất cả nhân viên?',
+    `Bạn sắp xóa ${employees.length} nhân viên. Thao tác này không thể hoàn tác.`,
+    () => {
+      // Also remove linked staff accounts
+      const empUserIds = new Set(employees.map(e => e.userId).filter(Boolean));
+      const users = DB.get('med_users').filter(u => u.role === 'admin' || !empUserIds.has(u.id));
+      DB.set('med_users', users);
+      DB.set('med_employees', []);
+      renderEmployees();
+      showToast(`Đã xóa toàn bộ ${employees.length} nhân viên.`, 'warning');
+    }
+  );
+}
+
+
+function exportLeavesExcel() {
+  const leaves = DB.get('med_leaves');
+  const depts = DB.get('med_depts');
+  const employees = DB.get('med_employees');
+
+  if (!leaves.length) {
+    showToast('Không có đơn nghỉ để xuất.', 'info');
+    return;
+  }
+
+  // Chi tiết từng ngày nghỉ
+  const headers = ['STT', 'Họ và tên', 'Phòng ban', 'Loại phép', 'Ngày nghỉ', 'Thứ', 'Trạng thái', 'Lý do', 'Ghi chú duyệt'];
+  const rows = [];
+  let stt = 0;
+  const dayNames = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+
+  const sorted = [...leaves].sort((a, b) => a.fromDate.localeCompare(b.fromDate));
+  sorted.forEach(l => {
+    const dept = depts.find(d => d.id === l.deptId);
+    const statusText = { pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Từ chối' }[l.status] || l.status;
+    const from = new Date(l.fromDate + 'T00:00:00');
+    const to = new Date(l.toDate + 'T00:00:00');
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      stt++;
+      const dateStr = fmtDate(d);
+      rows.push([
+        stt,
+        l.employeeName || '',
+        dept?.name || '',
+        l.type || '',
+        dateStr,
+        dayNames[d.getDay()],
+        statusText,
+        l.reason || '',
+        l.note || ''
+      ]);
+    }
+  });
+
+  const bom = "﻿";
+  const csvContent = bom + [headers, ...rows]
+    .map(row => row.map(cell => {
+      const s = String(cell ?? '');
+      return (s.includes(',') || s.includes('"') || s.includes('\n'))
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    }).join(','))
+    .join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const now = new Date();
+  a.download = `ChiTietNgayNghi_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`Đã xuất ${rows.length} dòng ngày nghỉ chi tiết!`, 'success');
+}
+
+function exportEmployeesExcel() {
+  const employees = DB.get('med_employees');
+  const depts = DB.get('med_depts');
+  const users = DB.get('med_users');
+  const leaves = DB.get('med_leaves');
+
+  if (!employees.length) {
+    showToast('Không có nhân viên để xuất.', 'info');
+    return;
+  }
+
+  // Current month leave summary
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const monthStart = fmtDate(new Date(y, m, 1));
+  const monthEnd = fmtDate(new Date(y, m + 1, 0));
+
+  const headers = ['STT', 'Họ và tên', 'Chức vụ', 'Nhóm', 'Phòng ban', 'SĐT', 'Tài khoản', 'Trạng thái TK', 'Số ngày nghỉ (tháng này)', 'Ghi chú'];
+  const rows = employees.map((e, i) => {
+    const deptNames = getEmpDeptIds(e).map(id => depts.find(d => d.id === id)?.name).filter(Boolean).join('; ');
+    const user = e.userId ? users.find(u => u.id === e.userId) : null;
+    const empLeaves = leaves.filter(l =>
+      l.employeeId === e.id &&
+      l.status === 'approved' &&
+      l.fromDate <= monthEnd &&
+      l.toDate >= monthStart
+    );
+    let leaveDays = 0;
+    empLeaves.forEach(l => {
+      const from = new Date(Math.max(new Date(l.fromDate), new Date(y, m, 1)));
+      const to = new Date(Math.min(new Date(l.toDate), new Date(y, m + 1, 0)));
+      leaveDays += Math.ceil((to - from) / 86400000) + 1;
+    });
+    return [
+      i + 1,
+      e.name,
+      e.position || '',
+      e.group || '',
+      deptNames,
+      e.phone || '',
+      user ? user.username : '',
+      user ? (user.status === 'active' ? 'Hoạt động' : user.status) : 'Chưa cấp',
+      leaveDays,
+      e.note || ''
+    ];
+  });
+
+  // Build CSV with BOM for Excel Vietnamese
+  const bom = "﻿";
+  const csvContent = bom + [headers, ...rows]
+    .map(row => row.map(cell => {
+      const s = String(cell ?? '');
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    }).join(','))
+    .join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `NhanVien_${y}_${String(m + 1).padStart(2, '0')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Đã xuất file Excel (CSV) thành công!', 'success');
+}
+
+// ============================================================
+//  DEPARTMENTS PAGE (Admin)
+// ============================================================
+function renderDepartments() {
+  const depts = DB.get('med_depts');
+  const employees = DB.get('med_employees');
+  const container = document.getElementById('dept-list');
+  if (!depts.length) {
+    container.innerHTML = emptyState('🏥', 'Chưa có phòng ban', 'Thêm phòng ban để bắt đầu.');
+    return;
+  }
+  container.innerHTML = depts.map(d => {
+    const count = employees.filter(e => empInDept(e, d.id)).length;
+    return `
+      <div class="dept-card">
+        <div class="dept-icon-big">${esc(d.icon || '🏥')}</div>
+        <div class="dept-card-name">${esc(d.name)}</div>
+        <div class="dept-card-desc">${esc(d.desc || '')}</div>
+        <span class="dept-count" style="background:${esc(d.color)}22;color:${esc(d.color)}" onclick="viewDeptStaff('${esc(d.id)}')" title="Xem nhân viên">👥 ${count} nhân viên</span>
+        <div class="dept-card-actions">
+          <button class="btn-sm edit" onclick="viewDeptStaff('${esc(d.id)}')">👥 Xem NV</button>
+          <button class="btn-sm edit" onclick="openDeptModal('${esc(d.id)}')">✏️ Sửa</button>
+          <button class="btn-sm del" onclick="deleteDept('${esc(d.id)}')">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function viewDeptStaff(deptId) {
+  const depts = DB.get('med_depts');
+  const employees = DB.get('med_employees');
+  const dept = depts.find(d => d.id === deptId);
+  if (!dept) return;
+  document.getElementById('dept-staff-title').textContent =
+    `${dept.icon || '🏥'} ${dept.name} — Nhân viên`;
+  const list = employees.filter(e => empInDept(e, deptId));
+  const content = document.getElementById('dept-staff-content');
+  if (!list.length) {
+    content.innerHTML = emptyState('👥', 'Chưa có nhân viên', 'Chưa có ai được phân vào phòng này.');
+  } else {
+    content.innerHTML = list.map(e => {
+      const ids = getEmpDeptIds(e);
+      const otherDepts = ids.filter(id => id !== deptId)
+        .map(id => depts.find(d => d.id === id)?.name)
+        .filter(Boolean);
+      return `
+        <div class="day-staff-item">
+          <div class="staff-avatar" style="background:${esc(dept.color || '#1a56db')};overflow:hidden;">
+            ${e.avatar ? `<img src="${e.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="" />` : esc(e.name.charAt(0))}
+          </div>
+          <div class="staff-info">
+            <div class="staff-name">${esc(e.name)}</div>
+            <div class="staff-dept">${esc(e.position)}${e.phone ? ' · 📞 ' + esc(e.phone) : ''}${otherDepts.length ? ' · Cũng thuộc: ' + esc(otherDepts.join(', ')) : ''}</div>
+          </div>
+          ${currentUser?.role === 'admin' ? `<button class="btn-sm edit" onclick="closeDeptStaffModal();openEmployeeModal('${esc(e.id)}')">✏️</button>` : ''}
+        </div>`;
+    }).join('');
+  }
+  document.getElementById('dept-staff-modal').classList.remove('hidden');
+}
+function closeDeptStaffModal() {
+  document.getElementById('dept-staff-modal').classList.add('hidden');
+}
+
+function openDeptModal(id) {
+  document.getElementById('dept-modal-title').textContent = id ? 'Sửa phòng ban' : 'Thêm phòng ban';
+  document.getElementById('dept-id').value = id || '';
+  if (id) {
+    const dept = DB.get('med_depts').find(d => d.id === id);
+    if (dept) {
+      document.getElementById('dept-name').value = dept.name;
+      document.getElementById('dept-icon').value = dept.icon || '';
+      document.getElementById('dept-color').value = dept.color || '#1a56db';
+      document.getElementById('dept-desc').value = dept.desc || '';
+    }
+  } else {
+    document.getElementById('dept-form').reset();
+    document.getElementById('dept-color').value = '#1a56db';
+  }
+  document.getElementById('dept-modal').classList.remove('hidden');
+}
+function closeDeptModal() { document.getElementById('dept-modal').classList.add('hidden'); }
+
+function saveDept(e) {
+  e.preventDefault();
+  const id = document.getElementById('dept-id').value;
+  const data = {
+    name: document.getElementById('dept-name').value.trim(),
+    icon: document.getElementById('dept-icon').value.trim() || '🏥',
+    color: document.getElementById('dept-color').value,
+    desc: document.getElementById('dept-desc').value.trim(),
+  };
+  const depts = DB.get('med_depts');
+  if (id) {
+    const idx = depts.findIndex(d => d.id === id);
+    if (idx >= 0) depts[idx] = { ...depts[idx], ...data };
+  } else {
+    depts.push({ id: genId(), ...data });
+  }
+  DB.set('med_depts', depts);
+  closeDeptModal();
+  renderDepartments();
+  populateDeptSelects();
+  showToast(id ? 'Đã cập nhật phòng ban!' : 'Đã thêm phòng ban mới!', 'success');
+}
+
+function deleteDept(id) {
+  const employees = DB.get('med_employees');
+  const linked = employees.filter(e => empInDept(e, id));
+  if (linked.length > 0) {
+    // Nếu NV chỉ thuộc phòng này → chặn; nếu còn phòng khác → hỏi gỡ phòng
+    const onlyThis = linked.filter(e => getEmpDeptIds(e).length === 1);
+    if (onlyThis.length > 0) {
+      showToast(`Không thể xóa! ${onlyThis.length} nhân viên chỉ thuộc phòng này. Hãy chuyển họ sang phòng khác trước.`, 'error');
+      return;
+    }
+    confirmDialog('Xóa phòng ban?', `Sẽ gỡ phòng này khỏi ${linked.length} nhân viên (họ vẫn còn phòng khác). Tiếp tục?`, () => {
+      linked.forEach(e => {
+        e.deptIds = getEmpDeptIds(e).filter(d => d !== id);
+        e.deptId = e.deptIds[0] || '';
+      });
+      DB.set('med_employees', employees);
+      const depts = DB.get('med_depts').filter(d => d.id !== id);
+      DB.set('med_depts', depts);
+      renderDepartments();
+      populateDeptSelects();
+      showToast('Đã xóa phòng ban và cập nhật phân phòng nhân viên.', 'warning');
+    });
+    return;
+  }
+  confirmDialog('Xóa phòng ban?', 'Thao tác này không thể hoàn tác.', () => {
+    const depts = DB.get('med_depts').filter(d => d.id !== id);
+    DB.set('med_depts', depts);
+    renderDepartments();
+    populateDeptSelects();
+    showToast('Đã xóa phòng ban.', 'warning');
+  });
+}
+
+// ============================================================
+//  USERS PAGE (Admin)
+// ============================================================
+function filterUsers(filter, btn) {
+  userFilter = filter;
+  document.querySelectorAll('#page-users .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderUsers();
+}
+
+function renderUsers() {
+  const users = DB.get('med_users');
+  const depts = DB.get('med_depts');
+  let list = userFilter === 'all' ? users : users.filter(u => u.status === userFilter);
+  list = list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const container = document.getElementById('users-list');
+  if (!list.length) {
+    container.innerHTML = emptyState('🔑', 'Không có tài khoản', 'Chưa có tài khoản nào trong danh sách này.');
+    return;
+  }
+
+  container.innerHTML = list.map(u => {
+    const dept = depts.find(d => d.id === u.deptId);
+    const statusBadge = {
+      pending: '<span class="leave-badge badge-pending">⏳ Chờ</span>',
+      active: '<span class="leave-badge badge-approved">✅</span>',
+      rejected: '<span class="leave-badge badge-rejected">❌</span>',
+    }[u.status] || '';
+
+    let actions = '';
+    if (u.status === 'pending') {
+      actions = `
+        <button class="btn-success btn-sm" onclick="approveUser('${esc(u.id)}')">Duyệt</button>
+        <button class="btn-danger btn-sm" onclick="rejectUser('${esc(u.id)}')">Từ chối</button>`;
+    }
+    if (u.status === 'active' && u.role !== 'admin') {
+      actions = `<button class="btn-warning btn-sm" onclick="toggleUserStatus('${esc(u.id)}')">Vô hiệu</button>`;
+    }
+    if (u.status === 'rejected') {
+      actions = `<button class="btn-success btn-sm" onclick="approveUser('${esc(u.id)}')">Kích hoạt</button>`;
+    }
+    if (u.role === 'admin') actions = '<span style="font-size:11px;color:var(--text-muted);">👑 Admin</span>';
+
+    return `
+      <div class="user-card">
+        <div class="user-avatar-sm">${esc(u.fullname.split(' ').pop()?.charAt(0) || 'U')}</div>
+        <div class="user-card-info">
+          <div class="user-card-name">${esc(u.fullname)} ${statusBadge}</div>
+          <div class="user-card-meta">@${esc(u.username)} · ${esc(u.position || '')} · ${esc(dept?.name || '—')}</div>
+          <div class="user-card-pw">🔑 <code>${esc(u.password || '—')}</code></div>
+        </div>
+        <div class="user-card-actions">${actions}</div>
+      </div>`;
+  }).join('');
+}
+
+function approveUser(id) {
+  const users = DB.get('med_users');
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  u.status = 'active';
+  DB.set('med_users', users);
+
+  // Tự tạo bản ghi nhân viên nếu chưa có (đồng bộ User ↔ Employee)
+  const employees = DB.get('med_employees');
+  const exists = employees.some(e => e.userId === u.id || e.name === u.fullname);
+  if (!exists && u.role !== 'admin') {
+    employees.push({
+      id: genId(),
+      userId: u.id,
+      name: u.fullname,
+      position: u.position || 'Nhân viên',
+      deptId: u.deptId || '',
+      phone: '',
+      note: 'Tự tạo khi duyệt tài khoản',
+      createdAt: fmtDate(new Date()),
+    });
+    DB.set('med_employees', employees);
+  }
+
+  renderUsers();
+  updateBadges();
+  showToast('✅ Đã phê duyệt tài khoản!', 'success');
+}
+
+function rejectUser(id) {
+  const users = DB.get('med_users');
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  u.status = 'rejected';
+  DB.set('med_users', users);
+  renderUsers();
+  updateBadges();
+  showToast('❌ Đã từ chối tài khoản.', 'error');
+}
+
+function toggleUserStatus(id) {
+  const users = DB.get('med_users');
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  u.status = u.status === 'active' ? 'rejected' : 'active';
+  DB.set('med_users', users);
+  renderUsers();
+  showToast(u.status === 'active' ? '🔓 Đã kích hoạt tài khoản.' : '🔒 Đã vô hiệu hóa tài khoản.', 'warning');
+}
+
+// ============================================================
+//  UTILITY – Dialogs
+// ============================================================
+function confirmDialog(title, msg, onConfirm) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <h3>${esc(title)}</h3>
+      <p>${esc(msg)}</p>
+      <div class="confirm-actions">
+        <button class="btn-outline" id="confirm-cancel">Hủy</button>
+        <button class="btn-danger" id="confirm-ok">Xác nhận</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('confirm-cancel').onclick = () => overlay.remove();
+  document.getElementById('confirm-ok').onclick = () => { overlay.remove(); onConfirm(); };
+}
+
+function promptDialog(title, msg, onConfirm) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <h3>${esc(title)}</h3>
+      <p style="margin-bottom:10px;">${esc(msg)}</p>
+      <input id="prompt-input" type="text" placeholder="Nhập lý do..." style="
+        width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;
+        font-family:inherit;font-size:14px;margin-bottom:16px;">
+      <div class="confirm-actions">
+        <button class="btn-outline" id="prompt-cancel">Hủy</button>
+        <button class="btn-danger" id="prompt-ok">Xác nhận</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('prompt-cancel').onclick = () => overlay.remove();
+  document.getElementById('prompt-ok').onclick = () => {
+    const val = document.getElementById('prompt-input').value;
+    overlay.remove();
+    onConfirm(val);
+  };
+  setTimeout(() => document.getElementById('prompt-input')?.focus(), 100);
+}
+
+// ============================================================
+//  UTILITY – Toast
+// ============================================================
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ============================================================
+//  UTILITY – Helpers
+// ============================================================
+function formatDateVN(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function emptyState(icon, title, desc) {
+  return `<div class="empty-state">
+    <span class="empty-icon">${icon}</span>
+    <h3>${title}</h3>
+    <p>${desc}</p>
+  </div>`;
+}
+
+// Close modals on overlay click
+document.getElementById('day-detail-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDayDetail();
+});
+document.getElementById('leave-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeLeaveModal();
+});
+document.getElementById('employee-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEmployeeModal();
+});
+document.getElementById('dept-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeptModal();
+});
+document.getElementById('profile-edit-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeProfileEditModal();
+});
+document.getElementById('dept-staff-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeDeptStaffModal();
+});
+
+</script>
 <script>
 // ── PWA Service Worker + Auto Update Detection ──────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
+  // navigator.serviceWorker.register('./sw.js')  // disabled in single-file version
     .then(reg => {
       reg.update();
       reg.addEventListener('updatefound', () => {
@@ -447,6 +4725,51 @@ function applyUpdate() {
     }
   });
 }
+
+// ── Chặn F12 / DevTools (cơ bản) ────────────────────────────
+(function blockDevTools() {
+  // Chặn phím tắt mở DevTools
+  document.addEventListener('keydown', function (e) {
+    const key = e.key || e.code;
+    // F12
+    if (key === 'F12' || e.keyCode === 123) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+    // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
+    if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C', 'i', 'j', 'c'].includes(key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+    // Ctrl+U (xem mã nguồn)
+    if (e.ctrlKey && (key === 'u' || key === 'U')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+    // Ctrl+S (lưu trang)
+    if (e.ctrlKey && (key === 's' || key === 'S')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  // Chặn chuột phải
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+    return false;
+  }, true);
+
+  // Chặn kéo chọn một phần (giảm inspect element dễ)
+  document.addEventListener('selectstart', function (e) {
+    const tag = (e.target && e.target.tagName) || '';
+    if (['INPUT', 'TEXTAREA', 'CODE'].includes(tag)) return;
+    // Cho phép chọn trong input/textarea/code
+  }, false);
+})();
 </script>
 </body>
 </html>
