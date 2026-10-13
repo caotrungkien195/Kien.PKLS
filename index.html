@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <title>PKĐK Lam Sơn – MedSchedule v2.3</title>
+  <title>PKĐK Lam Sơn – MedSchedule v2.4</title>
   <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
   <!-- PWA & Mobile -->
   <meta name="theme-color" content="#1a56db" />
@@ -1854,7 +1854,7 @@ a:hover { text-decoration: underline; }
       <h1>PKĐK Lam Sơn</h1>
       <p>Lịch làm việc</p>
       <p class="auth-phone">LH. 0966255685</p>
-      <p class="app-version" id="auth-version">MedSchedule v2.3</p>
+      <p class="app-version" id="auth-version">MedSchedule v2.4</p>
     </div>
 
     <div class="login-role-hint">
@@ -1910,7 +1910,7 @@ a:hover { text-decoration: underline; }
           <strong>PKĐK Lam Sơn</strong>
           <small>Lịch làm việc</small>
           <small class="sidebar-phone">LH. 0966255685</small>
-          <small class="sidebar-version" id="sidebar-version">MedSchedule v2.3</small>
+          <small class="sidebar-version" id="sidebar-version">MedSchedule v2.4</small>
         </div>
       </div>
       <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
@@ -2439,44 +2439,212 @@ a:hover { text-decoration: underline; }
 </nav>
 
 
+<!-- Firebase SDK (Firestore đồng bộ máy tính ↔ điện thoại) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
 <script>
 /* ====================================================
    PKĐK Lam Sơn – Application Logic
-   LocalStorage-based, no backend required
+   Firebase Firestore + localStorage (offline fallback)
    ==================================================== */
 
 /** Tên phiên bản ứng dụng */
 const APP_NAME = 'MedSchedule';
-const APP_VERSION = 'v2.3';
+const APP_VERSION = 'v2.4';
 const APP_VERSION_LABEL = APP_NAME + ' ' + APP_VERSION;
 
 // ============================================================
-//  DATA LAYER – LocalStorage helpers
+//  FIREBASE CONFIG – project pkls-2fa65
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyD2K3KJbas6SihwGGoIzmCBDl1PGQc0Ji8",
+  authDomain: "pkls-2fa65.firebaseapp.com",
+  projectId: "pkls-2fa65",
+  storageBucket: "pkls-2fa65.firebasestorage.app",
+  messagingSenderId: "59222094755",
+  appId: "1:59222094755:web:cd97de39bc72a8c8c5e016",
+  measurementId: "G-7Z6838P4YR"
+};
+
+let firestore = null;
+let DOC_REF = null;
+let _cloudReady = false;
+let _saveTimer = null;
+let _applyingRemote = false; // tránh vòng lặp khi nhận snapshot
+
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    firestore = firebase.firestore();
+    DOC_REF = firestore.collection('medschedule').doc('main');
+  }
+} catch (e) {
+  console.warn('[Firebase] Không khởi tạo được:', e);
+}
+
+// Cache bộ nhớ + map key local ↔ field cloud
+const _cache = {};
+const KEY_MAP = {
+  med_depts: 'depts',
+  med_employees: 'employees',
+  med_leaves: 'leaves',
+  med_users: 'users',
+  med_groups: 'groups',
+  med_day_shifts: 'day_shifts',
+  med_profile_requests: 'profile_requests',
+  med_notifications: 'notifications',
+};
+const SYNC_KEYS = Object.keys(KEY_MAP);
+
+function _readLocal(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v == null) return fallback;
+    return JSON.parse(v);
+  } catch {
+    return fallback;
+  }
+}
+
+function _writeLocal(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+}
+
+// ============================================================
+//  DATA LAYER – LocalStorage + Firebase sync
 // ============================================================
 const DB = {
-  get: (key) => { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } },
-  set: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-  getObj: (key, def = {}) => { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } },
-  setObj: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+  get: (key) => {
+    if (_cache[key] !== undefined) {
+      try { return JSON.parse(JSON.stringify(_cache[key])); } catch { return _cache[key] || []; }
+    }
+    const v = _readLocal(key, []);
+    _cache[key] = v;
+    return JSON.parse(JSON.stringify(v));
+  },
+  set: (key, val) => {
+    _cache[key] = val;
+    _writeLocal(key, val);
+    if (!_applyingRemote && SYNC_KEYS.includes(key)) scheduleCloudSave();
+  },
+  getObj: (key, def = {}) => {
+    if (key === 'med_current_user') return _readLocal(key, def); // session chỉ local
+    if (_cache[key] !== undefined) return _cache[key];
+    return _readLocal(key, def);
+  },
+  setObj: (key, val) => {
+    if (key === 'med_current_user') {
+      _writeLocal(key, val);
+      return;
+    }
+    _cache[key] = val;
+    _writeLocal(key, val);
+  },
 };
+
+function scheduleCloudSave() {
+  if (!_cloudReady || !DOC_REF) return;
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveToCloud, 500);
+}
+
+async function saveToCloud() {
+  if (!DOC_REF || _applyingRemote) return;
+  const payload = { updatedAt: new Date().toISOString() };
+  SYNC_KEYS.forEach(k => {
+    payload[KEY_MAP[k]] = _cache[k] !== undefined ? _cache[k] : _readLocal(k, k === 'med_groups' ? ['SA', 'XQ'] : []);
+  });
+  try {
+    await DOC_REF.set(payload, { merge: true });
+  } catch (err) {
+    console.error('[Firebase] Lỗi lưu:', err);
+    if (typeof showToast === 'function') showToast('Không đồng bộ được lên cloud. Kiểm tra mạng / Rules.', 'error');
+  }
+}
+
+async function loadFromCloud() {
+  if (!DOC_REF) return false;
+  try {
+    const snap = await DOC_REF.get();
+    if (!snap.exists) {
+      // Lần đầu: đưa dữ liệu local (nếu có) lên cloud
+      SYNC_KEYS.forEach(k => {
+        if (_cache[k] === undefined) _cache[k] = _readLocal(k, k === 'med_groups' ? ['SA', 'XQ'] : []);
+      });
+      await saveToCloud();
+      return true;
+    }
+    const data = snap.data() || {};
+    _applyingRemote = true;
+    SYNC_KEYS.forEach(k => {
+      const field = KEY_MAP[k];
+      if (data[field] !== undefined) {
+        _cache[k] = data[field];
+        _writeLocal(k, data[field]);
+      } else if (_cache[k] === undefined) {
+        _cache[k] = _readLocal(k, k === 'med_groups' ? ['SA', 'XQ'] : []);
+      }
+    });
+    _applyingRemote = false;
+    return true;
+  } catch (err) {
+    console.warn('[Firebase] Không tải được cloud, dùng localStorage:', err);
+    _applyingRemote = false;
+    return false;
+  }
+}
+
+function listenCloud() {
+  if (!DOC_REF) return;
+  DOC_REF.onSnapshot((snap) => {
+    if (!snap.exists) return;
+    const data = snap.data() || {};
+    let changed = false;
+    _applyingRemote = true;
+    SYNC_KEYS.forEach(k => {
+      const field = KEY_MAP[k];
+      if (data[field] === undefined) return;
+      const next = JSON.stringify(data[field]);
+      const prev = JSON.stringify(_cache[k]);
+      if (next !== prev) {
+        _cache[k] = data[field];
+        _writeLocal(k, data[field]);
+        changed = true;
+      }
+    });
+    _applyingRemote = false;
+    if (changed && typeof currentUser !== 'undefined' && currentUser) {
+      if (typeof updateBadges === 'function') updateBadges();
+      if (typeof updateNotifBadge === 'function') updateNotifBadge();
+      if (typeof navigate === 'function' && typeof currentPage !== 'undefined') {
+        navigate(currentPage || 'schedule');
+      }
+      if (typeof showToast === 'function') showToast('Đã đồng bộ dữ liệu từ cloud.', 'success');
+    }
+  }, (err) => console.error('[Firebase] Lỗi lắng nghe:', err));
+}
 
 // ============================================================
 //  INITIAL SEED DATA
 // ============================================================
 function seedData() {
-  if (localStorage.getItem('med_seeded')) return;
+  // Chỉ seed khi chưa có users (tránh ghi đè cloud)
+  const users = DB.get('med_users');
+  if (users && users.length) {
+    localStorage.setItem('med_seeded', '1');
+    return;
+  }
+  if (localStorage.getItem('med_seeded') === '1' && users && users.length) return;
 
-  // Không tạo phòng ban / nhân viên / đơn nghỉ mẫu
-  DB.set('med_depts', []);
-  DB.set('med_employees', []);
-  DB.set('med_leaves', []);
-  DB.set('med_profile_requests', []);
-  DB.set('med_groups', ['SA', 'XQ']);
-  DB.set('med_day_shifts', []);
-  DB.set('med_notifications', []);
+  DB.set('med_depts', DB.get('med_depts') || []);
+  DB.set('med_employees', DB.get('med_employees') || []);
+  DB.set('med_leaves', DB.get('med_leaves') || []);
+  DB.set('med_profile_requests', DB.get('med_profile_requests') || []);
+  if (!(DB.get('med_groups') || []).length) DB.set('med_groups', ['SA', 'XQ']);
+  DB.set('med_day_shifts', DB.get('med_day_shifts') || []);
+  DB.set('med_notifications', DB.get('med_notifications') || []);
 
-  // Chỉ tạo tài khoản Admin
-  const users = [
+  DB.set('med_users', [
     {
       id: 'u0',
       username: 'admin',
@@ -2488,23 +2656,20 @@ function seedData() {
       status: 'active',
       createdAt: new Date().toISOString(),
     }
-  ];
-  DB.set('med_users', users);
-
+  ]);
   localStorage.setItem('med_seeded', '1');
 }
-// Đảm bảo key profile requests tồn tại cho bản đã seed trước đó
-if (!localStorage.getItem('med_profile_requests')) {
-  DB.set('med_profile_requests', []);
-}
-if (!localStorage.getItem('med_groups')) {
-  DB.set('med_groups', ['SA', 'XQ']);
-}
-if (!localStorage.getItem('med_day_shifts')) {
-  DB.set('med_day_shifts', []);
-}
-if (!localStorage.getItem('med_notifications')) {
-  DB.set('med_notifications', []);
+
+function ensureLocalDefaults() {
+  SYNC_KEYS.forEach(k => {
+    if (_cache[k] === undefined) {
+      _cache[k] = _readLocal(k, k === 'med_groups' ? ['SA', 'XQ'] : []);
+    }
+  });
+  if (!(_cache.med_groups || []).length) {
+    _cache.med_groups = ['SA', 'XQ'];
+    _writeLocal('med_groups', _cache.med_groups);
+  }
 }
 
 function fmtDate(d) {
@@ -2809,20 +2974,35 @@ let userFilter = 'all';
 // ============================================================
 //  INIT
 // ============================================================
-window.addEventListener('DOMContentLoaded', () => {
-  seedData();
-  migrateEmployeeDepts();
+window.addEventListener('DOMContentLoaded', async () => {
   // Hiển thị tên phiên bản
-  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'MedSchedule v2.3';
+  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'MedSchedule v2.4';
   const authVer = document.getElementById('auth-version');
   const sideVer = document.getElementById('sidebar-version');
   if (authVer) authVer.textContent = ver;
   if (sideVer) sideVer.textContent = ver;
   document.title = 'PKĐK Lam Sơn – ' + ver;
 
+  ensureLocalDefaults();
+
+  // Đồng bộ Firebase trước khi đăng nhập
+  if (DOC_REF) {
+    try {
+      await loadFromCloud();
+      _cloudReady = true;
+      listenCloud();
+      console.log('[Firebase] Đồng bộ bật – project pkls-2fa65');
+    } catch (e) {
+      console.warn('[Firebase] Dùng offline localStorage', e);
+      _cloudReady = false;
+    }
+  }
+
+  seedData();
+  migrateEmployeeDepts();
+
   const savedUser = DB.getObj('med_current_user', null);
   if (savedUser && savedUser.id) {
-    // Re-validate from DB
     const users = DB.get('med_users');
     const user = users.find(u => u.id === savedUser.id && u.status === 'active');
     if (user) {
