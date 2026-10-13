@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <title>PKĐK Lam Sơn – v1.2</title>
+  <title>PKĐK Lam Sơn – v1.5</title>
   <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
   <!-- PWA & Mobile -->
   <meta name="theme-color" content="#1a56db" />
@@ -18,7 +18,7 @@
   
 <style>
 /* ========================================
-   v1.2 – Medical Teal UI
+   v1.5 – Medical Teal UI
    Clean · Soft · Mobile-first
    ======================================== */
 
@@ -1939,7 +1939,7 @@ a:hover { text-decoration: underline; }
       <h1>PKĐK Lam Sơn</h1>
       <p>Lịch làm việc</p>
       <p class="auth-phone">LH. 0966255685</p>
-      <p class="app-version" id="auth-version">v1.2</p>
+      <p class="app-version" id="auth-version">v1.5</p>
     </div>
 
     <div class="login-role-hint">
@@ -1995,7 +1995,7 @@ a:hover { text-decoration: underline; }
           <strong>PKĐK Lam Sơn</strong>
           <small>Lịch làm việc</small>
           <small class="sidebar-phone">LH. 0966255685</small>
-          <small class="sidebar-version" id="sidebar-version">v1.2</small>
+          <small class="sidebar-version" id="sidebar-version">v1.5</small>
         </div>
       </div>
       <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
@@ -2117,7 +2117,8 @@ a:hover { text-decoration: underline; }
           </div>
           <div class="page-actions">
             <button class="btn-primary" onclick="openLeaveModal()">+ Tạo đơn</button>
-            <button class="btn-outline admin-only perm-export" data-perm="export_excel" onclick="exportLeavesExcel()">📥 Xuất ngày nghỉ</button>
+            <button class="btn-outline admin-only perm-export" data-perm="export_excel" onclick="exportLeavesExcel()">📥 Xuất chi tiết</button>
+            <button class="btn-outline admin-only perm-export" data-perm="export_excel" onclick="exportLeaveMonthSummary()">📊 Tổng theo tháng</button>
           </div>
         </div>
         <div id="leave-list" class="leave-list"></div>
@@ -2133,13 +2134,33 @@ a:hover { text-decoration: underline; }
               <div class="form-row">
                 <div class="form-group">
                   <label>Từ ngày</label>
-                  <input type="date" id="leave-from" required />
+                  <input type="date" id="leave-from" required onchange="onLeaveDateOrSessionChange()" />
                 </div>
                 <div class="form-group">
                   <label>Đến ngày</label>
-                  <input type="date" id="leave-to" required />
+                  <input type="date" id="leave-to" required onchange="onLeaveDateOrSessionChange()" />
                 </div>
               </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Buổi bắt đầu</label>
+                  <select id="leave-session-start" onchange="onLeaveDateOrSessionChange()">
+                    <option value="full">Cả ngày</option>
+                    <option value="am">Nửa ngày – Sáng (0,5)</option>
+                    <option value="pm">Nửa ngày – Chiều (0,5)</option>
+                  </select>
+                </div>
+                <div class="form-group" id="leave-session-end-wrap">
+                  <label>Buổi kết thúc</label>
+                  <select id="leave-session-end" onchange="onLeaveDateOrSessionChange()">
+                    <option value="full">Cả ngày</option>
+                    <option value="am">Nửa ngày – Sáng (0,5)</option>
+                    <option value="pm">Nửa ngày – Chiều (0,5)</option>
+                  </select>
+                </div>
+              </div>
+              <p id="leave-days-hint" style="font-size:12px;color:var(--text-muted);margin:0 0 8px;">Số ngày nghỉ: <strong>1</strong></p>
+              <p style="font-size:11px;color:var(--text-muted);margin:-4px 0 10px;">VD: Nghỉ dài ngày, bắt đầu chiều 0,5 + các ngày giữa cả ngày + kết thúc sáng 0,5.</p>
               <div class="form-group">
                 <label>Loại phép</label>
                 <select id="leave-type">
@@ -2410,11 +2431,14 @@ a:hover { text-decoration: underline; }
             <h2>🔑 Tài khoản</h2>
             <p class="page-subtitle">Phê duyệt, kích hoạt hoặc vô hiệu hóa tài khoản đăng nhập.</p>
           </div>
-          <div class="filter-tabs">
-            <button class="tab-btn active" onclick="filterUsers('all',this)">Tất cả</button>
-            <button class="tab-btn" onclick="filterUsers('pending',this)">Chờ duyệt</button>
-            <button class="tab-btn" onclick="filterUsers('active',this)">Hoạt động</button>
-            <button class="tab-btn" onclick="filterUsers('rejected',this)">Từ chối</button>
+          <div class="page-actions" style="flex-wrap:wrap;gap:8px;">
+            <button class="btn-outline" onclick="exportAccountsExcel()" title="Chỉ admin">📥 Xuất TK & mật khẩu</button>
+            <div class="filter-tabs">
+              <button class="tab-btn active" onclick="filterUsers('all',this)">Tất cả</button>
+              <button class="tab-btn" onclick="filterUsers('pending',this)">Chờ duyệt</button>
+              <button class="tab-btn" onclick="filterUsers('active',this)">Hoạt động</button>
+              <button class="tab-btn" onclick="filterUsers('rejected',this)">Từ chối</button>
+            </div>
           </div>
         </div>
         <div id="users-list" class="users-list" style="margin-top:12px;"></div>
@@ -2571,7 +2595,7 @@ a:hover { text-decoration: underline; }
 
 /** Tên phiên bản ứng dụng */
 const APP_NAME = 'PKĐK Lam Sơn';
-const APP_VERSION = 'v1.2';
+const APP_VERSION = 'v1.5';
 const APP_VERSION_LABEL = APP_VERSION; // chỉ hiện số phiên bản
 
 // ============================================================
@@ -3167,7 +3191,7 @@ let userFilter = 'all';
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
   // Hiển thị tên phiên bản
-  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'v1.2';
+  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'v1.5';
   const authVer = document.getElementById('auth-version');
   const sideVer = document.getElementById('sidebar-version');
   if (authVer) authVer.textContent = ver;
@@ -3836,7 +3860,7 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
           </div>
           <div class="staff-info">
             <div class="staff-name">${esc(l.employeeName)}${emp?.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(emp.group)}</span>` : ''}</div>
-            <div class="staff-dept">${esc(l.type)} · ${formatDateVN(l.fromDate)} → ${formatDateVN(l.toDate)}</div>
+            <div class="staff-dept">${esc(l.type)} · ${formatDateVN(l.fromDate)}${l.fromDate!==l.toDate ? ' → '+formatDateVN(l.toDate) : ''} · ${formatLeaveDays(calcLeaveDays(l))} ngày${(normSession(l.sessionStart||l.session)==='am'||normSession(l.sessionStart||l.session)==='pm'||normSession(l.sessionEnd)==='am'||normSession(l.sessionEnd)==='pm') ? ' · có nửa ngày' : ''}</div>
           </div>
           <span class="staff-status status-leave">Nghỉ phép</span>
         </div>`;
@@ -4440,13 +4464,121 @@ function renderLeaveList() {
   container.innerHTML = myLeaves.map(l => leaveCardHTML(l, depts, false)).join('');
 }
 
+/** Chuẩn hóa buổi: full | am | pm */
+function normSession(s) {
+  return (s === 'am' || s === 'pm') ? s : 'full';
+}
+
+/**
+ * Buổi áp dụng cho 1 ngày cụ thể trong khoảng nghỉ
+ * - Ngày đầu: sessionStart (hoặc session bản cũ)
+ * - Ngày cuối: sessionEnd (nếu khác ngày đầu)
+ * - Ngày giữa: luôn cả ngày
+ */
+function sessionForDate(l, dateStr) {
+  if (!l || !dateStr) return 'full';
+  const legacyHalf = (!l.sessionStart && !l.sessionEnd && (l.session === 'am' || l.session === 'pm'));
+  const start = normSession(l.sessionStart || (legacyHalf ? l.session : 'full') || 'full');
+  const end = normSession(l.sessionEnd || (legacyHalf ? l.session : 'full') || 'full');
+
+  if (l.fromDate === l.toDate) return start;
+  if (dateStr === l.fromDate) return start;
+  if (dateStr === l.toDate) return end;
+  return 'full';
+}
+
+/**
+ * Tính số ngày nghỉ — 0,5 giữ đúng 0,5, không làm tròn lên 1.
+ * Cộng bằng đơn vị nửa ngày (integer): full = 2, am/pm = 1, rồi chia 2.
+ */
+function calcLeaveDays(l) {
+  if (!l?.fromDate || !l?.toDate) return 0;
+  const from = new Date(l.fromDate + 'T00:00:00');
+  const to = new Date(l.toDate + 'T00:00:00');
+  if (isNaN(from.getTime()) || isNaN(to.getTime()) || to < from) return 0;
+
+  let halfUnits = 0;
+  const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+  while (cur <= end) {
+    const sess = sessionForDate(l, fmtDate(cur));
+    halfUnits += (sess === 'full') ? 2 : 1;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return halfUnits / 2;
+}
+
+/** Hiển thị đúng 0,5 / 1,5 / 2,5… — không làm tròn */
+function formatLeaveDays(n) {
+  if (n == null || isNaN(n)) return '0';
+  const halves = Math.round(Number(n) * 2); // chỉ để hiển thị ổn định, không đẩy 0.5→1
+  if (halves % 2 === 0) return String(halves / 2);
+  return (halves / 2).toFixed(1).replace('.', ',');
+}
+
+function leaveSessionLabel(session) {
+  if (session === 'am') return 'Buổi sáng (0,5 ngày)';
+  if (session === 'pm') return 'Buổi chiều (0,5 ngày)';
+  return 'Cả ngày';
+}
+
+/** Phần ngày nghỉ của đơn l giao với tháng year-month (month 0–11) — không làm tròn */
+function leaveDaysInMonth(l, year, month) {
+  if (!l?.fromDate || !l?.toDate) return 0;
+  const from = new Date(l.fromDate + 'T00:00:00');
+  const to = new Date(l.toDate + 'T00:00:00');
+  if (isNaN(from.getTime()) || isNaN(to.getTime()) || to < from) return 0;
+
+  let halfUnits = 0;
+  const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+  while (cur <= end) {
+    if (cur.getFullYear() === year && cur.getMonth() === month) {
+      const sess = sessionForDate(l, fmtDate(cur));
+      halfUnits += (sess === 'full') ? 2 : 1;
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+  return halfUnits / 2;
+}
+
+function downloadCsv(filename, headers, rows) {
+  const bom = "\uFEFF";
+  const csvContent = bom + [headers, ...rows]
+    .map(row => row.map(cell => {
+      const s = String(cell ?? '');
+      return (s.includes(',') || s.includes('"') || s.includes('\n'))
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    }).join(','))
+    .join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function leaveCardHTML(l, depts, isApproval) {
   const dept = depts.find(d => d.id === l.deptId);
   const color = dept?.color || '#1a56db';
   const badgeClass = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected' }[l.status];
   const badgeText = { pending: '⏳ Chờ', approved: '✅ Duyệt', rejected: '❌ Từ chối' }[l.status];
 
-  const days = Math.ceil((new Date(l.toDate) - new Date(l.fromDate)) / 86400000) + 1;
+  const days = calcLeaveDays(l);
+  const sStart = normSession(l.sessionStart || (l.session === 'am' || l.session === 'pm' ? l.session : 'full'));
+  const sEnd = normSession(l.sessionEnd || 'full');
+  let sessionTag = '';
+  if (l.fromDate === l.toDate && sStart !== 'full') {
+    sessionTag = `<span class="leave-type-tag" style="background:var(--warning-light);color:#92400e;">${sStart === 'am' ? 'Sáng 0,5' : 'Chiều 0,5'}</span>`;
+  } else if (l.fromDate !== l.toDate && (sStart !== 'full' || sEnd !== 'full')) {
+    const parts = [];
+    if (sStart !== 'full') parts.push('Đầu: ' + (sStart === 'am' ? 'Sáng 0,5' : 'Chiều 0,5'));
+    if (sEnd !== 'full') parts.push('Cuối: ' + (sEnd === 'am' ? 'Sáng 0,5' : 'Chiều 0,5'));
+    sessionTag = `<span class="leave-type-tag" style="background:var(--warning-light);color:#92400e;">${parts.join(' · ')}</span>`;
+  }
 
   let actions = `<button class="btn-outline btn-sm" onclick="openLeaveDetail('${esc(l.id)}')">👁 Chi tiết</button>`;
   if (isApproval && l.status === 'pending' && hasPerm('approve_leave')) {
@@ -4478,8 +4610,9 @@ function leaveCardHTML(l, depts, isApproval) {
         <span class="leave-badge ${badgeClass}">${badgeText}</span>
       </div>
       <div class="leave-card-body" style="cursor:pointer;" onclick="openLeaveDetail('${esc(l.id)}')">
-        <span class="leave-date-range">📅 ${formatDateVN(l.fromDate)} → ${formatDateVN(l.toDate)} (${days}n)</span>
+        <span class="leave-date-range">📅 ${formatDateVN(l.fromDate)}${l.fromDate !== l.toDate ? ' → ' + formatDateVN(l.toDate) : ''} (${formatLeaveDays(days)} ngày)</span>
         <span class="leave-type-tag">${esc(l.type)}</span>
+        ${sessionTag}
         <span class="leave-reason">${esc(l.reason)}</span>
       </div>
       ${actions ? `<div class="leave-card-footer">${actions}</div>` : ''}
@@ -4497,11 +4630,17 @@ function openLeaveDetail(id) {
   const dept = depts.find(d => d.id === l.deptId);
   const employees = DB.get('med_employees');
   const emp = employees.find(e => e.id === l.employeeId) || employees.find(e => e.userId === l.userId);
-  const days = Math.ceil((new Date(l.toDate) - new Date(l.fromDate)) / 86400000) + 1;
+  const days = calcLeaveDays(l);
   const statusText = { pending: '⏳ Chờ duyệt', approved: '✅ Đã duyệt', rejected: '❌ Từ chối' }[l.status] || l.status;
   const created = l.createdAt
     ? (formatDateVN(l.createdAt.slice(0, 10)) + ' ' + (l.createdAt.slice(11, 16) || ''))
     : '—';
+  const sessionStart = normSession(l.sessionStart || (l.session === 'am' || l.session === 'pm' ? l.session : 'full'));
+  const sessionEnd = normSession(l.sessionEnd || 'full');
+  let sessionText = leaveSessionLabel(sessionStart);
+  if (l.fromDate !== l.toDate) {
+    sessionText = 'Đầu: ' + leaveSessionLabel(sessionStart) + ' · Cuối: ' + leaveSessionLabel(sessionEnd);
+  }
 
   // Liệt kê từng ngày nghỉ
   const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
@@ -4509,7 +4648,13 @@ function openLeaveDetail(id) {
   const from = new Date(l.fromDate + 'T00:00:00');
   const to = new Date(l.toDate + 'T00:00:00');
   for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
-    dayList.push(`${formatDateVN(fmtDate(d))} (${dayNames[d.getDay()]})`);
+    const ds = fmtDate(d);
+    const sess = sessionForDate(l, ds);
+    let label = `${formatDateVN(ds)} (${dayNames[d.getDay()]})`;
+    if (sess === 'am') label += ' · Sáng 0,5';
+    else if (sess === 'pm') label += ' · Chiều 0,5';
+    else label += ' · Cả ngày';
+    dayList.push(label);
   }
 
   const body = document.getElementById('leave-detail-body');
@@ -4525,9 +4670,10 @@ function openLeaveDetail(id) {
       </div>
       <div style="display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:13px;">
         <div style="color:var(--text-muted);">Loại phép</div><div style="font-weight:600;">${esc(l.type || '—')}</div>
+        <div style="color:var(--text-muted);">Buổi nghỉ</div><div style="font-weight:600;">${esc(sessionText)}</div>
         <div style="color:var(--text-muted);">Từ ngày</div><div>${formatDateVN(l.fromDate)}</div>
         <div style="color:var(--text-muted);">Đến ngày</div><div>${formatDateVN(l.toDate)}</div>
-        <div style="color:var(--text-muted);">Số ngày</div><div><strong>${days}</strong> ngày</div>
+        <div style="color:var(--text-muted);">Số ngày</div><div><strong>${formatLeaveDays(days)}</strong> ngày</div>
         <div style="color:var(--text-muted);">Lý do</div><div>${esc(l.reason || '—')}</div>
         <div style="color:var(--text-muted);">Ghi chú duyệt</div><div>${esc(l.note || '—')}</div>
         <div style="color:var(--text-muted);">Ngày tạo đơn</div><div>${esc(created)}</div>
@@ -4553,12 +4699,68 @@ function openLeaveModal() {
   document.getElementById('leave-from').value = today;
   document.getElementById('leave-to').value = today;
   document.getElementById('leave-reason').value = '';
+  const ss = document.getElementById('leave-session-start');
+  const se = document.getElementById('leave-session-end');
+  if (ss) ss.value = 'full';
+  if (se) se.value = 'full';
   document.getElementById('leave-form-error').classList.add('hidden');
   document.getElementById('leave-modal').classList.remove('hidden');
+  onLeaveDateOrSessionChange();
 }
 function closeLeaveModal() { document.getElementById('leave-modal').classList.add('hidden'); }
 
-function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId) {
+function onLeaveDateOrSessionChange() {
+  const fromEl = document.getElementById('leave-from');
+  const toEl = document.getElementById('leave-to');
+  const ssEl = document.getElementById('leave-session-start');
+  const seEl = document.getElementById('leave-session-end');
+  const endWrap = document.getElementById('leave-session-end-wrap');
+  const hint = document.getElementById('leave-days-hint');
+  if (!fromEl || !toEl) return;
+
+  const fromDate = fromEl.value;
+  const toDate = toEl.value;
+  const sessionStart = normSession(ssEl?.value || 'full');
+  let sessionEnd = normSession(seEl?.value || 'full');
+
+  // 1 ngày: ẩn buổi kết thúc
+  if (endWrap) {
+    if (fromDate && toDate && fromDate === toDate) {
+      endWrap.style.opacity = '0.45';
+      if (seEl) seEl.disabled = true;
+    } else {
+      endWrap.style.opacity = '1';
+      if (seEl) seEl.disabled = false;
+    }
+  }
+
+  if (!fromDate || !toDate) {
+    if (hint) hint.innerHTML = 'Số ngày nghỉ: <strong>—</strong>';
+    return;
+  }
+  if (fromDate > toDate) {
+    if (hint) hint.innerHTML = '<span style="color:var(--danger);">Ngày bắt đầu không được sau ngày kết thúc.</span>';
+    return;
+  }
+  if (fromDate === toDate) sessionEnd = sessionStart;
+  const days = calcLeaveDays({ fromDate, toDate, sessionStart, sessionEnd });
+  let note = '';
+  if (fromDate === toDate && sessionStart !== 'full') {
+    note = sessionStart === 'am' ? ' (sáng 0,5)' : ' (chiều 0,5)';
+  } else if (fromDate !== toDate) {
+    const bits = [];
+    if (sessionStart !== 'full') bits.push('bắt đầu ' + (sessionStart === 'am' ? 'sáng' : 'chiều') + ' 0,5');
+    if (sessionEnd !== 'full') bits.push('kết thúc ' + (sessionEnd === 'am' ? 'sáng' : 'chiều') + ' 0,5');
+    if (bits.length) note = ' (' + bits.join(', ') + ')';
+  }
+  if (hint) hint.innerHTML = `Số ngày nghỉ: <strong>${formatLeaveDays(days)}</strong>${note}`;
+}
+
+function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd) {
+  sessionStart = normSession(sessionStart || 'full');
+  sessionEnd = normSession(sessionEnd || 'full');
+  if (fromDate === toDate) sessionEnd = sessionStart;
+  const days = calcLeaveDays({ fromDate, toDate, sessionStart, sessionEnd });
   const leave = {
     id: genId(),
     userId: currentUser.id,
@@ -4567,6 +4769,11 @@ function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId) {
     deptId,
     group: emp?.group || '',
     fromDate, toDate, type, reason,
+    sessionStart,
+    sessionEnd,
+    // tương thích bản cũ
+    session: (fromDate === toDate && sessionStart !== 'full') ? sessionStart : 'full',
+    days,
     status: 'pending',
     note: '',
     createdAt: new Date().toISOString(),
@@ -4575,11 +4782,14 @@ function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId) {
   leaves.push(leave);
   DB.set('med_leaves', leaves);
 
-  // Thông báo cho admin
+  const extra = [];
+  if (sessionStart !== 'full') extra.push('đầu ' + (sessionStart === 'am' ? 'sáng' : 'chiều') + ' 0,5');
+  if (fromDate !== toDate && sessionEnd !== 'full') extra.push('cuối ' + (sessionEnd === 'am' ? 'sáng' : 'chiều') + ' 0,5');
+  const extraTxt = extra.length ? ' (' + extra.join(', ') + ')' : '';
   notifyAdmins(
     'leave_submit',
     'Đơn nghỉ phép mới',
-    `${empName} đăng ký nghỉ ${type}: ${formatDateVN(fromDate)} → ${formatDateVN(toDate)}. Lý do: ${reason || '—'}`,
+    `${empName} đăng ký nghỉ ${type}${extraTxt}: ${formatDateVN(fromDate)}${fromDate !== toDate ? ' → ' + formatDateVN(toDate) : ''} · ${formatLeaveDays(days)} ngày. Lý do: ${reason || '—'}`,
     { leaveId: leave.id }
   );
 
@@ -4595,31 +4805,31 @@ function submitLeave(e) {
   const toDate = document.getElementById('leave-to').value;
   const type = document.getElementById('leave-type').value;
   const reason = document.getElementById('leave-reason').value.trim();
+  const sessionStart = normSession(document.getElementById('leave-session-start')?.value || 'full');
+  let sessionEnd = normSession(document.getElementById('leave-session-end')?.value || 'full');
   const errEl = document.getElementById('leave-form-error');
 
   if (fromDate > toDate) {
     errEl.textContent = 'Ngày bắt đầu không được sau ngày kết thúc.';
     errEl.classList.remove('hidden'); return;
   }
+  if (fromDate === toDate) sessionEnd = sessionStart;
 
   const employees = DB.get('med_employees');
-
-  // Ưu tiên tìm employee theo userId (đồng bộ), sau đó theo tên
   let emp = employees.find(em => em.userId === currentUser.id)
     || employees.find(em => em.name === currentUser.fullname);
   let empName = emp?.name || currentUser.fullname;
   let deptId = primaryDeptId(emp) || currentUser.deptId || '';
 
-  // Cảnh báo nếu trong cùng nhóm đã có người nghỉ trùng ngày
   const conflicts = getGroupLeaveConflicts(emp, fromDate, toDate);
   if (conflicts.length && emp?.group) {
     confirmDialog('Cảnh báo nhóm ' + emp.group, formatGroupConflictMsg(conflicts, emp.group), () => {
-      doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId);
+      doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd);
     });
     return;
   }
 
-  doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId);
+  doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd);
 }
 
 function cancelLeave(id) {
@@ -5043,19 +5253,15 @@ function exportLeavesExcel() {
   }
   const leaves = DB.get('med_leaves');
   const depts = DB.get('med_depts');
-  const employees = DB.get('med_employees');
-
   if (!leaves.length) {
     showToast('Không có đơn nghỉ để xuất.', 'info');
     return;
   }
 
-  // Chi tiết từng ngày nghỉ
-  const headers = ['STT', 'Họ và tên', 'Phòng ban', 'Loại phép', 'Ngày nghỉ', 'Thứ', 'Trạng thái', 'Lý do', 'Ghi chú duyệt'];
+  const headers = ['STT', 'Họ và tên', 'Phòng ban', 'Loại phép', 'Ngày nghỉ', 'Thứ', 'Buổi', 'Số ngày', 'Trạng thái', 'Lý do', 'Ghi chú duyệt'];
   const rows = [];
   let stt = 0;
   const dayNames = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
-
   const sorted = [...leaves].sort((a, b) => a.fromDate.localeCompare(b.fromDate));
   sorted.forEach(l => {
     const dept = depts.find(d => d.id === l.deptId);
@@ -5065,6 +5271,9 @@ function exportLeavesExcel() {
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
       stt++;
       const dateStr = fmtDate(d);
+      const sess = sessionForDate(l, dateStr);
+      const buoi = sess === 'am' ? 'Sáng' : sess === 'pm' ? 'Chiều' : 'Cả ngày';
+      const dayVal = sess === 'full' ? 1 : 0.5;
       rows.push([
         stt,
         l.employeeName || '',
@@ -5072,6 +5281,8 @@ function exportLeavesExcel() {
         l.type || '',
         dateStr,
         dayNames[d.getDay()],
+        buoi,
+        dayVal,
         statusText,
         l.reason || '',
         l.note || ''
@@ -5079,25 +5290,136 @@ function exportLeavesExcel() {
     }
   });
 
-  const bom = "﻿";
-  const csvContent = bom + [headers, ...rows]
-    .map(row => row.map(cell => {
-      const s = String(cell ?? '');
-      return (s.includes(',') || s.includes('"') || s.includes('\n'))
-        ? '"' + s.replace(/"/g, '""') + '"'
-        : s;
-    }).join(','))
-    .join('\r\n');
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
   const now = new Date();
-  a.download = `ChiTietNgayNghi_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadCsv(`ChiTietNgayNghi_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`, headers, rows);
   showToast(`Đã xuất ${rows.length} dòng ngày nghỉ chi tiết!`, 'success');
+}
+
+/** Tổng ngày nghỉ theo tháng (có 0,5) → Excel */
+function exportLeaveMonthSummary() {
+  if (!hasPerm('export_excel')) {
+    showToast('Bạn không có quyền xuất Excel.', 'error');
+    return;
+  }
+  const raw = prompt('Nhập tháng cần tổng hợp (YYYY-MM), để trống = tháng hiện tại:', '');
+  if (raw === null) return;
+  let year, month;
+  if (!raw.trim()) {
+    const now = new Date();
+    year = now.getFullYear();
+    month = now.getMonth();
+  } else {
+    const m = raw.trim().match(/^(\d{4})-(\d{1,2})$/);
+    if (!m) {
+      showToast('Định dạng không hợp lệ. VD: 2026-10', 'error');
+      return;
+    }
+    year = parseInt(m[1], 10);
+    month = parseInt(m[2], 10) - 1;
+    if (month < 0 || month > 11) {
+      showToast('Tháng phải từ 01 đến 12.', 'error');
+      return;
+    }
+  }
+
+  const leaves = DB.get('med_leaves').filter(l => l.status === 'approved' || l.status === 'pending');
+  const depts = DB.get('med_depts');
+  const employees = DB.get('med_employees');
+
+  // Tổng theo nhân viên
+  const map = {};
+  leaves.forEach(l => {
+    const dInMonth = leaveDaysInMonth(l, year, month);
+    if (dInMonth <= 0) return;
+    const key = l.employeeId || l.employeeName || l.userId;
+    if (!map[key]) {
+      map[key] = {
+        name: l.employeeName || '',
+        deptId: l.deptId || '',
+        pending: 0,
+        approved: 0,
+        total: 0,
+      };
+    }
+    if (l.status === 'pending') map[key].pending += dInMonth;
+    if (l.status === 'approved') map[key].approved += dInMonth;
+    map[key].total += dInMonth;
+    if (!map[key].name && l.employeeName) map[key].name = l.employeeName;
+  });
+
+  // Bổ sung tên từ employees
+  employees.forEach(e => {
+    if (map[e.id] && !map[e.id].name) map[e.id].name = e.name;
+    if (map[e.id] && !map[e.id].deptId) map[e.id].deptId = primaryDeptId(e) || '';
+  });
+
+  const headers = ['STT', 'Họ và tên', 'Phòng ban', 'Ngày chờ duyệt', 'Ngày đã duyệt', 'Tổng ngày nghỉ', 'Tháng'];
+  const monthLabel = `${year}-${String(month + 1).padStart(2, '0')}`;
+  const rows = Object.values(map)
+    .filter(x => x.total > 0)
+    .sort((a, b) => a.name.localeCompare(b.name, 'vi'))
+    .map((x, i) => {
+      const dept = depts.find(d => d.id === x.deptId);
+      return [
+        i + 1,
+        x.name,
+        dept?.name || '',
+        String(x.pending),
+        String(x.approved),
+        String(x.total),
+        monthLabel,
+      ];
+    });
+
+  if (!rows.length) {
+    showToast('Không có ngày nghỉ trong tháng ' + monthLabel, 'info');
+    return;
+  }
+
+  // Dòng tổng
+  const sumP = Object.values(map).reduce((s, x) => s + x.pending, 0);
+  const sumA = Object.values(map).reduce((s, x) => s + x.approved, 0);
+  const sumT = Object.values(map).reduce((s, x) => s + x.total, 0);
+  rows.push(['', 'TỔNG', '', String(sumP), String(sumA), String(sumT), monthLabel]);
+
+  downloadCsv(`TongNgayNghi_${monthLabel}.csv`, headers, rows);
+  showToast(`Đã xuất tổng ngày nghỉ tháng ${monthLabel} (${rows.length - 1} người).`, 'success');
+}
+
+/** Xuất tài khoản + mật khẩu — chỉ admin */
+function exportAccountsExcel() {
+  if (currentUser?.role !== 'admin') {
+    showToast('Chỉ admin mới được xuất tài khoản và mật khẩu.', 'error');
+    return;
+  }
+  const users = DB.get('med_users');
+  const depts = DB.get('med_depts');
+  if (!users.length) {
+    showToast('Không có tài khoản để xuất.', 'info');
+    return;
+  }
+  const headers = ['STT', 'Họ và tên', 'Tên đăng nhập', 'Mật khẩu', 'Vai trò', 'Trạng thái', 'Chức vụ', 'Phòng ban', 'Quyền', 'Ngày tạo'];
+  const rows = [...users]
+    .sort((a, b) => (a.fullname || '').localeCompare(b.fullname || '', 'vi'))
+    .map((u, i) => {
+      const dept = depts.find(d => d.id === u.deptId);
+      const perms = u.role === 'admin' ? 'Toàn quyền' : (Array.isArray(u.permissions) ? u.permissions.join('; ') : '');
+      return [
+        i + 1,
+        u.fullname || '',
+        u.username || '',
+        u.password || '',
+        u.role === 'admin' ? 'Admin' : 'Nhân viên',
+        u.status || '',
+        u.position || '',
+        dept?.name || '',
+        perms,
+        u.createdAt ? u.createdAt.slice(0, 10) : '',
+      ];
+    });
+  const now = new Date();
+  downloadCsv(`TaiKhoan_MatKhau_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}_${String(now.getDate()).padStart(2,'0')}.csv`, headers, rows);
+  showToast(`Đã xuất ${rows.length} tài khoản (kèm mật khẩu). Chỉ admin được xem file này.`, 'success');
 }
 
 function exportEmployeesExcel() {
