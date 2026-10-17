@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <title>PKĐK Lam Sơn – v1.5</title>
+  <title>PKĐK Lam Sơn – v1.8</title>
   <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
   <!-- PWA & Mobile -->
   <meta name="theme-color" content="#1a56db" />
@@ -18,7 +18,7 @@
   
 <style>
 /* ========================================
-   v1.5 – Medical Teal UI
+   v1.8 – Medical Teal UI
    Clean · Soft · Mobile-first
    ======================================== */
 
@@ -1939,7 +1939,7 @@ a:hover { text-decoration: underline; }
       <h1>PKĐK Lam Sơn</h1>
       <p>Lịch làm việc</p>
       <p class="auth-phone">LH. 0966255685</p>
-      <p class="app-version" id="auth-version">v1.5</p>
+      <p class="app-version" id="auth-version">v1.8</p>
     </div>
 
     <div class="login-role-hint">
@@ -1995,7 +1995,7 @@ a:hover { text-decoration: underline; }
           <strong>PKĐK Lam Sơn</strong>
           <small>Lịch làm việc</small>
           <small class="sidebar-phone">LH. 0966255685</small>
-          <small class="sidebar-version" id="sidebar-version">v1.5</small>
+          <small class="sidebar-version" id="sidebar-version">v1.8</small>
         </div>
       </div>
       <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
@@ -2017,6 +2017,9 @@ a:hover { text-decoration: underline; }
       <a href="#" class="nav-item" data-page="leave" onclick="navigate('leave')">
         <span class="nav-icon">🗓️</span> Đơn nghỉ phép
         <span class="nav-badge hidden" id="nav-leave-badge">0</span>
+      </a>
+      <a href="#" class="nav-item" data-page="meals" onclick="navigate('meals')">
+        <span class="nav-icon">🍚</span> Chấm cơm
       </a>
       <a href="#" class="nav-item" data-page="profile" onclick="navigate('profile')">
         <span class="nav-icon">👤</span> Hồ sơ của tôi
@@ -2161,6 +2164,18 @@ a:hover { text-decoration: underline; }
               </div>
               <p id="leave-days-hint" style="font-size:12px;color:var(--text-muted);margin:0 0 8px;">Số ngày nghỉ: <strong>1</strong></p>
               <p style="font-size:11px;color:var(--text-muted);margin:-4px 0 10px;">VD: Nghỉ dài ngày, bắt đầu chiều 0,5 + các ngày giữa cả ngày + kết thúc sáng 0,5.</p>
+              <div id="leave-meal-wrap" class="form-group" style="display:none;padding:12px;background:var(--primary-soft,#f5f8ff);border-radius:12px;border:1px solid var(--border);">
+                <label style="font-weight:700;">🍚 Báo cơm (ngày nghỉ nửa ngày)</label>
+                <p style="font-size:12px;color:var(--text-muted);margin:4px 0 8px;">Nghỉ <strong>cả ngày</strong> mặc định <strong>không chấm cơm</strong>. Ngày nghỉ <strong>0,5</strong> vui lòng chọn:</p>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                    <input type="radio" name="leave-meal" id="leave-meal-yes" value="yes" /> Có báo cơm
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                    <input type="radio" name="leave-meal" id="leave-meal-no" value="no" checked /> Không báo cơm
+                  </label>
+                </div>
+              </div>
               <div class="form-group">
                 <label>Loại phép</label>
                 <select id="leave-type">
@@ -2330,6 +2345,16 @@ a:hover { text-decoration: underline; }
                 <label>Số điện thoại</label>
                 <input type="tel" id="emp-phone" placeholder="0901234567" />
               </div>
+              <div class="form-group" style="padding:12px;background:var(--primary-soft,#f5f8ff);border-radius:12px;border:1px solid var(--border);">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:650;">
+                  <input type="checkbox" id="emp-can-meal" style="width:18px;height:18px;accent-color:var(--primary);" checked />
+                  🍚 Cờ cơm — quản lý báo cáo chấm cơm
+                </label>
+                <p style="font-size:11px;color:var(--text-muted);margin:6px 0 0;">
+                  <strong>Tích</strong> = có trong bảng chấm cơm &amp; file Excel báo cáo.<br>
+                  <strong>Bỏ tích</strong> = không báo cơm, không đưa vào báo cáo.
+                </p>
+              </div>
               <div class="form-group">
                 <label>Ghi chú</label>
                 <input type="text" id="emp-note" placeholder="Ghi chú thêm..." />
@@ -2442,6 +2467,27 @@ a:hover { text-decoration: underline; }
           </div>
         </div>
         <div id="users-list" class="users-list" style="margin-top:12px;"></div>
+      </section>
+
+
+      <!-- ===== MEALS PAGE ===== -->
+      <section id="page-meals" class="page">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>🍚 Chấm cơm</h2>
+            <p class="page-subtitle">Tất cả nhân viên. Người <strong>ăn cơm</strong> xếp trên, <strong>không ăn</strong> xếp dưới. Admin / quyền chấm cơm được sửa cả NV không có cờ cơm. Mọi người xem được.</p>
+          </div>
+          <div class="page-actions" style="flex-wrap:wrap;gap:8px;">
+            <button class="btn-icon" onclick="shiftMealMonth(-1)" title="Tháng trước">‹</button>
+            <strong id="meal-month-label" style="min-width:110px;text-align:center;">—</strong>
+            <button class="btn-icon" onclick="shiftMealMonth(1)" title="Tháng sau">›</button>
+            <button class="btn-outline" id="btn-export-meals" data-perm="manage_meals" onclick="exportMealsMonthExcel()">📥 Xuất Excel tháng</button>
+          </div>
+        </div>
+        <div style="overflow:auto;max-width:100%;border:1px solid var(--border);border-radius:14px;background:#fff;">
+          <div id="meals-grid" style="min-width:100%;"></div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">✓ = có cơm · ✗ = không cơm · Ô xám nhạt = chủ nhật. Bấm ô để đổi (cần quyền quản lý chấm cơm).</p>
       </section>
 
     </main>
@@ -2563,6 +2609,10 @@ a:hover { text-decoration: underline; }
       <span class="bn-badge" id="bn-leave-badge" style="display:none">0</span>
       <span>Nghỉ phép</span>
     </button>
+    <button class="bn-item" id="bn-meals" onclick="navigate('meals')">
+      <span class="bn-icon">🍚</span>
+      <span>Cơm</span>
+    </button>
     <button class="bn-item" id="bn-profile" onclick="navigate('profile')">
       <span class="bn-icon">👤</span>
       <span class="bn-badge" id="bn-profile-badge" style="display:none">0</span>
@@ -2595,7 +2645,7 @@ a:hover { text-decoration: underline; }
 
 /** Tên phiên bản ứng dụng */
 const APP_NAME = 'PKĐK Lam Sơn';
-const APP_VERSION = 'v1.5';
+const APP_VERSION = 'v1.8';
 const APP_VERSION_LABEL = APP_VERSION; // chỉ hiện số phiên bản
 
 // ============================================================
@@ -2607,6 +2657,7 @@ const PERM_DEFS = [
   { id: 'manage_employees', label: 'Quản lý nhân viên', icon: '👥' },
   { id: 'manage_depts', label: 'Quản lý phòng ban', icon: '🏥' },
   { id: 'day_assign', label: 'Phân phòng theo ngày', icon: '📅' },
+  { id: 'manage_meals', label: 'Quản lý chấm cơm', icon: '🍚' },
 ];
 
 function getUserPerms(user) {
@@ -2632,6 +2683,8 @@ function applyPermissionUI() {
     if (!show && page === 'approvals') show = hasPerm('approve_leave');
     if (!show && page === 'employees') show = hasPerm('manage_employees');
     if (!show && page === 'departments') show = hasPerm('manage_depts');
+    // Chấm cơm: mọi nhân viên xem được; sửa cần quyền manage_meals
+    if (page === 'meals') show = true;
     // users chỉ admin
     if (page === 'users') show = isAdmin;
     // Nút xuất excel
@@ -2655,6 +2708,9 @@ function applyPermissionUI() {
     const show = isAdmin || (perm && hasPerm(perm));
     el.style.display = show ? '' : 'none';
   });
+  // Cơm: luôn hiện cho mọi nhân viên (chỉ xem; sửa cần quyền)
+  const bnMeals = document.getElementById('bn-meals');
+  if (bnMeals) bnMeals.style.display = '';
 
   // Nút xuất excel (không chỉ admin-only)
   document.querySelectorAll('[data-perm="export_excel"]').forEach(el => {
@@ -2663,6 +2719,11 @@ function applyPermissionUI() {
   });
   document.querySelectorAll('[data-perm="approve_leave"]').forEach(el => {
     const show = hasPerm('approve_leave');
+    el.style.display = show ? '' : 'none';
+    el.classList.toggle('hidden', !show);
+  });
+  document.querySelectorAll('[data-perm="manage_meals"]').forEach(el => {
+    const show = hasPerm('manage_meals');
     el.style.display = show ? '' : 'none';
     el.classList.toggle('hidden', !show);
   });
@@ -2708,6 +2769,7 @@ const KEY_MAP = {
   med_day_shifts: 'day_shifts',
   med_profile_requests: 'profile_requests',
   med_notifications: 'notifications',
+  med_meals: 'meals',
 };
 const SYNC_KEYS = Object.keys(KEY_MAP);
 
@@ -2858,6 +2920,7 @@ function seedData() {
   if (!(DB.get('med_groups') || []).length) DB.set('med_groups', ['SA', 'XQ']);
   DB.set('med_day_shifts', DB.get('med_day_shifts') || []);
   DB.set('med_notifications', DB.get('med_notifications') || []);
+  DB.set('med_meals', DB.get('med_meals') || []);
 
   DB.set('med_users', [
     {
@@ -3191,7 +3254,7 @@ let userFilter = 'all';
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
   // Hiển thị tên phiên bản
-  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'v1.5';
+  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'v1.8';
   const authVer = document.getElementById('auth-version');
   const sideVer = document.getElementById('sidebar-version');
   if (authVer) authVer.textContent = ver;
@@ -3403,6 +3466,7 @@ function navigate(page) {
     profile: 'bn-profile',
     employees: 'bn-employees',
     departments: 'bn-departments',
+    meals: 'bn-meals',
     users: 'bn-users',
   };
   document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
@@ -3416,6 +3480,7 @@ function navigate(page) {
     approvals: '✅ Phê duyệt',
     employees: '👥 Nhân viên',
     departments: '🏥 Phòng ban',
+    meals: '🍚 Chấm cơm',
     users: '🔑 Tài khoản',
   };
   document.getElementById('topbar-title').textContent = titles[page] || '';
@@ -3429,6 +3494,7 @@ function navigate(page) {
     case 'approvals': renderApprovals(); break;
     case 'employees': renderEmployees(); break;
     case 'departments': renderDepartments(); break;
+    case 'meals': renderMealsPage(); break;
     case 'users': renderUsers(); break;
   }
 }
@@ -4674,6 +4740,7 @@ function openLeaveDetail(id) {
         <div style="color:var(--text-muted);">Từ ngày</div><div>${formatDateVN(l.fromDate)}</div>
         <div style="color:var(--text-muted);">Đến ngày</div><div>${formatDateVN(l.toDate)}</div>
         <div style="color:var(--text-muted);">Số ngày</div><div><strong>${formatLeaveDays(days)}</strong> ngày</div>
+        <div style="color:var(--text-muted);">Báo cơm</div><div>${(function(){ const hasHalf = (l.fromDate===l.toDate && normSession(l.sessionStart||l.session)!=='full') || (l.fromDate!==l.toDate && (normSession(l.sessionStart||l.session)!=='full'||normSession(l.sessionEnd)!=='full')); if (!hasHalf) return 'Không (nghỉ cả ngày)'; return l.mealOnHalf ? 'Có (ngày 0,5)' : 'Không (ngày 0,5)'; })()}</div>
         <div style="color:var(--text-muted);">Lý do</div><div>${esc(l.reason || '—')}</div>
         <div style="color:var(--text-muted);">Ghi chú duyệt</div><div>${esc(l.note || '—')}</div>
         <div style="color:var(--text-muted);">Ngày tạo đơn</div><div>${esc(created)}</div>
@@ -4703,6 +4770,10 @@ function openLeaveModal() {
   const se = document.getElementById('leave-session-end');
   if (ss) ss.value = 'full';
   if (se) se.value = 'full';
+  const mealNo = document.getElementById('leave-meal-no');
+  if (mealNo) mealNo.checked = true;
+  const mealWrap = document.getElementById('leave-meal-wrap');
+  if (mealWrap) mealWrap.style.display = 'none';
   document.getElementById('leave-form-error').classList.add('hidden');
   document.getElementById('leave-modal').classList.remove('hidden');
   onLeaveDateOrSessionChange();
@@ -4754,13 +4825,32 @@ function onLeaveDateOrSessionChange() {
     if (bits.length) note = ' (' + bits.join(', ') + ')';
   }
   if (hint) hint.innerHTML = `Số ngày nghỉ: <strong>${formatLeaveDays(days)}</strong>${note}`;
+
+  // Hiện hỏi báo cơm khi có ngày nghỉ nửa ngày VÀ NV được tích báo cơm
+  const mealWrap = document.getElementById('leave-meal-wrap');
+  if (mealWrap) {
+    const hasHalf = (fromDate === toDate && sessionStart !== 'full')
+      || (fromDate !== toDate && (sessionStart !== 'full' || sessionEnd !== 'full'));
+    let canMeal = true;
+    if (typeof currentUser !== 'undefined' && currentUser) {
+      const emps = DB.get('med_employees') || [];
+      const me = emps.find(em => em.userId === currentUser.id) || emps.find(em => em.name === currentUser.fullname);
+      canMeal = !!(me && me.canMeal === true);
+    }
+    mealWrap.style.display = (hasHalf && canMeal) ? '' : 'none';
+  }
+
 }
 
-function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd) {
+function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd, mealOnHalf) {
   sessionStart = normSession(sessionStart || 'full');
   sessionEnd = normSession(sessionEnd || 'full');
   if (fromDate === toDate) sessionEnd = sessionStart;
   const days = calcLeaveDays({ fromDate, toDate, sessionStart, sessionEnd });
+  const hasHalf = (fromDate === toDate && sessionStart !== 'full')
+    || (fromDate !== toDate && (sessionStart !== 'full' || sessionEnd !== 'full'));
+  // Nghỉ cả ngày → không cơm; nửa ngày → theo lựa chọn (mặc định không)
+  const mealHalf = hasHalf ? (mealOnHalf === true) : false;
   const leave = {
     id: genId(),
     userId: currentUser.id,
@@ -4774,6 +4864,7 @@ function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, ses
     // tương thích bản cũ
     session: (fromDate === toDate && sessionStart !== 'full') ? sessionStart : 'full',
     days,
+    mealOnHalf: hasHalf ? mealHalf : false,
     status: 'pending',
     note: '',
     createdAt: new Date().toISOString(),
@@ -4821,19 +4912,268 @@ function submitLeave(e) {
   let empName = emp?.name || currentUser.fullname;
   let deptId = primaryDeptId(emp) || currentUser.deptId || '';
 
+  const hasHalf = (fromDate === toDate && sessionStart !== 'full')
+    || (fromDate !== toDate && (sessionStart !== 'full' || sessionEnd !== 'full'));
+  let mealOnHalf = false;
+  // Chỉ NV được tích báo cơm mới chọn cơm khi nghỉ 0,5 ngày
+  if (hasHalf && emp?.canMeal === true) {
+    const yes = document.getElementById('leave-meal-yes');
+    mealOnHalf = !!(yes && yes.checked);
+  }
+
   const conflicts = getGroupLeaveConflicts(emp, fromDate, toDate);
   if (conflicts.length && emp?.group) {
     confirmDialog('Cảnh báo nhóm ' + emp.group, formatGroupConflictMsg(conflicts, emp.group), () => {
-      doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd);
+      doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd, mealOnHalf);
     });
     return;
   }
 
-  doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd);
+  doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, sessionStart, sessionEnd, mealOnHalf);
 }
+
+
+
+// ============================================================
+//  CHẤM CƠM (báo cơm)
+// ============================================================
+let mealMonthCursor = new Date();
+
+function getMeals() {
+  return DB.get('med_meals') || [];
+}
+function saveMeals(list) {
+  DB.set('med_meals', list);
+}
+
+function mealKey(employeeId, dateStr) {
+  return employeeId + '|' + dateStr;
+}
+
+function getMealRecord(employeeId, dateStr) {
+  return getMeals().find(m => m.employeeId === employeeId && m.date === dateStr) || null;
+}
+
+/** Cờ cơm trên hồ sơ NV (tham khảo báo cáo / đăng ký nghỉ 0,5) */
+function employeeCanMeal(employeeId) {
+  const emp = (DB.get('med_employees') || []).find(e => e.id === employeeId);
+  return !!(emp && emp.canMeal === true);
+}
+
+/** Có cơm theo ngày? Mặc định true nếu chưa có bản ghi (đi làm bình thường) */
+function hasMeal(employeeId, dateStr) {
+  const r = getMealRecord(employeeId, dateStr);
+  if (!r) return true;
+  return !!r.meal;
+}
+
+function setMealMark(employeeId, employeeName, dateStr, meal, source, leaveId) {
+  const list = getMeals();
+  const idx = list.findIndex(m => m.employeeId === employeeId && m.date === dateStr);
+  const rec = {
+    id: idx >= 0 ? list[idx].id : genId(),
+    employeeId,
+    employeeName: employeeName || '',
+    date: dateStr,
+    meal: !!meal,
+    source: source || 'manual',
+    leaveId: leaveId || (idx >= 0 ? list[idx].leaveId : '') || '',
+    updatedAt: new Date().toISOString(),
+    updatedBy: currentUser?.id || '',
+  };
+  if (idx >= 0) list[idx] = rec;
+  else list.push(rec);
+  saveMeals(list);
+  return rec;
+}
+
+function clearMealsForLeave(leaveId) {
+  if (!leaveId) return;
+  const list = getMeals().filter(m => m.leaveId !== leaveId);
+  saveMeals(list);
+}
+
+/** Áp dụng chấm cơm theo đơn nghỉ đã duyệt */
+function applyLeaveMeals(leave) {
+  if (!leave || leave.status !== 'approved') return;
+  const empId = leave.employeeId;
+  const empName = leave.employeeName || '';
+  if (!empId || !leave.fromDate || !leave.toDate) return;
+
+  // Xóa dấu cơm cũ gắn đơn này rồi ghi lại
+  clearMealsForLeave(leave.id);
+
+  const from = new Date(leave.fromDate + 'T00:00:00');
+  const to = new Date(leave.toDate + 'T00:00:00');
+  const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+  while (cur <= end) {
+    const ds = fmtDate(cur);
+    const sess = sessionForDate(leave, ds);
+    let meal;
+    if (sess === 'full') {
+      // Nghỉ cả ngày → mặc định không chấm cơm
+      meal = false;
+    } else {
+      // Nghỉ 0,5 ngày → theo đăng ký (mặc định không)
+      meal = leave.mealOnHalf === true;
+    }
+    setMealMark(empId, empName, ds, meal, 'leave', leave.id);
+    cur.setDate(cur.getDate() + 1);
+  }
+}
+
+function shiftMealMonth(delta) {
+  mealMonthCursor.setMonth(mealMonthCursor.getMonth() + delta);
+  renderMealsPage();
+}
+
+function renderMealsPage() {
+  const canEdit = hasPerm('manage_meals') || currentUser?.role === 'admin';
+  const exportBtn = document.getElementById('btn-export-meals');
+  if (exportBtn) exportBtn.style.display = canEdit ? '' : 'none';
+
+  const y = mealMonthCursor.getFullYear();
+  const m = mealMonthCursor.getMonth();
+  const label = document.getElementById('meal-month-label');
+  if (label) label.textContent = `Tháng ${m + 1}/${y}`;
+
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  // Tất cả nhân viên; sắp xếp: ăn nhiều (có cơm) lên trên, không ăn xuống dưới
+  let employees = (DB.get('med_employees') || []).slice();
+  const leaves = (DB.get('med_leaves') || []).filter(l => l.status === 'approved');
+
+  // Đảm bảo đơn đã duyệt đã áp dụng cơm (bổ sung nếu thiếu)
+  leaves.forEach(l => {
+    const from = l.fromDate, to = l.toDate;
+    if (!from || !to) return;
+    if (to.slice(0, 7) < `${y}-${String(m+1).padStart(2,'0')}` || from.slice(0, 7) > `${y}-${String(m+1).padStart(2,'0')}`) return;
+    const hasAny = getMeals().some(x => x.leaveId === l.id);
+    if (!hasAny) applyLeaveMeals(l);
+  });
+
+  // Tính số ngày có cơm trong tháng để sắp xếp
+  const scoreMap = {};
+  employees.forEach(emp => {
+    let sumYes = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (hasMeal(emp.id, fmtDate(new Date(y, m, d)))) sumYes++;
+    }
+    scoreMap[emp.id] = sumYes;
+  });
+  employees.sort((a, b) => {
+    const da = scoreMap[a.id] || 0;
+    const db = scoreMap[b.id] || 0;
+    if (db !== da) return db - da; // nhiều ngày có cơm → trên
+    // cùng điểm: có cờ cơm trước, rồi theo tên
+    const ca = a.canMeal === true ? 1 : 0;
+    const cb = b.canMeal === true ? 1 : 0;
+    if (cb !== ca) return cb - ca;
+    return (a.name || '').localeCompare(b.name || '', 'vi');
+  });
+
+  let html = '<table style="border-collapse:collapse;font-size:11px;width:100%;">';
+  html += '<thead><tr style="background:#eef2ff;position:sticky;top:0;z-index:1;">';
+  html += '<th style="padding:8px;border:1px solid var(--border);text-align:left;min-width:140px;position:sticky;left:0;background:#eef2ff;z-index:2;">Nhân viên</th>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dt = new Date(y, m, d);
+    const isSun = dt.getDay() === 0;
+    html += `<th style="padding:6px 4px;border:1px solid var(--border);text-align:center;min-width:28px;${isSun ? 'background:#fee2e2;' : ''}">${d}</th>`;
+  }
+  html += '<th style="padding:6px;border:1px solid var(--border);">Σ có</th></tr></thead><tbody>';
+
+  if (!employees.length) {
+    html += '<tr><td colspan="' + (daysInMonth + 2) + '" style="padding:16px;text-align:center;color:var(--text-muted);">Chưa có nhân viên</td></tr>';
+  }
+
+  employees.forEach(emp => {
+    let sumYes = scoreMap[emp.id] || 0;
+    const flag = emp.canMeal === true
+      ? ' <span style="font-size:10px;background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:999px;">cờ</span>'
+      : '';
+    html += '<tr>';
+    html += `<td style="padding:6px 8px;border:1px solid var(--border);position:sticky;left:0;background:#fff;font-weight:600;white-space:nowrap;">${esc(emp.name || '')}${flag}</td>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dt = new Date(y, m, d);
+      const ds = fmtDate(dt);
+      const isSun = dt.getDay() === 0;
+      const yes = hasMeal(emp.id, ds);
+      const rec = getMealRecord(emp.id, ds);
+      const title = rec ? (rec.meal ? 'Có cơm' : 'Không cơm') + (rec.source === 'leave' ? ' (theo nghỉ)' : '') : 'Mặc định có cơm';
+      const bg = yes ? '#d1fae5' : '#fee2e2';
+      const click = canEdit ? `onclick="toggleMealCell('${esc(emp.id)}','${esc(emp.name || '')}','${ds}')"` : '';
+      const cur = canEdit ? 'pointer' : 'default';
+      html += `<td title="${esc(title)}${canEdit ? '' : ' (chỉ xem)'}" ${click} style="padding:4px;border:1px solid var(--border);text-align:center;cursor:${cur};background:${isSun && !rec ? '#fff1f2' : bg};user-select:none;">${yes ? '✓' : '✗'}</td>`;
+    }
+    html += `<td style="padding:6px;border:1px solid var(--border);text-align:center;font-weight:700;">${sumYes}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('meals-grid').innerHTML = html;
+}
+
+function toggleMealCell(employeeId, employeeName, dateStr) {
+  if (!hasPerm('manage_meals') && currentUser?.role !== 'admin') {
+    showToast('Bạn không có quyền sửa chấm cơm.', 'error');
+    return;
+  }
+  const cur = hasMeal(employeeId, dateStr);
+  setMealMark(employeeId, employeeName, dateStr, !cur, 'manual', '');
+  renderMealsPage();
+}
+
+function exportMealsMonthExcel() {
+  if (!hasPerm('manage_meals') && !hasPerm('export_excel')) {
+    showToast('Bạn không có quyền xuất bảng cơm.', 'error');
+    return;
+  }
+  const y = mealMonthCursor.getFullYear();
+  const m = mealMonthCursor.getMonth();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const daysN = new Date(y, m + 1, 0).getDate();
+  let employees = (DB.get('med_employees') || []).slice();
+  employees.sort((a, b) => {
+    let ya = 0, yb = 0;
+    for (let d = 1; d <= daysN; d++) {
+      if (hasMeal(a.id, fmtDate(new Date(y, m, d)))) ya++;
+      if (hasMeal(b.id, fmtDate(new Date(y, m, d)))) yb++;
+    }
+    if (yb !== ya) return yb - ya;
+    return (a.name || '').localeCompare(b.name || '', 'vi');
+  });
+  const monthLabel = `${y}-${String(m + 1).padStart(2, '0')}`;
+
+  const headers = ['STT', 'Họ và tên', 'Phòng ban'];
+  for (let d = 1; d <= daysInMonth; d++) headers.push(String(d));
+  headers.push('Tổng có cơm', 'Tổng không cơm');
+
+  const depts = DB.get('med_depts') || [];
+  const rows = employees.map((emp, i) => {
+    const deptIds = typeof getEmpDeptIds === 'function' ? getEmpDeptIds(emp) : (emp.deptId ? [emp.deptId] : []);
+    const deptName = deptIds.map(id => depts.find(d => d.id === id)?.name).filter(Boolean).join(', ');
+    let yes = 0, no = 0;
+    const cells = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = fmtDate(new Date(y, m, d));
+      const v = hasMeal(emp.id, ds);
+      if (v) yes++; else no++;
+      cells.push(v ? 'Có' : 'Không');
+    }
+    return [i + 1, emp.name || '', deptName, ...cells, yes, no];
+  });
+
+  if (!rows.length) {
+    showToast('Không có dữ liệu nhân viên để xuất.', 'info');
+    return;
+  }
+  downloadCsv(`BangCom_${monthLabel}.csv`, headers, rows);
+  showToast(`Đã xuất bảng cơm tháng ${monthLabel}.`, 'success');
+}
+
 
 function cancelLeave(id) {
   confirmDialog('Hủy đơn nghỉ?', 'Đơn này sẽ bị xóa và không thể khôi phục.', () => {
+    clearMealsForLeave(id);
     const leaves = DB.get('med_leaves').filter(l => l.id !== id);
     DB.set('med_leaves', leaves);
     renderLeaveList();
@@ -4845,6 +5185,7 @@ function cancelLeave(id) {
 function adminDeleteLeave(id) {
   if (currentUser.role !== 'admin') return;
   confirmDialog('Xóa đơn nghỉ?', 'Admin xóa đơn này. Thao tác không thể hoàn tác.', () => {
+    clearMealsForLeave(id);
     const leaves = DB.get('med_leaves').filter(l => l.id !== id);
     DB.set('med_leaves', leaves);
     if (typeof renderLeaveList === 'function') renderLeaveList();
@@ -4929,6 +5270,7 @@ function doApproveLeave(id) {
 
   renderApprovals();
   updateBadges();
+  applyLeaveMeals(l);
   showToast('✅ Đã phê duyệt đơn nghỉ!', 'success');
 }
 
@@ -5037,7 +5379,7 @@ function renderEmployees() {
       <div class="employee-card">
         <div class="emp-avatar" style="background:${esc(color)};overflow:hidden;">${e.avatar ? `<img src="${e.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="" />` : esc(e.name.charAt(0))}</div>
         <div class="emp-info">
-          <div class="emp-name">${esc(e.name)}${e.group ? ` <span class="emp-dept-tag" style="background:#fef3c7;color:#92400e;vertical-align:middle;">👥 ${esc(e.group)}</span>` : ''}</div>
+          <div class="emp-name">${esc(e.name)}${e.group ? ` <span class="emp-dept-tag" style="background:#fef3c7;color:#92400e;vertical-align:middle;">👥 ${esc(e.group)}</span>` : ''}${e.canMeal ? ` <span class="emp-dept-tag" style="background:#d1fae5;color:#065f46;vertical-align:middle;">🍚 Cờ cơm</span>` : ''}</div>
           <div class="emp-position">${esc(e.position)}${e.phone ? ' · 📞 ' + esc(e.phone) : ''}</div>
           ${empDeptTagsHTML(e, depts)}
           ${(() => {
@@ -5078,6 +5420,8 @@ function openEmployeeModal(id) {
       renderDeptCheckboxes('emp-dept-checks', getEmpDeptIds(emp));
       populateGroupSelect(emp.group || '');
       document.getElementById('emp-phone').value = emp.phone || '';
+      const canMealEl = document.getElementById('emp-can-meal');
+      if (canMealEl) canMealEl.checked = emp.canMeal === true;
       document.getElementById('emp-note').value = emp.note || '';
       if (emp.avatar) {
         document.getElementById('emp-avatar-data').value = emp.avatar;
@@ -5099,6 +5443,8 @@ function openEmployeeModal(id) {
     renderDeptCheckboxes('emp-dept-checks', []);
     populateGroupSelect('');
     document.getElementById('emp-group-custom').value = '';
+    const canMealEl = document.getElementById('emp-can-meal');
+    if (canMealEl) canMealEl.checked = true; // mặc định có cờ cơm để quản lý báo cáo
   }
   document.getElementById('employee-modal').classList.remove('hidden');
 }
@@ -5130,6 +5476,7 @@ function saveEmployee(e) {
     deptId: deptIds[0],
     group: group || '',
     phone: document.getElementById('emp-phone').value.trim(),
+    canMeal: !!(document.getElementById('emp-can-meal')?.checked),
     note: document.getElementById('emp-note').value.trim(),
     avatar: document.getElementById('emp-avatar-data').value || '',
   };
