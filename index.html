@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <title>PKĐK Lam Sơn – v1.8</title>
+  <title>PKĐK Lam Sơn – v1.9</title>
   <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
   <!-- PWA & Mobile -->
   <meta name="theme-color" content="#1a56db" />
@@ -18,7 +18,7 @@
   
 <style>
 /* ========================================
-   v1.8 – Medical Teal UI
+   v1.9 – Medical Teal UI + Tin tức
    Clean · Soft · Mobile-first
    ======================================== */
 
@@ -845,9 +845,13 @@ a:hover { text-decoration: underline; }
   background: linear-gradient(160deg, var(--primary-soft), var(--primary-light));
 }
 .cal-day.other-month { opacity: 0.38; }
-.cal-day.has-leave { border-color: #fbbf24; background: #fffbeb; }
+.cal-day.has-leave {
+  border-color: #fbbf24;
+  border-style: dashed;
+  background: #fffbeb;
+}
 .cal-day.has-shift { border-color: var(--primary); border-style: dashed; }
-.cal-day.has-leave.has-shift { border-color: #f59e0b; border-style: solid; }
+.cal-day.has-leave.has-shift { border-color: #f59e0b; border-style: dashed; }
 .cal-day.weekend .day-num { color: var(--danger); }
 
 .day-num {
@@ -1926,6 +1930,78 @@ a:hover { text-decoration: underline; }
   display: block;
 }
 
+
+
+/* ============ NEWS / THÔNG BÁO ============ */
+.news-list { display: flex; flex-direction: column; gap: 12px; }
+.news-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(226,232,240,0.9);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  animation: fadeIn 0.22s ease;
+  position: relative;
+}
+.news-card:hover { box-shadow: var(--shadow-md); border-color: #93c5fd; }
+.news-card.pinned {
+  border-color: #fbbf24;
+  background: linear-gradient(160deg, #fffbeb 0%, #fff 60%);
+  box-shadow: 0 4px 16px rgba(251,191,36,0.15);
+}
+.news-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.news-title {
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--text-primary);
+  line-height: 1.35;
+  flex: 1;
+}
+.news-pin-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.news-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.news-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+  align-items: center;
+}
+.news-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.news-author {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
 </style>
 </head>
 <body>
@@ -2014,6 +2090,9 @@ a:hover { text-decoration: underline; }
       <a href="#" class="nav-item active" data-page="schedule" onclick="navigate('schedule')">
         <span class="nav-icon">📅</span> Lịch làm việc
       </a>
+      <a href="#" class="nav-item" data-page="news" onclick="navigate('news')">
+        <span class="nav-icon">📢</span> Tin tức
+      </a>
       <a href="#" class="nav-item" data-page="leave" onclick="navigate('leave')">
         <span class="nav-icon">🗓️</span> Đơn nghỉ phép
         <span class="nav-badge hidden" id="nav-leave-badge">0</span>
@@ -2063,7 +2142,11 @@ a:hover { text-decoration: underline; }
           <div class="notif-panel" id="notif-panel">
             <div class="notif-panel-header">
               <span>🔔 Thông báo</span>
-              <button type="button" onclick="markAllNotifsRead()">Đánh dấu đã đọc</button>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+                <button type="button" onclick="closeNotifPanel(); navigate('news');" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📢 Tin tức</button>
+                <button type="button" onclick="markAllNotifsRead()">Đã đọc</button>
+                <button type="button" onclick="deleteAllMyNotifs()" style="color:var(--danger)!important;">Xóa tất cả</button>
+              </div>
             </div>
             <div class="notif-list" id="notif-list"></div>
           </div>
@@ -2095,8 +2178,8 @@ a:hover { text-decoration: underline; }
         </div>
         <div class="cal-legend">
           <span class="cal-legend-item"><span class="cal-legend-dot today"></span> Hôm nay</span>
-          <span class="cal-legend-item"><span class="cal-legend-dot leave"></span> Có người nghỉ</span>
-          <span class="cal-legend-item"><span class="cal-legend-dot shift"></span> Có phân phòng</span>
+          <span class="cal-legend-item"><span class="cal-legend-dot leave"></span> Có người nghỉ (viền đứt)</span>
+          <span class="cal-legend-item"><span class="cal-legend-dot shift"></span> Có phân phòng (viền đứt)</span>
           <span class="cal-legend-item"><span class="cal-legend-dot weekend"></span> Cuối tuần</span>
         </div>
         <div id="schedule-calendar" class="schedule-calendar"></div>
@@ -2475,19 +2558,37 @@ a:hover { text-decoration: underline; }
         <div class="page-header">
           <div class="page-header-text">
             <h2>🍚 Chấm cơm</h2>
-            <p class="page-subtitle">Tất cả nhân viên. Người <strong>ăn cơm</strong> xếp trên, <strong>không ăn</strong> xếp dưới. Admin / quyền chấm cơm được sửa cả NV không có cờ cơm. Mọi người xem được.</p>
+            <p class="page-subtitle">DS nhân viên A→Z. Chỉ hiện đến <strong>ngày hiện tại</strong> (ngày chưa tới = —). Nhân viên báo cơm <strong>hôm nay trước 10:30</strong>. Admin sửa được hôm nay và các ngày đã qua.</p>
+            <p id="meal-live-clock" style="font-size:13px;font-weight:700;color:var(--primary);margin-top:6px;font-variant-numeric:tabular-nums;">⏱ —</p>
+            <p id="meal-cutoff-status" style="font-size:12px;color:var(--text-muted);margin-top:2px;"></p>
           </div>
           <div class="page-actions" style="flex-wrap:wrap;gap:8px;">
             <button class="btn-icon" onclick="shiftMealMonth(-1)" title="Tháng trước">‹</button>
             <strong id="meal-month-label" style="min-width:110px;text-align:center;">—</strong>
             <button class="btn-icon" onclick="shiftMealMonth(1)" title="Tháng sau">›</button>
+            <button type="button" class="btn-outline" id="btn-self-meal-off" onclick="selfReportMeal(false)" title="Báo không ăn cơm hôm nay (trước 10:30)">🍚 Cắt cơm hôm nay</button>
+            <button type="button" class="btn-outline" id="btn-self-meal-on" onclick="selfReportMeal(true)" title="Báo có ăn cơm hôm nay (trước 10:30)">✓ Có cơm hôm nay</button>
             <button class="btn-outline" id="btn-export-meals" data-perm="manage_meals" onclick="exportMealsMonthExcel()">📥 Xuất Excel tháng</button>
           </div>
         </div>
         <div style="overflow:auto;max-width:100%;border:1px solid var(--border);border-radius:14px;background:#fff;">
           <div id="meals-grid" style="min-width:100%;"></div>
         </div>
-        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">✓ = có cơm · ✗ = không cơm · Ô xám nhạt = chủ nhật. Bấm ô để đổi (cần quyền quản lý chấm cơm).</p>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">✓ = có cơm · ✗ = cắt cơm · <strong>—</strong> = ngày chưa tới · Ô xám nhạt = chủ nhật.<br>Mọi tài khoản chỉ xem đến ngày hiện tại. Nhân viên: sửa hôm nay trước 10:30. Admin: sửa hôm nay + ngày đã qua.</p>
+      </section>
+
+      <!-- ===== NEWS / THÔNG BÁO ===== -->
+      <section id="page-news" class="page">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>📢 Tin tức & Thông báo</h2>
+            <p class="page-subtitle">Thông báo nội bộ phòng khám. Admin hoặc người được phân quyền có thể đăng tin mới.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn-primary" id="btn-add-news" data-perm="manage_news" style="display:none;" onclick="openNewsModal()">➕ Đăng tin</button>
+          </div>
+        </div>
+        <div id="news-list" class="news-list"></div>
       </section>
 
     </main>
@@ -2536,6 +2637,43 @@ a:hover { text-decoration: underline; }
     <div class="form-actions" style="margin-top:16px;">
       <button type="button" class="btn-outline" onclick="closeLeaveDetail()">Đóng</button>
     </div>
+  </div>
+</div>
+
+
+<!-- News Modal -->
+<div id="news-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="news-modal-title">📢 Đăng tin mới</h3>
+      <button type="button" onclick="closeNewsModal()">✕</button>
+    </div>
+    <form id="news-form" class="auth-form" onsubmit="saveNews(event)">
+      <input type="hidden" id="news-id" />
+      <div class="form-group">
+        <label>Tiêu đề</label>
+        <input type="text" id="news-title" placeholder="VD: Lịch họp khoa tháng 10" required maxlength="200" />
+      </div>
+      <div class="form-group">
+        <label>Nội dung</label>
+        <textarea id="news-content" rows="6" placeholder="Nội dung thông báo..." required maxlength="5000"></textarea>
+      </div>
+      <div class="form-group" style="padding:12px;background:var(--primary-soft,#f5f8ff);border-radius:12px;border:1px solid var(--border);">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:650;">
+          <input type="checkbox" id="news-pinned" style="width:18px;height:18px;accent-color:var(--primary);" />
+          📌 Ghim lên đầu danh sách
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:650;margin-top:10px;">
+          <input type="checkbox" id="news-notify" style="width:18px;height:18px;accent-color:var(--primary);" checked />
+          🔔 Gửi thông báo cho tất cả nhân viên
+        </label>
+      </div>
+      <div id="news-form-error" class="form-error hidden"></div>
+      <div class="form-actions">
+        <button type="button" class="btn-outline" onclick="closeNewsModal()">Hủy</button>
+        <button type="submit" class="btn-primary">Lưu tin</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -2604,6 +2742,10 @@ a:hover { text-decoration: underline; }
       <span class="bn-icon">📅</span>
       <span>Lịch</span>
     </button>
+    <button class="bn-item" id="bn-news" onclick="navigate('news')">
+      <span class="bn-icon">📢</span>
+      <span>Tin tức</span>
+    </button>
     <button class="bn-item" id="bn-leaves" onclick="navigate('leave')">
       <span class="bn-icon">🗓️</span>
       <span class="bn-badge" id="bn-leave-badge" style="display:none">0</span>
@@ -2645,7 +2787,7 @@ a:hover { text-decoration: underline; }
 
 /** Tên phiên bản ứng dụng */
 const APP_NAME = 'PKĐK Lam Sơn';
-const APP_VERSION = 'v1.8';
+const APP_VERSION = 'v1.9';
 const APP_VERSION_LABEL = APP_VERSION; // chỉ hiện số phiên bản
 
 // ============================================================
@@ -2658,6 +2800,7 @@ const PERM_DEFS = [
   { id: 'manage_depts', label: 'Quản lý phòng ban', icon: '🏥' },
   { id: 'day_assign', label: 'Phân phòng theo ngày', icon: '📅' },
   { id: 'manage_meals', label: 'Quản lý chấm cơm', icon: '🍚' },
+  { id: 'manage_news', label: 'Quản lý tin tức', icon: '📢' },
 ];
 
 function getUserPerms(user) {
@@ -2727,6 +2870,14 @@ function applyPermissionUI() {
     el.style.display = show ? '' : 'none';
     el.classList.toggle('hidden', !show);
   });
+  document.querySelectorAll('[data-perm="manage_news"]').forEach(el => {
+    const show = hasPerm('manage_news');
+    el.style.display = show ? '' : 'none';
+    el.classList.toggle('hidden', !show);
+  });
+  // Tin tức: mọi người xem; bottom nav luôn hiện
+  const bnNews = document.getElementById('bn-news');
+  if (bnNews) bnNews.style.display = '';
 }
 
 // ============================================================
@@ -2770,6 +2921,7 @@ const KEY_MAP = {
   med_profile_requests: 'profile_requests',
   med_notifications: 'notifications',
   med_meals: 'meals',
+  med_news: 'news',
 };
 const SYNC_KEYS = Object.keys(KEY_MAP);
 
@@ -2921,6 +3073,7 @@ function seedData() {
   DB.set('med_day_shifts', DB.get('med_day_shifts') || []);
   DB.set('med_notifications', DB.get('med_notifications') || []);
   DB.set('med_meals', DB.get('med_meals') || []);
+  DB.set('med_news', DB.get('med_news') || []);
 
   DB.set('med_users', [
     {
@@ -3464,6 +3617,7 @@ function navigate(page) {
     schedule: 'bn-schedule',
     leave: 'bn-leaves',
     profile: 'bn-profile',
+    news: 'bn-news',
     employees: 'bn-employees',
     departments: 'bn-departments',
     meals: 'bn-meals',
@@ -3477,6 +3631,7 @@ function navigate(page) {
     schedule: '📅 Lịch làm việc',
     leave: '🗓️ Đơn nghỉ phép',
     profile: '👤 Hồ sơ của tôi',
+    news: '📢 Tin tức',
     approvals: '✅ Phê duyệt',
     employees: '👥 Nhân viên',
     departments: '🏥 Phòng ban',
@@ -3496,6 +3651,7 @@ function navigate(page) {
     case 'departments': renderDepartments(); break;
     case 'meals': renderMealsPage(); break;
     case 'users': renderUsers(); break;
+    case 'news': renderNews(); break;
   }
 }
 
@@ -3640,13 +3796,23 @@ function renderNotifList() {
       leave_approved: '✅',
       leave_rejected: '❌',
       dept_assign: '🏥',
+      news: '📢',
       info: '🔔',
     }[n.type] || '🔔';
+    const goNews = n.type === 'news' ? `closeNotifPanel(); navigate('news');` : '';
     return `
-      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}')">
-        <div class="notif-item-title">${icon} ${esc(n.title)}</div>
-        <div class="notif-item-msg">${esc(n.message)}</div>
-        <div class="notif-item-time">${esc(time)}</div>
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}'); ${goNews}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="flex:1;min-width:0;">
+            <div class="notif-item-title">${icon} ${esc(n.title)}</div>
+            <div class="notif-item-msg">${esc(n.message)}</div>
+            <div class="notif-item-time">${esc(time)}</div>
+          </div>
+          <button type="button" title="Xóa thông báo" onclick="event.stopPropagation(); deleteNotif('${esc(n.id)}')"
+            style="flex-shrink:0;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px;line-height:1;"
+            onmouseover="this.style.color='var(--danger)';this.style.background='var(--danger-light)'"
+            onmouseout="this.style.color='var(--text-muted)';this.style.background='none'">🗑</button>
+        </div>
       </div>`;
   }).join('');
 }
@@ -3678,6 +3844,31 @@ function markAllNotifsRead() {
     renderNotifList();
     showToast('Đã đánh dấu tất cả đã đọc.', 'success');
   }
+}
+
+function deleteNotif(id) {
+  if (!currentUser || !id) return;
+  const notifs = DB.get('med_notifications').filter(n => !(n.id === id && n.userId === currentUser.id));
+  DB.set('med_notifications', notifs);
+  updateNotifBadge();
+  renderNotifList();
+  showToast('Đã xóa thông báo.', 'warning');
+}
+
+function deleteAllMyNotifs() {
+  if (!currentUser) return;
+  const mine = getMyNotifications();
+  if (!mine.length) {
+    showToast('Không có thông báo để xóa.', 'info');
+    return;
+  }
+  confirmDialog('Xóa tất cả thông báo?', `Bạn sắp xóa ${mine.length} thông báo. Không thể khôi phục.`, () => {
+    const notifs = DB.get('med_notifications').filter(n => n.userId !== currentUser.id);
+    DB.set('med_notifications', notifs);
+    updateNotifBadge();
+    renderNotifList();
+    showToast('Đã xóa tất cả thông báo.', 'warning');
+  });
 }
 
 // Đóng panel khi click ra ngoài
@@ -3788,8 +3979,21 @@ function createDayCell(date, employees, leaves, depts, filterDept, isOtherMonth)
     return emp ? empInDept(emp, filterDept) : false;
   });
 
+  // Nghỉ: mọi người đều thấy (để biết ai nghỉ)
   if (dayLeaves.length > 0) cell.classList.add('has-leave');
-  const dayShifts = DB.get('med_day_shifts').filter(s => s.date === dateStr);
+
+  // Phân phòng: chỉ tài khoản được phân (hoặc admin) mới thấy viền đứt
+  const dayShiftsAll = (DB.get('med_day_shifts') || []).filter(s => {
+    if (s.date !== dateStr || !s.deptId) return false;
+    const emp = employees.find(e => e.id === s.employeeId);
+    if (!emp) return false;
+    if (!filterDept) return true;
+    return s.deptId === filterDept || empInDept(emp, filterDept);
+  });
+  const myEmp = getMyEmployee(employees);
+  const canSeeAllShifts = currentUser?.role === 'admin' || hasPerm('day_assign');
+  const myShift = myEmp ? dayShiftsAll.find(s => s.employeeId === myEmp.id) : null;
+  const dayShifts = canSeeAllShifts ? dayShiftsAll : (myShift ? [myShift] : []);
   if (dayShifts.length > 0) cell.classList.add('has-shift');
 
   // Day number + âm lịch
@@ -3826,9 +4030,22 @@ function createDayCell(date, employees, leaves, depts, filterDept, isOtherMonth)
   } else if (dayShifts.length && dayLeaves.length < 2) {
     const chip = document.createElement('div');
     chip.className = 'cal-chip';
-    chip.style.background = '#e8f0fe';
+    chip.style.background = '#dbeafe';
     chip.style.color = '#1a56db';
-    chip.textContent = `📋 ${dayShifts.length} phân phòng`;
+    chip.style.fontWeight = '700';
+    if (!canSeeAllShifts && myShift) {
+      const d = depts.find(x => x.id === myShift.deptId);
+      chip.textContent = d ? `📋 ${(d.icon || '')} ${d.name}`.trim() : '📋 Phân phòng';
+      chip.title = 'Bạn được phân phòng làm việc ngày này';
+    } else if (dayShifts.length === 1) {
+      const s0 = dayShifts[0];
+      const d = depts.find(x => x.id === s0.deptId);
+      const emp = employees.find(e => e.id === s0.employeeId);
+      const short = emp ? (emp.name.split(' ').slice(-1)[0] || emp.name) : '';
+      chip.textContent = d ? `📋 ${short}: ${d.name}` : `📋 ${short} phân phòng`;
+    } else {
+      chip.textContent = `📋 ${dayShifts.length} phân phòng`;
+    }
     chips.appendChild(chip);
   }
   cell.appendChild(chips);
@@ -3897,7 +4114,7 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
   if (!depts) depts = DB.get('med_depts');
   if (filterDept === undefined) filterDept = _dayDetailFilterDept;
 
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === 'admin' || hasPerm('day_assign');
   const filteredEmps = filterDept ? employees.filter(e => empInDept(e, filterDept)) : employees;
 
   const dayLeaves = leaves.filter(l => {
@@ -3920,12 +4137,12 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
       const emp = employees.find(e => e.id === l.employeeId);
       const dept = depts.find(d => d.id === l.deptId) || depts.find(d => d.id === primaryDeptId(emp));
       html += `
-        <div class="day-staff-item">
-          <div class="staff-avatar" style="background:${esc(dept?.color||'#f59e0b')};overflow:hidden;">
+        <div class="day-staff-item" style="border:1.5px dashed #f59e0b;border-radius:12px;padding:10px 8px;margin:4px 0;background:#fffbeb;align-items:flex-start;">
+          <div class="staff-avatar" style="background:${esc(dept?.color||'#f59e0b')};overflow:hidden;margin-top:2px;">
             ${emp?.avatar ? `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="" />` : esc((l.employeeName || '?').charAt(0))}
           </div>
           <div class="staff-info">
-            <div class="staff-name">${esc(l.employeeName)}${emp?.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(emp.group)}</span>` : ''}</div>
+            <div class="staff-name">${esc(l.employeeName)}${emp?.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(emp.group)}</span>` : ''} <span style="font-size:10px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;font-weight:700;">🚫 Nghỉ</span></div>
             <div class="staff-dept">${esc(l.type)} · ${formatDateVN(l.fromDate)}${l.fromDate!==l.toDate ? ' → '+formatDateVN(l.toDate) : ''} · ${formatLeaveDays(calcLeaveDays(l))} ngày${(normSession(l.sessionStart||l.session)==='am'||normSession(l.sessionStart||l.session)==='pm'||normSession(l.sessionEnd)==='am'||normSession(l.sessionEnd)==='pm') ? ' · có nửa ngày' : ''}</div>
           </div>
           <span class="staff-status status-leave">Nghỉ phép</span>
@@ -3933,14 +4150,18 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
     });
   }
 
-  // ===== Đang làm việc + phân phòng =====
-  const working = filteredEmps.filter(e => !leaveEmpIds.has(e.id));
-  html += `<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin:16px 0 8px;">✅ Đang làm việc (${working.length})</div>`;
+  // ===== Đang làm việc: hiện tất cả; viền đứt chỉ NV được phân phòng =====
+  const allWorking = filteredEmps.filter(e => !leaveEmpIds.has(e.id));
+  const assigned = allWorking.filter(e => !!getDayShiftDeptId(e.id, dateStr));
+  const working = allWorking;
+
+  html += `<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin:16px 0 8px;">✅ Đang làm việc (${working.length})${assigned.length ? ` · <span style="color:var(--primary);">📋 ${assigned.length} phân phòng</span>` : ''}</div>`;
 
   if (!working.length) {
     html += `<div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Không có nhân viên làm việc ngày này.</div>`;
   } else {
-    working.forEach(e => {
+    const ordered = [...assigned, ...working.filter(e => !getDayShiftDeptId(e.id, dateStr))];
+    ordered.forEach(e => {
       const workDeptId = getWorkDeptIdForDay(e, dateStr);
       const workDept = depts.find(d => d.id === workDeptId);
       const isOverride = !!getDayShiftDeptId(e.id, dateStr);
@@ -3961,16 +4182,23 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
           </select>
           ${isOverride ? '<div style="font-size:10px;color:#b45309;margin-top:2px;">⚡ Phân công riêng ngày này</div>' : '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Mặc định theo hồ sơ</div>'}`;
       } else {
-        deptControl = `<div class="staff-dept">${esc(workDept?.name || 'Chưa phân phòng')} · ${esc(e.position || '')}${isOverride ? ' · (đã phân công)' : ''}</div>`;
+        if (isOverride) {
+          deptControl = `<div class="staff-dept" style="margin-top:4px;"><span style="display:inline-block;background:#dbeafe;color:#1a56db;font-weight:700;padding:3px 10px;border-radius:8px;font-size:12px;">📋 Phòng làm việc: ${esc(workDept?.icon || '')} ${esc(workDept?.name || '—')}</span>${e.position ? ' · ' + esc(e.position) : ''} · <span style="color:#b45309;">đã phân công</span></div>`;
+        } else {
+          deptControl = `<div class="staff-dept">${esc(workDept?.name || 'Chưa phân phòng')} · ${esc(e.position || '')}</div>`;
+        }
       }
 
+      const itemBorder = isOverride
+        ? 'border:1.5px dashed var(--primary);border-radius:12px;padding:10px 8px;margin:4px 0;background:linear-gradient(160deg,var(--primary-soft),#fff);'
+        : 'align-items:flex-start;';
       html += `
-        <div class="day-staff-item" style="align-items:flex-start;">
+        <div class="day-staff-item" style="${itemBorder}align-items:flex-start;">
           <div class="staff-avatar" style="background:${esc(color)};overflow:hidden;margin-top:2px;">
             ${e.avatar ? `<img src="${e.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="" />` : esc((e.name || '?').charAt(0))}
           </div>
           <div class="staff-info" style="min-width:0;">
-            <div class="staff-name">${esc(e.name)}${e.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(e.group)}</span>` : ''}</div>
+            <div class="staff-name">${esc(e.name)}${e.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(e.group)}</span>` : ''}${isOverride ? ' <span style="font-size:10px;background:#dbeafe;color:#1a56db;padding:1px 6px;border-radius:10px;font-weight:700;">📋 Phân phòng</span>' : ''}</div>
             ${!isAdmin ? deptControl : `<div class="staff-dept">${esc(e.position || '')}${defaultIds.length ? ' · Phòng mặc định: ' + esc(defaultIds.map(id => depts.find(d => d.id === id)?.name).filter(Boolean).join(', ')) : ''}</div>${deptControl}`}
           </div>
           <span class="staff-status status-working" style="flex-shrink:0;">Làm việc</span>
@@ -4934,10 +5162,250 @@ function submitLeave(e) {
 
 
 
+
+// ============================================================
+//  TIN TỨC / THÔNG BÁO
+// ============================================================
+function getNews() {
+  return DB.get('med_news') || [];
+}
+function saveNewsList(list) {
+  DB.set('med_news', list);
+}
+
+function notifyAllUsers(type, title, message, meta) {
+  const users = (DB.get('med_users') || []).filter(u => u.status === 'active');
+  users.forEach(u => {
+    if (u.id === currentUser?.id) return; // không gửi cho chính người đăng
+    pushNotification(u.id, type, title, message, meta);
+  });
+}
+
+function renderNews() {
+  const list = getNews().slice().sort((a, b) => {
+    if (!!b.pinned !== !!a.pinned) return b.pinned ? -1 : 1;
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+  });
+  const canManage = hasPerm('manage_news');
+  const btn = document.getElementById('btn-add-news');
+  if (btn) {
+    btn.style.display = canManage ? '' : 'none';
+    btn.classList.toggle('hidden', !canManage);
+  }
+  const container = document.getElementById('news-list');
+  if (!container) return;
+  if (!list.length) {
+    container.innerHTML = emptyState('📢', 'Chưa có tin tức', canManage
+      ? 'Bấm "Đăng tin" để gửi thông báo cho toàn bộ nhân viên.'
+      : 'Chưa có thông báo nào. Admin sẽ đăng tin khi có nội dung mới.');
+    return;
+  }
+  container.innerHTML = list.map(n => {
+    const time = n.createdAt ? formatDateVN(n.createdAt.slice(0, 10)) + (n.createdAt.length > 10 ? ' ' + n.createdAt.slice(11, 16) : '') : '';
+    const updated = n.updatedAt && n.updatedAt !== n.createdAt
+      ? ' · Cập nhật: ' + formatDateVN(n.updatedAt.slice(0, 10))
+      : '';
+    const actions = canManage ? `
+      <div class="news-actions">
+        <button class="btn-sm edit" onclick="openNewsModal('${esc(n.id)}')">✏️ Sửa</button>
+        <button class="btn-sm del" onclick="deleteNews('${esc(n.id)}')">🗑 Xóa</button>
+      </div>` : '';
+    return `
+      <div class="news-card ${n.pinned ? 'pinned' : ''}">
+        <div class="news-card-header">
+          <div class="news-title">${esc(n.title || '')}</div>
+          ${n.pinned ? '<span class="news-pin-badge">📌 Ghim</span>' : ''}
+        </div>
+        <div class="news-body">${esc(n.content || '')}</div>
+        <div class="news-meta">
+          <span class="news-author">👤 ${esc(n.authorName || 'Admin')}</span>
+          <span>🕒 ${esc(time)}${esc(updated)}</span>
+        </div>
+        ${actions}
+      </div>`;
+  }).join('');
+}
+
+function openNewsModal(id) {
+  if (!hasPerm('manage_news')) {
+    showToast('Bạn không có quyền đăng / sửa tin tức.', 'error');
+    return;
+  }
+  document.getElementById('news-modal-title').textContent = id ? '✏️ Sửa tin tức' : '📢 Đăng tin mới';
+  document.getElementById('news-id').value = id || '';
+  document.getElementById('news-form-error')?.classList.add('hidden');
+  const notifyEl = document.getElementById('news-notify');
+  if (id) {
+    const n = getNews().find(x => x.id === id);
+    if (!n) return;
+    document.getElementById('news-title').value = n.title || '';
+    document.getElementById('news-content').value = n.content || '';
+    document.getElementById('news-pinned').checked = !!n.pinned;
+    if (notifyEl) {
+      notifyEl.checked = false;
+      notifyEl.parentElement.style.opacity = '0.7';
+    }
+  } else {
+    document.getElementById('news-form').reset();
+    document.getElementById('news-pinned').checked = false;
+    if (notifyEl) {
+      notifyEl.checked = true;
+      notifyEl.parentElement.style.opacity = '1';
+    }
+  }
+  document.getElementById('news-modal').classList.remove('hidden');
+}
+
+function closeNewsModal() {
+  document.getElementById('news-modal')?.classList.add('hidden');
+}
+
+function saveNews(e) {
+  e.preventDefault();
+  if (!hasPerm('manage_news')) {
+    showToast('Bạn không có quyền quản lý tin tức.', 'error');
+    return;
+  }
+  const id = document.getElementById('news-id').value;
+  const title = document.getElementById('news-title').value.trim();
+  const content = document.getElementById('news-content').value.trim();
+  const pinned = !!document.getElementById('news-pinned').checked;
+  const doNotify = !!document.getElementById('news-notify')?.checked;
+  const errEl = document.getElementById('news-form-error');
+  if (!title || !content) {
+    if (errEl) {
+      errEl.textContent = 'Vui lòng nhập tiêu đề và nội dung.';
+      errEl.classList.remove('hidden');
+    }
+    return;
+  }
+  const list = getNews();
+  const now = new Date().toISOString();
+  if (id) {
+    const idx = list.findIndex(x => x.id === id);
+    if (idx < 0) return;
+    list[idx] = {
+      ...list[idx],
+      title,
+      content,
+      pinned,
+      updatedAt: now,
+      updatedBy: currentUser?.id || '',
+    };
+  } else {
+    list.unshift({
+      id: genId(),
+      title,
+      content,
+      pinned,
+      authorId: currentUser?.id || '',
+      authorName: currentUser?.fullname || 'Admin',
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  saveNewsList(list);
+  if (doNotify) {
+    const preview = content.length > 80 ? content.slice(0, 80) + '…' : content;
+    notifyAllUsers(
+      'news',
+      '📢 ' + title,
+      preview,
+      { newsId: id || list[0]?.id }
+    );
+  }
+  closeNewsModal();
+  renderNews();
+  showToast(id ? 'Đã cập nhật tin tức!' : 'Đã đăng tin tức!' + (doNotify ? ' Đã gửi thông báo.' : ''), 'success');
+}
+
+function deleteNews(id) {
+  if (!hasPerm('manage_news')) {
+    showToast('Bạn không có quyền xóa tin tức.', 'error');
+    return;
+  }
+  confirmDialog('Xóa tin tức?', 'Tin này sẽ bị xóa và không thể khôi phục.', () => {
+    saveNewsList(getNews().filter(n => n.id !== id));
+    renderNews();
+    showToast('Đã xóa tin tức.', 'warning');
+  });
+}
+
 // ============================================================
 //  CHẤM CƠM (báo cơm)
 // ============================================================
 let mealMonthCursor = new Date();
+/** Giờ chốt báo cơm trong ngày (nhân viên) */
+const MEAL_CUTOFF_H = 10;
+const MEAL_CUTOFF_M = 30;
+let _mealClockTimer = null;
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function formatDateTimeVN(d) {
+  const days = ['CN','T2','T3','T4','T5','T6','T7'];
+  return `${days[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
+/** Đã qua 10:30 hôm nay? */
+function isMealCutoffPassed(now) {
+  now = now || new Date();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  return mins >= MEAL_CUTOFF_H * 60 + MEAL_CUTOFF_M;
+}
+
+function todayStr() {
+  return fmtDate(new Date());
+}
+
+/**
+ * Nhân viên có được sửa ô cơm ngày dateStr không?
+ * Chỉ hôm nay + trước 10:30. Admin bỏ qua.
+ */
+function canStaffEditMealDate(dateStr) {
+  if (hasPerm('manage_meals') || currentUser?.role === 'admin') return true;
+  if (dateStr !== todayStr()) return false;
+  return !isMealCutoffPassed();
+}
+
+function updateMealLiveClock() {
+  const el = document.getElementById('meal-live-clock');
+  const st = document.getElementById('meal-cutoff-status');
+  if (!el && !st) return;
+  const now = new Date();
+  if (el) el.textContent = '⏱ ' + formatDateTimeVN(now);
+  if (st) {
+    const passed = isMealCutoffPassed(now);
+    if (passed) {
+      st.innerHTML = '<span style="color:var(--danger);font-weight:650;">🔒 Đã qua 10:30 — chốt cơm hôm nay. Nhân viên không còn đổi được.</span>';
+    } else {
+      const left = MEAL_CUTOFF_H * 60 + MEAL_CUTOFF_M - (now.getHours() * 60 + now.getMinutes());
+      const lh = Math.floor(left / 60), lm = left % 60;
+      st.innerHTML = `<span style="color:var(--success);font-weight:650;">🟢 Còn ${lh}h${lm > 0 ? lm + 'p' : ''} để báo cơm hôm nay (chốt 10:30).</span>`;
+    }
+  }
+  // Ẩn/hiện nút nhanh
+  const can = canStaffEditMealDate(todayStr());
+  const canEditAll = hasPerm('manage_meals') || currentUser?.role === 'admin';
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  const showBtns = !!myEmp && (can || canEditAll);
+  const btnOff = document.getElementById('btn-self-meal-off');
+  const btnOn = document.getElementById('btn-self-meal-on');
+  if (btnOff) {
+    btnOff.style.display = showBtns ? '' : 'none';
+    btnOff.disabled = !can && !canEditAll;
+  }
+  if (btnOn) {
+    btnOn.style.display = showBtns ? '' : 'none';
+    btnOn.disabled = !can && !canEditAll;
+  }
+}
+
+function startMealClock() {
+  updateMealLiveClock();
+  if (_mealClockTimer) clearInterval(_mealClockTimer);
+  _mealClockTimer = setInterval(updateMealLiveClock, 1000);
+}
 
 function getMeals() {
   return DB.get('med_meals') || [];
@@ -5029,9 +5497,13 @@ function shiftMealMonth(delta) {
 }
 
 function renderMealsPage() {
-  const canEdit = hasPerm('manage_meals') || currentUser?.role === 'admin';
+  startMealClock();
+  const canEditAll = hasPerm('manage_meals') || currentUser?.role === 'admin';
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  const myEmpId = myEmp?.id || '';
   const exportBtn = document.getElementById('btn-export-meals');
-  if (exportBtn) exportBtn.style.display = canEdit ? '' : 'none';
+  if (exportBtn) exportBtn.style.display = canEditAll ? '' : 'none';
+  updateMealLiveClock();
 
   const y = mealMonthCursor.getFullYear();
   const m = mealMonthCursor.getMonth();
@@ -5052,25 +5524,21 @@ function renderMealsPage() {
     if (!hasAny) applyLeaveMeals(l);
   });
 
-  // Tính số ngày có cơm trong tháng để sắp xếp
+  // Sắp xếp A → Z theo tên
+  const today = todayStr();
   const scoreMap = {};
   employees.forEach(emp => {
     let sumYes = 0;
     for (let d = 1; d <= daysInMonth; d++) {
-      if (hasMeal(emp.id, fmtDate(new Date(y, m, d)))) sumYes++;
+      const ds = fmtDate(new Date(y, m, d));
+      // Chỉ đếm ngày đã qua hoặc hôm nay đã chốt (sau 10:30) / có bản ghi
+      if (ds > today) continue;
+      if (ds === today && !isMealCutoffPassed() && !getMealRecord(emp.id, ds)) continue;
+      if (hasMeal(emp.id, ds)) sumYes++;
     }
     scoreMap[emp.id] = sumYes;
   });
-  employees.sort((a, b) => {
-    const da = scoreMap[a.id] || 0;
-    const db = scoreMap[b.id] || 0;
-    if (db !== da) return db - da; // nhiều ngày có cơm → trên
-    // cùng điểm: có cờ cơm trước, rồi theo tên
-    const ca = a.canMeal === true ? 1 : 0;
-    const cb = b.canMeal === true ? 1 : 0;
-    if (cb !== ca) return cb - ca;
-    return (a.name || '').localeCompare(b.name || '', 'vi');
-  });
+  employees.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
 
   let html = '<table style="border-collapse:collapse;font-size:11px;width:100%;">';
   html += '<thead><tr style="background:#eef2ff;position:sticky;top:0;z-index:1;">';
@@ -5087,25 +5555,54 @@ function renderMealsPage() {
   }
 
   employees.forEach(emp => {
-    let sumYes = scoreMap[emp.id] || 0;
     const flag = emp.canMeal === true
       ? ' <span style="font-size:10px;background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:999px;">cờ</span>'
       : '';
     html += '<tr>';
-    html += `<td style="padding:6px 8px;border:1px solid var(--border);position:sticky;left:0;background:#fff;font-weight:600;white-space:nowrap;">${esc(emp.name || '')}${flag}</td>`;
+    const isSelfRow = !!myEmpId && emp.id === myEmpId;
+    html += `<td style="padding:6px 8px;border:1px solid var(--border);position:sticky;left:0;background:${isSelfRow ? '#eff6ff' : '#fff'};font-weight:600;white-space:nowrap;">${esc(emp.name || '')}${flag}${isSelfRow ? ' <span style="font-size:10px;color:var(--primary);">(bạn)</span>' : ''}</td>`;
     for (let d = 1; d <= daysInMonth; d++) {
       const dt = new Date(y, m, d);
       const ds = fmtDate(dt);
       const isSun = dt.getDay() === 0;
-      const yes = hasMeal(emp.id, ds);
+      const isFuture = ds > today;
+      const isToday = ds === today;
+      const finalized = !isFuture && (ds < today || isMealCutoffPassed() || !!getMealRecord(emp.id, ds));
       const rec = getMealRecord(emp.id, ds);
-      const title = rec ? (rec.meal ? 'Có cơm' : 'Không cơm') + (rec.source === 'leave' ? ' (theo nghỉ)' : '') : 'Mặc định có cơm';
-      const bg = yes ? '#d1fae5' : '#fee2e2';
-      const click = canEdit ? `onclick="toggleMealCell('${esc(emp.id)}','${esc(emp.name || '')}','${ds}')"` : '';
-      const cur = canEdit ? 'pointer' : 'default';
-      html += `<td title="${esc(title)}${canEdit ? '' : ' (chỉ xem)'}" ${click} style="padding:4px;border:1px solid var(--border);text-align:center;cursor:${cur};background:${isSun && !rec ? '#fff1f2' : bg};user-select:none;">${yes ? '✓' : '✗'}</td>`;
+      const yes = hasMeal(emp.id, ds);
+      const isSelf = !!myEmpId && emp.id === myEmpId;
+      // Mọi tài khoản (kể cả admin): chỉ xem/sửa đến ngày hiện tại
+      // NV: chỉ hôm nay trước 10:30; Admin: hôm nay + các ngày đã qua
+      const canEditCell = isFuture
+        ? false
+        : (canEditAll
+            ? true
+            : (isSelf && isToday && !isMealCutoffPassed()));
+      let symbol, bg, title;
+      if (isFuture) {
+        symbol = '—';
+        bg = isSun ? '#fff1f2' : '#f8fafc';
+        title = 'Ngày chưa tới — chưa chấm';
+      } else if (isToday && !isMealCutoffPassed() && !rec && !canEditAll) {
+        symbol = yes ? '✓' : '✗';
+        bg = yes ? '#d1fae5' : '#fee2e2';
+        title = 'Mặc định có cơm — bấm để cắt/đổi (trước 10:30)';
+      } else {
+        symbol = yes ? '✓' : '✗';
+        bg = yes ? '#d1fae5' : '#fee2e2';
+        title = rec
+          ? ((rec.meal ? 'Có cơm' : 'Không cơm') + (rec.source === 'leave' ? ' (theo nghỉ)' : rec.source === 'self' ? ' (tự báo)' : ''))
+          : (finalized ? 'Chốt: mặc định có cơm' : 'Mặc định có cơm');
+        if (isToday && isMealCutoffPassed() && !canEditAll) title += ' · đã chốt 10:30';
+      }
+      if (isSun && (isFuture || !rec)) bg = bg === '#f8fafc' ? '#fff1f2' : bg;
+      const click = canEditCell ? `onclick="toggleMealCell('${esc(emp.id)}','${esc(emp.name || '')}','${ds}')"` : '';
+      const cur = canEditCell ? 'pointer' : 'default';
+      const selfRing = isSelf && isToday ? 'outline:2px solid var(--primary);outline-offset:-2px;' : '';
+      const hint = canEditCell ? ' — bấm để đổi' : (isFuture && !canEditAll ? '' : ' (chỉ xem)');
+      html += `<td title="${esc(title)}${hint}" ${click} style="padding:4px;border:1px solid var(--border);text-align:center;cursor:${cur};background:${bg};user-select:none;${selfRing}">${symbol}</td>`;
     }
-    html += `<td style="padding:6px;border:1px solid var(--border);text-align:center;font-weight:700;">${sumYes}</td>`;
+    html += `<td style="padding:6px;border:1px solid var(--border);text-align:center;font-weight:700;">${scoreMap[emp.id] || 0}</td>`;
     html += '</tr>';
   });
   html += '</tbody></table>';
@@ -5113,13 +5610,58 @@ function renderMealsPage() {
 }
 
 function toggleMealCell(employeeId, employeeName, dateStr) {
-  if (!hasPerm('manage_meals') && currentUser?.role !== 'admin') {
-    showToast('Bạn không có quyền sửa chấm cơm.', 'error');
+  const canEditAll = hasPerm('manage_meals') || currentUser?.role === 'admin';
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  const isSelf = myEmp && myEmp.id === employeeId;
+  if (dateStr > todayStr()) {
+    showToast('Chưa đến ngày này — không chấm trước được.', 'error');
     return;
   }
+  if (!canEditAll) {
+    if (!isSelf) {
+      showToast('Bạn chỉ được báo cơm trên dòng của mình.', 'error');
+      return;
+    }
+    if (dateStr !== todayStr()) {
+      showToast('Chỉ được báo cơm cho ngày hôm nay. Ngày đã qua không sửa.', 'error');
+      return;
+    }
+    if (isMealCutoffPassed()) {
+      showToast('Đã qua 10:30 — cơm hôm nay đã chốt, không đổi được.', 'error');
+      return;
+    }
+  }
   const cur = hasMeal(employeeId, dateStr);
-  setMealMark(employeeId, employeeName, dateStr, !cur, 'manual', '');
+  const source = isSelf && !canEditAll ? 'self' : 'manual';
+  setMealMark(employeeId, employeeName, dateStr, !cur, source, '');
   renderMealsPage();
+  if (isSelf && !canEditAll) {
+    showToast(!cur ? 'Đã báo có cơm ngày ' + formatDateVN(dateStr) : 'Đã báo cắt cơm ngày ' + formatDateVN(dateStr), !cur ? 'success' : 'warning');
+  }
+}
+
+/** Nhân viên tự báo có/cắt cơm hôm nay — chỉ trước 10:30 */
+function selfReportMeal(wantMeal) {
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  if (!myEmp) {
+    showToast('Chưa gắn hồ sơ nhân viên với tài khoản. Liên hệ admin.', 'error');
+    return;
+  }
+  const canEditAll = hasPerm('manage_meals') || currentUser?.role === 'admin';
+  if (!canEditAll && isMealCutoffPassed()) {
+    showToast('Đã qua 10:30 — cơm hôm nay đã chốt, không đổi được.', 'error');
+    return;
+  }
+  const today = todayStr();
+  setMealMark(myEmp.id, myEmp.name || '', today, !!wantMeal, canEditAll ? 'manual' : 'self', '');
+  mealMonthCursor = new Date();
+  renderMealsPage();
+  showToast(
+    wantMeal
+      ? 'Đã báo có cơm hôm nay (' + formatDateVN(today) + ').'
+      : 'Đã báo cắt cơm hôm nay (' + formatDateVN(today) + ').',
+    wantMeal ? 'success' : 'warning'
+  );
 }
 
 function exportMealsMonthExcel() {
@@ -6242,6 +6784,9 @@ document.getElementById('profile-edit-modal')?.addEventListener('click', functio
 });
 document.getElementById('dept-staff-modal')?.addEventListener('click', function(e) {
   if (e.target === this) closeDeptStaffModal();
+});
+document.getElementById('news-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeNewsModal();
 });
 
 </script>
