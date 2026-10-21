@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-  <title>PKĐK Lam Sơn – v1.9</title>
+  <title>PKĐK Lam Sơn – v20251021_v1.5</title>
   <meta name="description" content="Ứng dụng quản lý lịch làm việc và đơn nghỉ phép dành cho nhân viên y tế. Đăng ký, phê duyệt và theo dõi lịch trực tuyến." />
   <!-- PWA & Mobile -->
-  <meta name="theme-color" content="#1a56db" />
+  <meta name="theme-color" content="#1565c0" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -18,53 +18,53 @@
   
 <style>
 /* ========================================
-   v1.9 – Medical Teal UI + Tin tức
+   v20251021_v1.5 – UI chuyên nghiệp
    Clean · Soft · Mobile-first
    ======================================== */
 
 :root {
-  /* Màu theo logo PKĐK Lam Sơn (xanh dương + đỏ y tế) */
-  --primary: #1a56db;
-  --primary-dark: #1340b0;
-  --primary-light: #e0eaff;
-  --primary-glow: rgba(26,86,219,0.16);
-  --primary-soft: #f5f8ff;
-  --brand-red: #e11d2a;
+  /* PKĐK Lam Sơn — medical professional palette */
+  --primary: #1565c0;
+  --primary-dark: #0d47a1;
+  --primary-light: #e3f0fc;
+  --primary-glow: rgba(21,101,192,0.14);
+  --primary-soft: #f0f7ff;
+  --brand-red: #c62828;
 
-  --success: #059669;
-  --success-light: #d1fae5;
-  --warning: #d97706;
-  --warning-light: #fef3c7;
-  --danger: #e11d48;
-  --danger-light: #ffe4e6;
-  --info: #2563eb;
+  --success: #2e7d32;
+  --success-light: #e8f5e9;
+  --warning: #ef6c00;
+  --warning-light: #fff3e0;
+  --danger: #c62828;
+  --danger-light: #ffebee;
+  --info: #0277bd;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #1a2332;
+  --text-secondary: #4a5568;
+  --text-muted: #8b9aab;
 
-  --bg-page: #f3f6fb;
+  --bg-page: #eef2f7;
   --bg-card: #ffffff;
-  --bg-sidebar: #0b1d4a;
-  --bg-sidebar-hover: rgba(255,255,255,0.07);
-  --bg-sidebar-active: rgba(59,130,246,0.22);
+  --bg-sidebar: #0f2744;
+  --bg-sidebar-hover: rgba(255,255,255,0.06);
+  --bg-sidebar-active: rgba(66,165,245,0.18);
 
-  --border: #e2e8f0;
-  --border-focus: #1a56db;
+  --border: #dce3ed;
+  --border-focus: #1565c0;
 
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 
-  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
-  --shadow-md: 0 4px 16px rgba(15,23,42,0.07);
-  --shadow-lg: 0 12px 36px rgba(15,23,42,0.1);
-  --shadow-xl: 0 24px 56px rgba(15,23,42,0.14);
+  --shadow-sm: 0 1px 2px rgba(15,39,68,0.04);
+  --shadow-md: 0 2px 8px rgba(15,39,68,0.06), 0 1px 2px rgba(15,39,68,0.04);
+  --shadow-lg: 0 8px 24px rgba(15,39,68,0.08);
+  --shadow-xl: 0 16px 40px rgba(15,39,68,0.12);
 
-  --sidebar-width: 272px;
-  --topbar-h: 58px;
-  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --sidebar-width: 260px;
+  --topbar-h: 56px;
+  --transition: 0.18s ease;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -567,6 +567,12 @@ a:hover { text-decoration: underline; }
   letter-spacing: -0.02em;
 }
 .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.topbar-news-label { display: inline; }
+@media (max-width: 480px) {
+  .topbar-news-label { display: none; }
+  #topbar-news-btn { padding: 0 10px !important; }
+}
 .topbar-user {
   font-size: 12px;
   color: var(--text-muted);
@@ -846,12 +852,21 @@ a:hover { text-decoration: underline; }
 }
 .cal-day.other-month { opacity: 0.38; }
 .cal-day.has-leave {
-  border-color: #fbbf24;
-  border-style: dashed;
+  border-color: #f59e0b;
+  border-style: solid;
   background: #fffbeb;
 }
+.cal-day.has-holiday {
+  border-color: #dc2626;
+  border-style: solid;
+  background: #fef2f2;
+}
 .cal-day.has-shift { border-color: var(--primary); border-style: dashed; }
-.cal-day.has-leave.has-shift { border-color: #f59e0b; border-style: dashed; }
+.cal-day.has-leave.has-shift {
+  border-color: #f59e0b;
+  border-style: solid;
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
 .cal-day.weekend .day-num { color: var(--danger); }
 
 .day-num {
@@ -2002,6 +2017,301 @@ a:hover { text-decoration: underline; }
   color: var(--text-secondary);
 }
 
+
+
+/* ── UI polish v1.5 ── */
+body {
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+}
+#app {
+  background: var(--bg-page);
+}
+.topbar {
+  background: rgba(255,255,255,0.92) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.topbar-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.notif-bell-btn, #topbar-news-btn {
+  border: 1px solid var(--border) !important;
+  background: var(--bg-card) !important;
+  border-radius: 10px !important;
+  transition: var(--transition);
+  box-shadow: none !important;
+}
+.notif-bell-btn:hover, #topbar-news-btn:hover {
+  border-color: var(--primary) !important;
+  background: var(--primary-light) !important;
+  color: var(--primary) !important;
+}
+.topbar-user {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  background: var(--primary-soft);
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.sidebar {
+  background: linear-gradient(180deg, #0f2744 0%, #0a1a30 100%) !important;
+  border-right: none;
+  box-shadow: 4px 0 24px rgba(15,39,68,0.12);
+}
+.sidebar-logo {
+  padding: 18px 20px 14px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-nav {
+  padding: 12px 10px !important;
+  gap: 2px;
+  display: flex;
+  flex-direction: column;
+}
+.nav-item {
+  border-radius: 10px !important;
+  margin: 1px 0 !important;
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,0.72) !important;
+  transition: var(--transition) !important;
+}
+.nav-item:hover {
+  background: var(--bg-sidebar-hover) !important;
+  color: #fff !important;
+}
+.nav-item.active {
+  background: var(--bg-sidebar-active) !important;
+  color: #fff !important;
+  font-weight: 650 !important;
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+.nav-icon {
+  width: 22px;
+  text-align: center;
+  opacity: 0.9;
+}
+.page-container {
+  padding: 20px 22px 32px !important;
+  max-width: 1280px;
+}
+.page-header {
+  margin-bottom: 18px !important;
+  gap: 12px !important;
+  align-items: flex-start !important;
+}
+.page-header h2 {
+  font-size: 1.35rem !important;
+  font-weight: 750 !important;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+.page-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+  margin-top: 4px;
+  max-width: 560px;
+  line-height: 1.5;
+}
+.btn-primary, .btn-outline, .btn-success, .btn-danger, .btn-warning {
+  border-radius: 10px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.01em;
+  box-shadow: none !important;
+  transition: var(--transition) !important;
+}
+.btn-primary {
+  background: var(--primary) !important;
+  border: 1px solid var(--primary-dark) !important;
+}
+.btn-primary:hover {
+  background: var(--primary-dark) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md) !important;
+}
+.btn-outline {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+.btn-outline:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background: var(--primary-soft) !important;
+}
+.btn-icon {
+  border-radius: 10px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-card) !important;
+}
+.leave-card, .employee-card, .user-card, .news-card, .dept-card {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  background: var(--bg-card) !important;
+  transition: var(--transition);
+}
+.leave-card:hover, .employee-card:hover, .user-card:hover, .news-card:hover {
+  box-shadow: var(--shadow-md) !important;
+  border-color: #c5d0e0 !important;
+}
+.schedule-calendar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.cal-day {
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  transition: var(--transition);
+}
+.cal-day:hover:not(.other-month) {
+  background: var(--primary-soft) !important;
+  border-color: var(--primary-light) !important;
+}
+.cal-day.today {
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+.cal-day.has-leave {
+  border-color: #f59e0b !important;
+  border-style: solid !important;
+  background: #fffbeb !important;
+}
+.cal-day.has-holiday {
+  border-color: #c62828 !important;
+  border-style: solid !important;
+  background: #ffebee !important;
+}
+.cal-day.has-shift {
+  border-color: var(--primary) !important;
+  border-style: dashed !important;
+}
+.cal-legend {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px !important;
+  box-shadow: var(--shadow-sm);
+}
+.modal-box {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-xl) !important;
+  border: 1px solid var(--border);
+}
+.modal-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.form-group label {
+  font-weight: 600 !important;
+  font-size: 12.5px !important;
+  color: var(--text-secondary) !important;
+  margin-bottom: 6px !important;
+}
+.form-group input, .form-group select, .form-group textarea,
+input[type="text"], input[type="password"], input[type="date"],
+input[type="tel"], select, textarea {
+  border-radius: 10px !important;
+  border: 1.5px solid var(--border) !important;
+  transition: var(--transition) !important;
+  font-family: inherit !important;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus,
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-glow) !important;
+  outline: none !important;
+}
+.auth-card {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--border);
+}
+.bottom-nav {
+  background: rgba(255,255,255,0.95) !important;
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border) !important;
+  box-shadow: 0 -4px 20px rgba(15,39,68,0.06);
+}
+.bn-item {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 10.5px !important;
+}
+.bn-item.active {
+  color: var(--primary) !important;
+  background: var(--primary-soft) !important;
+}
+/* Tables (meals / stats) */
+#meals-grid table, #stats-content table {
+  font-variant-numeric: tabular-nums;
+}
+#meals-grid thead th, #stats-content thead th {
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.02em;
+}
+.section-label {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted) !important;
+  margin: 16px 0 8px !important;
+}
+.toast {
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-lg) !important;
+  font-weight: 600 !important;
+}
+.empty-state {
+  padding: 40px 24px !important;
+  color: var(--text-muted);
+}
+.empty-state .empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.85;
+}
+.empty-state h3 {
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 12px 0 6px;
+}
+.sidebar-user {
+  margin: 12px 12px 8px !important;
+  padding: 12px !important;
+  background: rgba(255,255,255,0.05) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.btn-change-pw, .btn-logout {
+  margin: 4px 12px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+}
+.btn-logout {
+  margin-bottom: 16px !important;
+}
+.day-staff-item {
+  border-radius: 10px;
+  transition: var(--transition);
+}
+.badge-role {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
 </style>
 </head>
 <body>
@@ -2015,7 +2325,7 @@ a:hover { text-decoration: underline; }
       <h1>PKĐK Lam Sơn</h1>
       <p>Lịch làm việc</p>
       <p class="auth-phone">LH. 0966255685</p>
-      <p class="app-version" id="auth-version">v1.8</p>
+      <p class="app-version" id="auth-version">v20251021_v1.5</p>
     </div>
 
     <div class="login-role-hint">
@@ -2040,6 +2350,7 @@ a:hover { text-decoration: underline; }
         </div>
       </div>
       <div id="login-error" class="form-error hidden"></div>
+      <p style="font-size:11px;color:var(--text-muted);margin:0 0 8px;text-align:center;">Bảo mật: sai 5 lần sẽ khóa 5 phút · phiên tối đa 8 giờ · tự thoát sau 15 phút không dùng</p>
       <button type="submit" class="btn-primary full" id="login-btn">
         Đăng nhập
       </button>
@@ -2071,7 +2382,7 @@ a:hover { text-decoration: underline; }
           <strong>PKĐK Lam Sơn</strong>
           <small>Lịch làm việc</small>
           <small class="sidebar-phone">LH. 0966255685</small>
-          <small class="sidebar-version" id="sidebar-version">v1.8</small>
+          <small class="sidebar-version" id="sidebar-version">v20251021_v1.5</small>
         </div>
       </div>
       <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
@@ -2090,12 +2401,12 @@ a:hover { text-decoration: underline; }
       <a href="#" class="nav-item active" data-page="schedule" onclick="navigate('schedule')">
         <span class="nav-icon">📅</span> Lịch làm việc
       </a>
-      <a href="#" class="nav-item" data-page="news" onclick="navigate('news')">
-        <span class="nav-icon">📢</span> Tin tức
-      </a>
       <a href="#" class="nav-item" data-page="leave" onclick="navigate('leave')">
         <span class="nav-icon">🗓️</span> Đơn nghỉ phép
         <span class="nav-badge hidden" id="nav-leave-badge">0</span>
+      </a>
+      <a href="#" class="nav-item" data-page="stats" onclick="navigate('stats')">
+        <span class="nav-icon">📋</span> NV nghỉ / công
       </a>
       <a href="#" class="nav-item" data-page="meals" onclick="navigate('meals')">
         <span class="nav-icon">🍚</span> Chấm cơm
@@ -2134,6 +2445,9 @@ a:hover { text-decoration: underline; }
       <button class="menu-btn" onclick="toggleSidebar()">☰</button>
       <div class="topbar-title" id="topbar-title">Lịch làm việc</div>
       <div class="topbar-right">
+        <button type="button" class="notif-bell-btn" id="topbar-news-btn" onclick="navigate('news')" title="Tin tức" style="width:auto;padding:0 12px;gap:6px;font-size:13px;font-weight:650;">
+          📢 <span class="topbar-news-label">Tin tức</span>
+        </button>
         <div class="notif-bell-wrap">
           <button type="button" class="notif-bell-btn" id="notif-bell-btn" onclick="toggleNotifPanel(event)" title="Thông báo">
             🔔
@@ -2166,6 +2480,10 @@ a:hover { text-decoration: underline; }
             <p class="page-subtitle">Bấm vào ngày để xem ai nghỉ, ai làm và phòng làm việc. Admin có thể phân phòng theo ngày.</p>
           </div>
           <div class="schedule-controls page-actions">
+            <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="schedule-mine-only" onchange="renderSchedule()" style="width:16px;height:16px;accent-color:var(--primary);" />
+              Chỉ tôi
+            </label>
             <select id="schedule-dept-filter" onchange="renderSchedule()">
               <option value="">Tất cả phòng</option>
             </select>
@@ -2178,7 +2496,8 @@ a:hover { text-decoration: underline; }
         </div>
         <div class="cal-legend">
           <span class="cal-legend-item"><span class="cal-legend-dot today"></span> Hôm nay</span>
-          <span class="cal-legend-item"><span class="cal-legend-dot leave"></span> Có người nghỉ (viền đứt)</span>
+          <span class="cal-legend-item"><span class="cal-legend-dot leave"></span> Có người nghỉ (viền liền)</span>
+          <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#dc2626;"></span> Nghỉ cả (đóng cửa)</span>
           <span class="cal-legend-item"><span class="cal-legend-dot shift"></span> Có phân phòng (viền đứt)</span>
           <span class="cal-legend-item"><span class="cal-legend-dot weekend"></span> Cuối tuần</span>
         </div>
@@ -2220,7 +2539,7 @@ a:hover { text-decoration: underline; }
               <div class="form-row">
                 <div class="form-group">
                   <label>Từ ngày</label>
-                  <input type="date" id="leave-from" required onchange="onLeaveDateOrSessionChange()" />
+                  <input type="date" id="leave-from" required onchange="onLeaveFromDateChange()" />
                 </div>
                 <div class="form-group">
                   <label>Đến ngày</label>
@@ -2259,20 +2578,11 @@ a:hover { text-decoration: underline; }
                   </label>
                 </div>
               </div>
-              <div class="form-group">
-                <label>Loại phép</label>
-                <select id="leave-type">
-                  <option value="Phép năm">Phép năm</option>
-                  <option value="Phép ốm">Phép ốm</option>
-                  <option value="Phép không lương">Phép không lương</option>
-                  <option value="Việc gia đình">Việc gia đình</option>
-                  <option value="Khác">Khác</option>
-                </select>
+                            <div class="form-group">
+                <label>Lý do <span style="color:var(--danger);">*</span></label>
+                <textarea id="leave-reason" rows="3" placeholder="Bắt buộc — mô tả lý do nghỉ..." required minlength="3"></textarea>
               </div>
-              <div class="form-group">
-                <label>Lý do</label>
-                <textarea id="leave-reason" rows="3" placeholder="Mô tả lý do nghỉ..." required></textarea>
-              </div>
+
               <div id="leave-form-error" class="form-error hidden"></div>
               <div class="form-actions">
                 <button type="button" class="btn-outline" onclick="closeLeaveModal()">Hủy</button>
@@ -2462,7 +2772,7 @@ a:hover { text-decoration: underline; }
               <div class="form-group">
                 <label>Mật khẩu</label>
                 <div class="input-eye-wrap">
-                  <input type="password" id="emp-password" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" />
+                  <input type="password" id="emp-password" placeholder="Ít nhất 8 ký tự, có chữ và số" autocomplete="new-password" />
                   <button type="button" class="eye-btn" onclick="togglePw('emp-password',this)">👁</button>
                 </div>
               </div>
@@ -2540,7 +2850,7 @@ a:hover { text-decoration: underline; }
             <p class="page-subtitle">Phê duyệt, kích hoạt hoặc vô hiệu hóa tài khoản đăng nhập.</p>
           </div>
           <div class="page-actions" style="flex-wrap:wrap;gap:8px;">
-            <button class="btn-outline" onclick="exportAccountsExcel()" title="Chỉ admin">📥 Xuất TK & mật khẩu</button>
+            <button class="btn-outline" onclick="exportAccountsExcel()" title="Chỉ admin — không xuất mật khẩu đọc được">📥 Xuất danh sách TK</button>
             <div class="filter-tabs">
               <button class="tab-btn active" onclick="filterUsers('all',this)">Tất cả</button>
               <button class="tab-btn" onclick="filterUsers('pending',this)">Chờ duyệt</button>
@@ -2552,6 +2862,42 @@ a:hover { text-decoration: underline; }
         <div id="users-list" class="users-list" style="margin-top:12px;"></div>
       </section>
 
+
+
+      <!-- ===== STATS PAGE ===== -->
+      <section id="page-stats" class="page">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>📋 Nhân viên nghỉ / chấm công</h2>
+            <p class="page-subtitle">Xem <strong>ai nghỉ theo phòng · ngày</strong>. Bên dưới: bảng chấm công cả tháng (N/S/C).</p>
+          </div>
+          <div class="page-actions" style="flex-wrap:wrap;gap:8px;align-items:center;">
+            <select id="stats-dept-filter" onchange="renderStatsPage()" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;">
+              <option value="">Tất cả phòng</option>
+            </select>
+            <input type="date" id="stats-day-pick" onchange="renderStatsPage()" style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;" />
+            <button class="btn-icon" onclick="shiftStatsMonth(-1)" title="Tháng trước">‹</button>
+            <strong id="stats-month-label" style="min-width:110px;text-align:center;">—</strong>
+            <button class="btn-icon" onclick="shiftStatsMonth(1)" title="Tháng sau">›</button>
+          </div>
+        </div>
+        <div id="stats-content"></div>
+      </section>
+
+
+      <!-- ===== AUDIT LOG PAGE (Admin) ===== -->
+      <section id="page-audit" class="page">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>🧾 Nhật ký thao tác</h2>
+            <p class="page-subtitle">Lưu lịch sử thao tác của toàn bộ nhân viên và admin. Chỉ admin xem được.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn-outline" onclick="renderAuditPage()">🔄 Làm mới</button>
+          </div>
+        </div>
+        <div id="audit-list" style="max-height:70vh;overflow:auto;"></div>
+      </section>
 
       <!-- ===== MEALS PAGE ===== -->
       <section id="page-meals" class="page">
@@ -2568,6 +2914,7 @@ a:hover { text-decoration: underline; }
             <button class="btn-icon" onclick="shiftMealMonth(1)" title="Tháng sau">›</button>
             <button type="button" class="btn-outline" id="btn-self-meal-off" onclick="selfReportMeal(false)" title="Báo không ăn cơm hôm nay (trước 10:30)">🍚 Cắt cơm hôm nay</button>
             <button type="button" class="btn-outline" id="btn-self-meal-on" onclick="selfReportMeal(true)" title="Báo có ăn cơm hôm nay (trước 10:30)">✓ Có cơm hôm nay</button>
+            <button class="btn-outline" id="btn-meal-logs" data-perm="manage_meals" onclick="openMealLogsModal()">📋 Lịch sử sửa</button>
             <button class="btn-outline" id="btn-export-meals" data-perm="manage_meals" onclick="exportMealsMonthExcel()">📥 Xuất Excel tháng</button>
           </div>
         </div>
@@ -2641,6 +2988,20 @@ a:hover { text-decoration: underline; }
 </div>
 
 
+
+<!-- Meal audit logs -->
+<div id="meal-logs-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-header">
+      <h3>📋 Lịch sử chỉnh sửa chấm cơm</h3>
+      <button type="button" onclick="closeMealLogsModal()">✕</button>
+    </div>
+    <div id="meal-logs-body" style="max-height:60vh;overflow:auto;font-size:13px;"></div>
+    <div class="form-actions" style="margin-top:12px;">
+      <button type="button" class="btn-outline" onclick="closeMealLogsModal()">Đóng</button>
+    </div>
+  </div>
+</div>
 <!-- News Modal -->
 <div id="news-modal" class="modal-overlay hidden">
   <div class="modal-box">
@@ -2751,6 +3112,10 @@ a:hover { text-decoration: underline; }
       <span class="bn-badge" id="bn-leave-badge" style="display:none">0</span>
       <span>Nghỉ phép</span>
     </button>
+    <button class="bn-item" id="bn-stats" onclick="navigate('stats')">
+      <span class="bn-icon">📋</span>
+      <span>NV nghỉ</span>
+    </button>
     <button class="bn-item" id="bn-meals" onclick="navigate('meals')">
       <span class="bn-icon">🍚</span>
       <span>Cơm</span>
@@ -2787,7 +3152,7 @@ a:hover { text-decoration: underline; }
 
 /** Tên phiên bản ứng dụng */
 const APP_NAME = 'PKĐK Lam Sơn';
-const APP_VERSION = 'v1.9';
+const APP_VERSION = 'v20251021_v1.5'; // Format: vYYYYMMDD_vX.Y — tăng vX.Y khi có tính năng mới
 const APP_VERSION_LABEL = APP_VERSION; // chỉ hiện số phiên bản
 
 // ============================================================
@@ -2884,7 +3249,7 @@ function applyPermissionUI() {
 //  FIREBASE CONFIG – project pkls-2fa65
 // ============================================================
 const firebaseConfig = {
-  apiKey: "AIzaSyDTpHpSO3XDGkK2S9hVt3BLEq8DSDGQB5Y",
+  apiKey: "AIzaSyD2K3KJbas6SihwGGoIzmCBDl1PGQc0Ji8",
   authDomain: "pkls-2fa65.firebaseapp.com",
   projectId: "pkls-2fa65",
   storageBucket: "pkls-2fa65.firebasestorage.app",
@@ -2922,6 +3287,9 @@ const KEY_MAP = {
   med_notifications: 'notifications',
   med_meals: 'meals',
   med_news: 'news',
+  med_meal_logs: 'meal_logs',
+  med_holidays: 'holidays',
+  med_audit_logs: 'audit_logs',
 };
 const SYNC_KEYS = Object.keys(KEY_MAP);
 
@@ -3074,6 +3442,9 @@ function seedData() {
   DB.set('med_notifications', DB.get('med_notifications') || []);
   DB.set('med_meals', DB.get('med_meals') || []);
   DB.set('med_news', DB.get('med_news') || []);
+  DB.set('med_meal_logs', DB.get('med_meal_logs') || []);
+  DB.set('med_holidays', DB.get('med_holidays') || []);
+  DB.set('med_audit_logs', DB.get('med_audit_logs') || []);
 
   DB.set('med_users', [
     {
@@ -3285,6 +3656,134 @@ function _stopIdleWatcher() {
 
 
 // ============================================================
+//  BẢO MẬT – hash mật khẩu, khóa đăng nhập, phiên
+// ============================================================
+const SEC_MAX_LOGIN_FAIL = 5;          // sai quá N lần → khóa
+const SEC_LOCK_MS = 5 * 60 * 1000;     // khóa 5 phút
+const SEC_SESSION_MAX_MS = 8 * 60 * 60 * 1000; // phiên tối đa 8 giờ
+const SEC_MIN_PW_LEN = 8;
+
+/** Lưu trạng thái khóa đăng nhập theo máy (local) */
+function _loginGuardGet() {
+  try {
+    return JSON.parse(localStorage.getItem('med_login_guard') || '{}') || {};
+  } catch (e) { return {}; }
+}
+function _loginGuardSet(obj) {
+  try { localStorage.setItem('med_login_guard', JSON.stringify(obj)); } catch (e) {}
+}
+
+function getLoginLockInfo(username) {
+  const g = _loginGuardGet();
+  const key = (username || '').toLowerCase().trim() || '_global';
+  const row = g[key] || { fails: 0, lockedUntil: 0 };
+  return { key, ...row };
+}
+
+function recordLoginFail(username) {
+  const info = getLoginLockInfo(username);
+  const g = _loginGuardGet();
+  const fails = (info.fails || 0) + 1;
+  const lockedUntil = fails >= SEC_MAX_LOGIN_FAIL ? Date.now() + SEC_LOCK_MS : 0;
+  g[info.key] = { fails, lockedUntil };
+  _loginGuardSet(g);
+  return { fails, lockedUntil };
+}
+
+function clearLoginFail(username) {
+  const info = getLoginLockInfo(username);
+  const g = _loginGuardGet();
+  delete g[info.key];
+  _loginGuardSet(g);
+}
+
+function isLoginLocked(username) {
+  const info = getLoginLockInfo(username);
+  if (info.lockedUntil && Date.now() < info.lockedUntil) {
+    return Math.ceil((info.lockedUntil - Date.now()) / 60000);
+  }
+  if (info.lockedUntil && Date.now() >= info.lockedUntil) {
+    clearLoginFail(username);
+  }
+  return 0;
+}
+
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function isPasswordHashed(stored) {
+  return typeof stored === 'string' && /^sha256:[a-f0-9]{64}$/i.test(stored);
+}
+
+/** Hash mật khẩu (kèm username làm muối) */
+async function hashPassword(password, username) {
+  const salt = String(username || '').toLowerCase().trim();
+  const hex = await sha256Hex('pkls-v1|' + salt + '|' + password);
+  return 'sha256:' + hex;
+}
+
+async function verifyPassword(password, stored, username) {
+  if (password == null || stored == null) return false;
+  if (isPasswordHashed(stored)) {
+    const h = await hashPassword(password, username);
+    return h === stored;
+  }
+  // Tương thích bản cũ (lưu plain-text)
+  return password === stored;
+}
+
+/** Kiểm tra độ mạnh mật khẩu mới */
+function validatePasswordStrength(pw) {
+  if (!pw || pw.length < SEC_MIN_PW_LEN) {
+    return 'Mật khẩu phải có ít nhất ' + SEC_MIN_PW_LEN + ' ký tự.';
+  }
+  if (!/[A-Za-zÀ-ỹ]/.test(pw) || !/[0-9]/.test(pw)) {
+    return 'Mật khẩu phải có cả chữ và số.';
+  }
+  const weak = ['12345678', 'password', 'admin123', 'matkhau1', '11111111', '00000000'];
+  if (weak.includes(pw.toLowerCase())) {
+    return 'Mật khẩu quá yếu, vui lòng chọn mật khẩu khác.';
+  }
+  return '';
+}
+
+/** Phiên đăng nhập: không lưu mật khẩu trên máy */
+function toSessionUser(user) {
+  if (!user) return null;
+  return {
+    id: user.id,
+    username: user.username,
+    fullname: user.fullname,
+    role: user.role,
+    deptId: user.deptId || '',
+    position: user.position || '',
+    status: user.status,
+    permissions: Array.isArray(user.permissions) ? user.permissions : [],
+    _sessionAt: Date.now(),
+  };
+}
+
+function isSessionExpired(session) {
+  if (!session || !session._sessionAt) return true;
+  return (Date.now() - session._sessionAt) > SEC_SESSION_MAX_MS;
+}
+
+/** Nâng cấp mật khẩu plain-text → hash sau khi đăng nhập đúng */
+async function upgradeUserPasswordIfNeeded(user, plainPassword) {
+  if (!user || isPasswordHashed(user.password)) return;
+  const users = DB.get('med_users');
+  const idx = users.findIndex(u => u.id === user.id);
+  if (idx < 0) return;
+  users[idx].password = await hashPassword(plainPassword, user.username);
+  DB.set('med_users', users);
+}
+
+
+
+// ============================================================
 //  ÂM LỊCH VIỆT NAM (thuật toán Hồ Ngọc Đức – rút gọn)
 // ============================================================
 function jdFromDate(dd, mm, yy) {
@@ -3407,7 +3906,7 @@ let userFilter = 'all';
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
   // Hiển thị tên phiên bản
-  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'v1.8';
+  const ver = typeof APP_VERSION_LABEL !== 'undefined' ? APP_VERSION_LABEL : 'v20251021_v1.5';
   const authVer = document.getElementById('auth-version');
   const sideVer = document.getElementById('sidebar-version');
   if (authVer) authVer.textContent = ver;
@@ -3462,21 +3961,41 @@ function togglePw(inputId, btn) {
   else { inp.type = 'password'; btn.textContent = '👁'; }
 }
 
-document.getElementById('login-form').addEventListener('submit', function (e) {
+document.getElementById('login-form').addEventListener('submit', async function (e) {
   e.preventDefault();
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
   const errEl = document.getElementById('login-error');
   const btn = document.getElementById('login-btn');
 
+  const lockMin = isLoginLocked(username);
+  if (lockMin > 0) {
+    errEl.textContent = 'Tài khoản tạm khóa do nhập sai nhiều lần. Thử lại sau ' + lockMin + ' phút.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!username || !password) {
+    errEl.textContent = 'Vui lòng nhập tên đăng nhập và mật khẩu.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
   btn.disabled = true; btn.textContent = 'Đang đăng nhập...';
+  errEl.classList.add('hidden');
 
-  setTimeout(() => {
-    const users = DB.get('med_users');
-    const user = users.find(u => u.username === username && u.password === password);
+  try {
+    const users = DB.get('med_users') || [];
+    const user = users.find(u => u.username === username);
+    let ok = false;
+    if (user) ok = await verifyPassword(password, user.password, username);
 
-    if (!user) {
-      errEl.textContent = 'Tên đăng nhập hoặc mật khẩu không đúng.';
+    if (!user || !ok) {
+      const { fails, lockedUntil } = recordLoginFail(username);
+      if (lockedUntil) {
+        errEl.textContent = 'Sai quá nhiều lần. Tài khoản bị khóa 5 phút.';
+      } else {
+        errEl.textContent = 'Tên đăng nhập hoặc mật khẩu không đúng. (' + fails + '/' + SEC_MAX_LOGIN_FAIL + ')';
+      }
       errEl.classList.remove('hidden');
       btn.disabled = false; btn.textContent = 'Đăng nhập';
       return;
@@ -3488,15 +4007,23 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
       return;
     }
     if (user.status === 'rejected') {
-      errEl.textContent = 'Tài khoản đã bị từ chối. Vui lòng liên hệ quản trị viên.';
+      errEl.textContent = 'Tài khoản đã bị từ chối / vô hiệu. Liên hệ quản trị viên.';
       errEl.classList.remove('hidden');
       btn.disabled = false; btn.textContent = 'Đăng nhập';
       return;
     }
-    errEl.classList.add('hidden');
-    loginSuccess(user);
-    btn.disabled = false; btn.textContent = 'Đăng nhập';
-  }, 500);
+
+    clearLoginFail(username);
+    await upgradeUserPasswordIfNeeded(user, password);
+    // Lấy lại user sau khi có thể đã hash
+    const fresh = (DB.get('med_users') || []).find(u => u.id === user.id) || user;
+    loginSuccess(fresh, false);
+  } catch (err) {
+    console.warn('[Auth]', err);
+    errEl.textContent = 'Lỗi đăng nhập. Thử lại.';
+    errEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Đăng nhập';
 });
 
 // Public registration disabled – only admin can create staff accounts
@@ -3508,11 +4035,24 @@ if (regForm) {
   });
 }
 
-function loginSuccess(user) {
-  currentUser = user;
-  DB.setObj('med_current_user', user);
+function loginSuccess(user, fromSession) {
+  // Phiên làm việc không lưu mật khẩu
+  currentUser = toSessionUser(user);
+  if (fromSession && user._sessionAt) {
+    currentUser._sessionAt = user._sessionAt;
+  }
+  DB.setObj('med_current_user', currentUser);
   _resetIdleTimer();
   _startIdleWatcher();
+  // Kiểm tra hết hạn phiên định kỳ
+  if (window._sessionCheckTimer) clearInterval(window._sessionCheckTimer);
+  window._sessionCheckTimer = setInterval(() => {
+    if (!currentUser) return;
+    if (isSessionExpired(currentUser)) {
+      showToast('Phiên đăng nhập đã hết hạn (tối đa 8 giờ). Vui lòng đăng nhập lại.', 'warning');
+      logout();
+    }
+  }, 60000);
 
   document.getElementById('auth-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
@@ -3538,6 +4078,10 @@ function loginSuccess(user) {
   navigate('schedule');
   updateBadges();
   updateNotifBadge();
+  if (typeof startMealReminders === 'function') startMealReminders();
+  if (!fromSession && typeof pushAuditLog === 'function') {
+    pushAuditLog('login', 'Đăng nhập hệ thống', { username: currentUser?.username });
+  }
 }
 
 
@@ -3551,20 +4095,29 @@ function openChangePassword() {
 function closeChangePassword() {
   document.getElementById('change-pw-modal').classList.add('hidden');
 }
-function submitChangePassword(e) {
+async function submitChangePassword(e) {
   e.preventDefault();
   const cur = document.getElementById('pw-current').value;
   const neu = document.getElementById('pw-new').value;
   const conf = document.getElementById('pw-confirm').value;
   const err = document.getElementById('pw-error');
   if (!currentUser) return;
-  if (cur !== currentUser.password) {
+  const users = DB.get('med_users');
+  const u = users.find(x => x.id === currentUser.id);
+  if (!u) {
+    err.textContent = 'Không tìm thấy tài khoản.';
+    err.classList.remove('hidden');
+    return;
+  }
+  const ok = await verifyPassword(cur, u.password, u.username);
+  if (!ok) {
     err.textContent = 'Mật khẩu hiện tại không đúng.';
     err.classList.remove('hidden');
     return;
   }
-  if (neu.length < 6) {
-    err.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+  const strength = validatePasswordStrength(neu);
+  if (strength) {
+    err.textContent = strength;
     err.classList.remove('hidden');
     return;
   }
@@ -3573,20 +4126,25 @@ function submitChangePassword(e) {
     err.classList.remove('hidden');
     return;
   }
-  const users = DB.get('med_users');
-  const u = users.find(x => x.id === currentUser.id);
-  if (u) {
-    u.password = neu;
-    DB.set('med_users', users);
-    currentUser.password = neu;
-    DB.setObj('med_current_user', currentUser);
+  if (neu === cur) {
+    err.textContent = 'Mật khẩu mới phải khác mật khẩu hiện tại.';
+    err.classList.remove('hidden');
+    return;
   }
+  u.password = await hashPassword(neu, u.username);
+  DB.set('med_users', users);
+  // Không lưu mật khẩu vào session
+  DB.setObj('med_current_user', currentUser);
   closeChangePassword();
   showToast('Đã đổi mật khẩu thành công!', 'success');
 }
 
 function logout() {
+  if (typeof pushAuditLog === 'function' && currentUser) {
+    pushAuditLog('logout', 'Đăng xuất', { username: currentUser.username });
+  }
   _stopIdleWatcher();
+  if (window._sessionCheckTimer) { clearInterval(window._sessionCheckTimer); window._sessionCheckTimer = null; }
   currentUser = null;
   DB.setObj('med_current_user', {});
   document.getElementById('app').classList.add('hidden');
@@ -3616,6 +4174,7 @@ function navigate(page) {
   const bnMap = {
     schedule: 'bn-schedule',
     leave: 'bn-leaves',
+    stats: 'bn-stats',
     profile: 'bn-profile',
     news: 'bn-news',
     employees: 'bn-employees',
@@ -3632,13 +4191,27 @@ function navigate(page) {
     leave: '🗓️ Đơn nghỉ phép',
     profile: '👤 Hồ sơ của tôi',
     news: '📢 Tin tức',
+    stats: '📋 NV nghỉ / công',
     approvals: '✅ Phê duyệt',
     employees: '👥 Nhân viên',
     departments: '🏥 Phòng ban',
     meals: '🍚 Chấm cơm',
     users: '🔑 Tài khoản',
+    audit: '🧾 Nhật ký thao tác',
   };
   document.getElementById('topbar-title').textContent = titles[page] || '';
+  const newsBtn = document.getElementById('topbar-news-btn');
+  if (newsBtn) {
+    if (page === 'news') {
+      newsBtn.style.borderColor = 'var(--primary)';
+      newsBtn.style.background = 'var(--primary-light)';
+      newsBtn.style.color = 'var(--primary)';
+    } else {
+      newsBtn.style.borderColor = '';
+      newsBtn.style.background = '';
+      newsBtn.style.color = '';
+    }
+  }
   closeSidebarIfMobile();
 
   // Render page
@@ -3652,6 +4225,8 @@ function navigate(page) {
     case 'meals': renderMealsPage(); break;
     case 'users': renderUsers(); break;
     case 'news': renderNews(); break;
+    case 'stats': renderStatsPage(); break;
+    case 'audit': renderAuditPage(); break;
   }
 }
 
@@ -3799,9 +4374,8 @@ function renderNotifList() {
       news: '📢',
       info: '🔔',
     }[n.type] || '🔔';
-    const goNews = n.type === 'news' ? `closeNotifPanel(); navigate('news');` : '';
     return `
-      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}'); ${goNews}">
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="openNotification('${esc(n.id)}')">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
           <div style="flex:1;min-width:0;">
             <div class="notif-item-title">${icon} ${esc(n.title)}</div>
@@ -3826,6 +4400,71 @@ function markNotifRead(id) {
     updateNotifBadge();
     renderNotifList();
   }
+}
+
+/** Bấm thông báo → đánh dấu đã đọc + chuyển đúng mục */
+function openNotification(id) {
+  const notifs = DB.get('med_notifications') || [];
+  const n = notifs.find(x => x.id === id);
+  if (!n) return;
+  markNotifRead(id);
+  closeNotifPanel();
+
+  const meta = n.meta || {};
+  const type = n.type || 'info';
+
+  if (type === 'news') {
+    navigate('news');
+    return;
+  }
+  if (type === 'leave_submit') {
+    // Admin xem phê duyệt; NV xem đơn của mình
+    if (currentUser?.role === 'admin' || hasPerm('approve_leave')) {
+      navigate('approvals');
+    } else {
+      navigate('leave');
+    }
+    if (meta.leaveId && typeof openLeaveDetail === 'function') {
+      setTimeout(() => openLeaveDetail(meta.leaveId), 200);
+    }
+    return;
+  }
+  if (type === 'leave_approved' || type === 'leave_rejected') {
+    navigate('leave');
+    if (meta.leaveId && typeof openLeaveDetail === 'function') {
+      setTimeout(() => openLeaveDetail(meta.leaveId), 200);
+    }
+    return;
+  }
+  if (type === 'dept_assign') {
+    navigate('schedule');
+    if (meta.date && typeof openDayDetail === 'function') {
+      setTimeout(() => {
+        try {
+          const [yy, mm, dd] = meta.date.split('-').map(Number);
+          openDayDetail(new Date(yy, mm - 1, dd), DB.get('med_employees'), DB.get('med_leaves'), DB.get('med_depts'), '');
+        } catch (e) {}
+      }, 250);
+    }
+    return;
+  }
+  if (type === 'info' && meta.date) {
+    // Nghỉ cả / thông báo theo ngày
+    navigate('schedule');
+    setTimeout(() => {
+      try {
+        const [yy, mm, dd] = String(meta.date).split('-').map(Number);
+        if (yy && mm && dd) openDayDetail(new Date(yy, mm - 1, dd), DB.get('med_employees'), DB.get('med_leaves'), DB.get('med_depts'), '');
+      } catch (e) {}
+    }, 250);
+    return;
+  }
+  // Mặc định: lịch
+  if (type === 'profile' || (n.title || '').includes('hồ sơ')) {
+    navigate('profile');
+    return;
+  }
+  navigate('schedule');
 }
 
 function markAllNotifsRead() {
@@ -3912,9 +4551,30 @@ function changeMonth(dir) {
 
 function renderSchedule() {
   const depts = DB.get('med_depts');
-  const employees = DB.get('med_employees');
-  const leaves = DB.get('med_leaves');
+  let employees = DB.get('med_employees');
+  let leaves = DB.get('med_leaves');
   const filterDept = document.getElementById('schedule-dept-filter')?.value || '';
+  const mineOnly = !!document.getElementById('schedule-mine-only')?.checked;
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  const isStaffView = currentUser && currentUser.role !== 'admin' && !hasPerm('day_assign');
+
+  // Lọc "Chỉ tôi": NV thấy nghỉ/phân phòng liên quan mình + phòng mình
+  if (mineOnly || isStaffView && mineOnly) {
+    /* handled below */
+  }
+  if (mineOnly && myEmp) {
+    const myDeptIds = typeof getEmpDeptIds === 'function' ? getEmpDeptIds(myEmp) : (myEmp.deptId ? [myEmp.deptId] : []);
+    leaves = leaves.filter(l =>
+      l.employeeId === myEmp.id || l.userId === currentUser.id ||
+      (l.deptId && myDeptIds.includes(l.deptId))
+    );
+    employees = employees.filter(e =>
+      e.id === myEmp.id ||
+      (typeof empInDept === 'function' && myDeptIds.some(id => empInDept(e, id)))
+    );
+  } else if (mineOnly && !myEmp && currentUser) {
+    leaves = leaves.filter(l => l.userId === currentUser.id);
+  }
 
   const y = calendarMonth.getFullYear();
   const m = calendarMonth.getMonth();
@@ -3981,8 +4641,10 @@ function createDayCell(date, employees, leaves, depts, filterDept, isOtherMonth)
 
   // Nghỉ: mọi người đều thấy (để biết ai nghỉ)
   if (dayLeaves.length > 0) cell.classList.add('has-leave');
+  if (isHoliday(dateStr)) cell.classList.add('has-holiday');
 
   // Phân phòng: chỉ tài khoản được phân (hoặc admin) mới thấy viền đứt
+  const mineOnly = !!document.getElementById('schedule-mine-only')?.checked;
   const dayShiftsAll = (DB.get('med_day_shifts') || []).filter(s => {
     if (s.date !== dateStr || !s.deptId) return false;
     const emp = employees.find(e => e.id === s.employeeId);
@@ -3991,9 +4653,17 @@ function createDayCell(date, employees, leaves, depts, filterDept, isOtherMonth)
     return s.deptId === filterDept || empInDept(emp, filterDept);
   });
   const myEmp = getMyEmployee(employees);
-  const canSeeAllShifts = currentUser?.role === 'admin' || hasPerm('day_assign');
+  const canSeeAllShifts = (currentUser?.role === 'admin' || hasPerm('day_assign')) && !mineOnly;
   const myShift = myEmp ? dayShiftsAll.find(s => s.employeeId === myEmp.id) : null;
-  const dayShifts = canSeeAllShifts ? dayShiftsAll : (myShift ? [myShift] : []);
+  // "Chỉ tôi": chỉ viền đứt khi chính mình được phân (hoặc admin tắt chỉ tôi thì thấy all)
+  let dayShifts;
+  if (mineOnly && myEmp) {
+    dayShifts = myShift ? [myShift] : [];
+  } else if (canSeeAllShifts) {
+    dayShifts = dayShiftsAll;
+  } else {
+    dayShifts = myShift ? [myShift] : [];
+  }
   if (dayShifts.length > 0) cell.classList.add('has-shift');
 
   // Day number + âm lịch
@@ -4011,6 +4681,15 @@ function createDayCell(date, employees, leaves, depts, filterDept, isOtherMonth)
   // Chips: nghỉ phép + gợi ý phân phòng
   const chips = document.createElement('div');
   chips.className = 'cal-chips';
+  if (isHoliday(dateStr)) {
+    const chip = document.createElement('div');
+    chip.className = 'cal-chip';
+    chip.style.background = '#fee2e2';
+    chip.style.color = '#b91c1c';
+    chip.style.fontWeight = '700';
+    chip.textContent = '🏢 Nghỉ cả';
+    chips.appendChild(chip);
+  }
   dayLeaves.slice(0, 2).forEach(l => {
     const dept = depts.find(d => d.id === l.deptId);
     const chip = document.createElement('div');
@@ -4082,6 +4761,9 @@ function setDayShift(employeeId, dateStr, deptId) {
     if (idx >= 0) {
       shifts.splice(idx, 1);
       DB.set('med_day_shifts', shifts);
+      if (typeof pushAuditLog === 'function') {
+        pushAuditLog('day_assign', 'Bỏ phân phòng · ' + (emp?.name || '') + ' · ' + formatDateVN(dateStr), { employeeId, date: dateStr });
+      }
     }
     return;
   }
@@ -4128,6 +4810,30 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
 
   let html = '';
 
+  const holiday = getHoliday(dateStr);
+  if (holiday) {
+    html += `<div style="margin-bottom:12px;padding:12px;border-radius:12px;background:#fef2f2;border:1.5px dashed #dc2626;">
+      <div style="font-weight:700;color:#b91c1c;">🏢 Nghỉ cả ngày</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Toàn bộ nghỉ · chấm cơm = cắt · ${esc(holiday.createdByName || '')} · ${esc(holiday.note || '')}</div>
+    </div>`;
+  }
+
+  // Admin: đặt / bỏ nghỉ cả
+  if (currentUser?.role === 'admin' || hasPerm('day_assign')) {
+    html += `<div style="margin-bottom:14px;">
+      <button type="button" class="${holiday ? 'btn-outline' : 'btn-danger'}" style="width:100%;" onclick="toggleFullDayOff('${esc(dateStr)}')">
+        ${holiday ? '↩️ Bỏ nghỉ cả ngày này' : '🏢 Đặt nghỉ cả (cả chấm cơm)'}
+      </button>
+    </div>`;
+  }
+
+  // Đăng ký nghỉ nhanh từ lịch (nhân viên) — không cần nếu đã nghỉ cả
+  if (currentUser && currentUser.role !== 'admin' && !holiday) {
+    html += `<div style="margin-bottom:14px;">
+      <button type="button" class="btn-primary" style="width:100%;" onclick="closeDayDetail(); openLeaveModal('${esc(dateStr)}')">🗓️ Xin nghỉ ngày ${esc(formatDateVN(dateStr))}</button>
+    </div>`;
+  }
+
   // ===== Nghỉ phép =====
   html += `<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">🚫 Nghỉ phép (${dayLeaves.length})</div>`;
   if (!dayLeaves.length) {
@@ -4137,7 +4843,7 @@ function renderDayDetailContent(dateStr, employees, leaves, depts, filterDept) {
       const emp = employees.find(e => e.id === l.employeeId);
       const dept = depts.find(d => d.id === l.deptId) || depts.find(d => d.id === primaryDeptId(emp));
       html += `
-        <div class="day-staff-item" style="border:1.5px dashed #f59e0b;border-radius:12px;padding:10px 8px;margin:4px 0;background:#fffbeb;align-items:flex-start;">
+        <div class="day-staff-item" style="border:1.5px solid #f59e0b;border-radius:12px;padding:10px 8px;margin:4px 0;background:#fffbeb;align-items:flex-start;">
           <div class="staff-avatar" style="background:${esc(dept?.color||'#f59e0b')};overflow:hidden;margin-top:2px;">
             ${emp?.avatar ? `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="" />` : esc((l.employeeName || '?').charAt(0))}
           </div>
@@ -4989,10 +5695,11 @@ function closeLeaveDetail() {
   document.getElementById('leave-detail-modal')?.classList.add('hidden');
 }
 
-function openLeaveModal() {
+function openLeaveModal(prefillDate) {
   const today = fmtDate(new Date());
-  document.getElementById('leave-from').value = today;
-  document.getElementById('leave-to').value = today;
+  const d = prefillDate || today;
+  document.getElementById('leave-from').value = d;
+  document.getElementById('leave-to').value = d;
   document.getElementById('leave-reason').value = '';
   const ss = document.getElementById('leave-session-start');
   const se = document.getElementById('leave-session-end');
@@ -5007,6 +5714,16 @@ function openLeaveModal() {
   onLeaveDateOrSessionChange();
 }
 function closeLeaveModal() { document.getElementById('leave-modal').classList.add('hidden'); }
+
+/** Khi chọn Từ ngày → Đến ngày tự nhảy bằng Từ ngày */
+function onLeaveFromDateChange() {
+  const fromEl = document.getElementById('leave-from');
+  const toEl = document.getElementById('leave-to');
+  if (fromEl && toEl && fromEl.value) {
+    toEl.value = fromEl.value;
+  }
+  onLeaveDateOrSessionChange();
+}
 
 function onLeaveDateOrSessionChange() {
   const fromEl = document.getElementById('leave-from');
@@ -5037,9 +5754,10 @@ function onLeaveDateOrSessionChange() {
     if (hint) hint.innerHTML = 'Số ngày nghỉ: <strong>—</strong>';
     return;
   }
-  if (fromDate > toDate) {
-    if (hint) hint.innerHTML = '<span style="color:var(--danger);">Ngày bắt đầu không được sau ngày kết thúc.</span>';
-    return;
+  if (fromDate && toDate && fromDate > toDate) {
+    // Tự chỉnh Đến ngày = Từ ngày
+    toEl.value = fromDate;
+    toDate = fromDate;
   }
   if (fromDate === toDate) sessionEnd = sessionStart;
   const days = calcLeaveDays({ fromDate, toDate, sessionStart, sessionEnd });
@@ -5115,6 +5833,9 @@ function doSubmitLeave(fromDate, toDate, type, reason, emp, empName, deptId, ses
   closeLeaveModal();
   renderLeaveList();
   updateBadges();
+  if (typeof pushAuditLog === 'function') {
+    pushAuditLog('leave_submit', empName + ' gửi đơn nghỉ ' + type + ' ' + formatDateVN(fromDate) + (fromDate !== toDate ? '→' + formatDateVN(toDate) : ''), { leaveId: leave.id });
+  }
   showToast('Đơn nghỉ đã được gửi! Chờ admin phê duyệt.', 'success');
 }
 
@@ -5122,11 +5843,22 @@ function submitLeave(e) {
   e.preventDefault();
   const fromDate = document.getElementById('leave-from').value;
   const toDate = document.getElementById('leave-to').value;
-  const type = document.getElementById('leave-type').value;
+  const type = 'Nghỉ phép';
   const reason = document.getElementById('leave-reason').value.trim();
+  const errEl = document.getElementById('leave-form-error');
+  if (!reason || reason.length < 3) {
+    if (errEl) {
+      errEl.textContent = 'Vui lòng nhập lý do nghỉ (ít nhất 3 ký tự).';
+      errEl.classList.remove('hidden');
+    } else {
+      showToast('Vui lòng nhập lý do nghỉ.', 'error');
+    }
+    document.getElementById('leave-reason')?.focus();
+    return;
+  }
+  if (errEl) errEl.classList.add('hidden');
   const sessionStart = normSession(document.getElementById('leave-session-start')?.value || 'full');
   let sessionEnd = normSession(document.getElementById('leave-session-end')?.value || 'full');
-  const errEl = document.getElementById('leave-form-error');
 
   if (fromDate > toDate) {
     errEl.textContent = 'Ngày bắt đầu không được sau ngày kết thúc.';
@@ -5331,6 +6063,295 @@ function deleteNews(id) {
   });
 }
 
+
+// ============================================================
+//  THỐNG KÊ NGHỈ PHÉP
+// ============================================================
+let statsMonthCursor = new Date();
+/** Hạn mức phép năm mặc định (ngày) — có thể ghi đè emp.leaveLimit */
+const DEFAULT_LEAVE_YEAR_LIMIT = 12;
+
+function shiftStatsMonth(delta) {
+  statsMonthCursor.setMonth(statsMonthCursor.getMonth() + delta);
+  renderStatsPage();
+}
+
+function renderStatsPage() {
+  const y = statsMonthCursor.getFullYear();
+  const m = statsMonthCursor.getMonth();
+  const label = document.getElementById('stats-month-label');
+  if (label) label.textContent = `Tháng ${m + 1}/${y}`;
+
+  const deptSel = document.getElementById('stats-dept-filter');
+  if (deptSel && deptSel.options.length <= 1) {
+    (DB.get('med_depts') || []).forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = (d.icon || '') + ' ' + d.name;
+      deptSel.appendChild(opt);
+    });
+  }
+  const filterDept = deptSel?.value || '';
+
+  const dayPick = document.getElementById('stats-day-pick');
+  const today = fmtDate(new Date());
+  if (dayPick && !dayPick.value) {
+    const inMonth = today.startsWith(`${y}-${String(m + 1).padStart(2, '0')}`);
+    dayPick.value = inMonth ? today : fmtDate(new Date(y, m, 1));
+  }
+  if (dayPick && dayPick.value) {
+    const dv = dayPick.value;
+    if (!dv.startsWith(`${y}-${String(m + 1).padStart(2, '0')}`)) {
+      dayPick.value = fmtDate(new Date(y, m, 1));
+    }
+  }
+  const focusDay = dayPick?.value || today;
+
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const leaves = (DB.get('med_leaves') || []).filter(l => l.status === 'approved' || l.status === 'pending');
+  const employees = (DB.get('med_employees') || []).slice();
+  const depts = DB.get('med_depts') || [];
+  const isAdmin = currentUser?.role === 'admin' || hasPerm('approve_leave') || hasPerm('day_assign');
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  const myEmpId = myEmp?.id || '';
+
+  const holidays = (typeof getHolidays === 'function' ? getHolidays() : []);
+  const holidaySet = new Set(
+    holidays.filter(h => (h.date || '').startsWith(`${y}-${String(m + 1).padStart(2, '0')}`)).map(h => h.date)
+  );
+  const isFocusHoliday = typeof isHoliday === 'function' && isHoliday(focusDay);
+
+  let list = employees;
+  if (filterDept) {
+    list = list.filter(e => typeof empInDept === 'function' ? empInDept(e, filterDept) : e.deptId === filterDept);
+  }
+  if (!isAdmin && myEmp) {
+    if (!filterDept) list = list.filter(e => e.id === myEmp.id);
+  }
+  list.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+
+  function leaveOnDay(empId, dateStr) {
+    return leaves.filter(l =>
+      l.employeeId === empId && dateStr >= l.fromDate && dateStr <= l.toDate
+    );
+  }
+
+  function cellInfo(empId, dateStr) {
+    if (holidaySet.has(dateStr) || (typeof isHoliday === 'function' && isHoliday(dateStr))) {
+      return { kind: 'holiday', label: 'Cả', title: 'Nghỉ cả (đóng cửa)', bg: '#fee2e2', color: '#b91c1c' };
+    }
+    const dayLs = leaveOnDay(empId, dateStr);
+    if (!dayLs.length) {
+      return { kind: 'work', label: '·', title: 'Đi làm', bg: '#f8fafc', color: '#94a3b8' };
+    }
+    const l = dayLs.find(x => x.status === 'approved') || dayLs[0];
+    const sess = typeof sessionForDate === 'function' ? sessionForDate(l, dateStr) : 'full';
+    const pending = l.status === 'pending';
+    let label = 'N';
+    if (sess === 'am') label = 'S';
+    else if (sess === 'pm') label = 'C';
+    return {
+      kind: pending ? 'pending' : 'leave',
+      label,
+      title: (pending ? '[Chờ] ' : '') + (l.type || 'Nghỉ') + (sess === 'am' ? ' · sáng' : sess === 'pm' ? ' · chiều' : ' · cả ngày'),
+      bg: pending ? '#fef3c7' : '#ffedd5',
+      color: pending ? '#92400e' : '#c2410c',
+      leave: l,
+      sess,
+    };
+  }
+
+  function monthLeaveDays(empId) {
+    let sum = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = fmtDate(new Date(y, m, d));
+      const info = cellInfo(empId, ds);
+      if (info.kind === 'leave' || info.kind === 'pending' || info.kind === 'holiday') {
+        sum += (info.label === 'S' || info.label === 'C') ? 0.5 : 1;
+      }
+    }
+    return sum;
+  }
+
+  let html = '';
+  html += `<div style="margin-bottom:18px;">
+    <div style="font-size:14px;font-weight:700;color:var(--text-secondary);margin-bottom:10px;">
+      📍 Nhân viên nghỉ · ${esc(formatDateVN(focusDay))}
+      ${isFocusHoliday ? ' <span style="color:#b91c1c;">(Nghỉ cả — đóng cửa)</span>' : ''}
+    </div>`;
+
+  const leaveRows = [];
+  list.forEach(emp => {
+    const info = cellInfo(emp.id, focusDay);
+    if (info.kind === 'work') return;
+    const deptIds = typeof getEmpDeptIds === 'function' ? getEmpDeptIds(emp) : (emp.deptId ? [emp.deptId] : []);
+    const primary = deptIds[0] || emp.deptId || '';
+    const workDeptId = typeof getWorkDeptIdForDay === 'function' ? getWorkDeptIdForDay(emp, focusDay) : primary;
+    const deptId = workDeptId || primary;
+    leaveRows.push({ emp, info, deptId });
+  });
+
+  const byDept = {};
+  leaveRows.forEach(row => {
+    const key = row.deptId || '_none';
+    if (!byDept[key]) byDept[key] = [];
+    byDept[key].push(row);
+  });
+
+  if (isFocusHoliday) {
+    html += `<div style="padding:14px;border-radius:12px;background:#fef2f2;border:1.5px solid #fecaca;margin-bottom:12px;font-size:13px;color:#991b1b;">
+      🏢 <strong>Nghỉ cả ngày</strong> — toàn bộ nhân viên nghỉ, chấm cơm đã cắt.
+    </div>`;
+  }
+
+  if (!leaveRows.length && !isFocusHoliday) {
+    html += `<div style="padding:16px;border-radius:12px;border:1px dashed var(--border);color:var(--text-muted);font-size:13px;margin-bottom:8px;">
+      Không có nhân viên nghỉ ngày này${filterDept ? ' (trong phòng đã chọn)' : ''}.
+    </div>`;
+  } else if (leaveRows.length) {
+    const deptOrder = [...depts.map(d => d.id), '_none'];
+    const keys = Object.keys(byDept).sort((a, b) => deptOrder.indexOf(a) - deptOrder.indexOf(b));
+    keys.forEach(deptId => {
+      const dept = depts.find(d => d.id === deptId);
+      const name = dept ? `${dept.icon || ''} ${dept.name}` : 'Chưa phân phòng';
+      const color = dept?.color || '#64748b';
+      html += `<div style="margin-bottom:12px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#fff;">
+        <div style="padding:10px 14px;background:${color}18;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;color:${color};">
+          ${esc(name)} · ${byDept[deptId].length} người nghỉ
+        </div>`;
+      byDept[deptId].forEach(({ emp, info }) => {
+        const badge = info.kind === 'pending'
+          ? '<span style="font-size:10px;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-weight:700;">Chờ duyệt</span>'
+          : info.kind === 'holiday'
+            ? '<span style="font-size:10px;background:#fee2e2;color:#b91c1c;padding:2px 8px;border-radius:999px;font-weight:700;">Nghỉ cả</span>'
+            : '<span style="font-size:10px;background:#ffedd5;color:#c2410c;padding:2px 8px;border-radius:999px;font-weight:700;">Đã duyệt</span>';
+        const sessTxt = info.label === 'S' ? 'Sáng 0,5' : info.label === 'C' ? 'Chiều 0,5' : 'Cả ngày';
+        const typeTxt = info.leave?.type || (info.kind === 'holiday' ? 'Nghỉ cả' : 'Nghỉ');
+        html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);">
+          <div style="width:36px;height:36px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;flex-shrink:0;">
+            ${emp.avatar ? `<img src="${emp.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="" />` : esc((emp.name || '?').charAt(0))}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:650;">${esc(emp.name || '')}${emp.group ? ` <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;">${esc(emp.group)}</span>` : ''}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${esc(typeTxt)} · ${sessTxt}${emp.position ? ' · ' + esc(emp.position) : ''}</div>
+          </div>
+          ${badge}
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  }
+  html += `</div>`;
+
+  html += `<div style="font-size:14px;font-weight:700;color:var(--text-secondary);margin:8px 0 10px;">📅 Chấm công cả tháng ${m + 1}/${y}</div>`;
+  html += `<p style="font-size:12px;color:var(--text-muted);margin:0 0 10px;">
+    <strong>N</strong>=nghỉ cả ngày · <strong>S</strong>=sáng · <strong>C</strong>=chiều · <strong>·</strong>=đi làm ·
+    vàng=chờ duyệt · cam=đã duyệt · đỏ=nghỉ cả
+  </p>`;
+
+  html += '<div style="overflow:auto;max-width:100%;border:1px solid var(--border);border-radius:14px;background:#fff;">';
+  html += '<table style="border-collapse:collapse;font-size:11px;width:100%;">';
+  html += '<thead><tr style="background:#fff7ed;position:sticky;top:0;z-index:1;">';
+  html += '<th style="padding:8px;border:1px solid var(--border);text-align:left;min-width:140px;position:sticky;left:0;background:#fff7ed;z-index:2;">Nhân viên</th>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dt = new Date(y, m, d);
+    const isSun = dt.getDay() === 0;
+    const ds = fmtDate(dt);
+    const hol = holidaySet.has(ds);
+    const isFocus = ds === focusDay;
+    html += `<th style="padding:6px 4px;border:1px solid var(--border);text-align:center;min-width:28px;cursor:pointer;${isSun || hol ? 'background:#fee2e2;' : ''}${isFocus ? 'outline:2px solid var(--primary);outline-offset:-2px;' : ''}" onclick="document.getElementById('stats-day-pick').value='${ds}';renderStatsPage();">${d}</th>`;
+  }
+  html += '<th style="padding:6px;border:1px solid var(--border);min-width:48px;">Σ nghỉ</th>';
+  html += '</tr></thead><tbody>';
+
+  if (!list.length) {
+    html += `<tr><td colspan="${daysInMonth + 2}" style="padding:16px;text-align:center;color:var(--text-muted);">Không có nhân viên</td></tr>`;
+  }
+
+  list.forEach(emp => {
+    const isSelf = myEmpId && emp.id === myEmpId;
+    const mDays = monthLeaveDays(emp.id);
+    html += '<tr>';
+    html += `<td style="padding:6px 8px;border:1px solid var(--border);position:sticky;left:0;background:${isSelf ? '#eff6ff' : '#fff'};font-weight:600;white-space:nowrap;z-index:1;">${esc(emp.name || '')}${isSelf ? ' <span style="font-size:10px;color:var(--primary);">(bạn)</span>' : ''}</td>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dt = new Date(y, m, d);
+      const ds = fmtDate(dt);
+      const isSun = dt.getDay() === 0;
+      const info = cellInfo(emp.id, ds);
+      let bg = info.bg;
+      if (info.kind === 'work' && isSun) bg = '#fff1f2';
+      const isFocus = ds === focusDay;
+      html += `<td title="${esc(info.title)}" onclick="document.getElementById('stats-day-pick').value='${ds}';renderStatsPage();" style="padding:4px;border:1px solid var(--border);text-align:center;background:${bg};color:${info.color};font-weight:700;cursor:pointer;${isFocus ? 'outline:2px solid var(--primary);outline-offset:-2px;' : ''}">${info.label}</td>`;
+    }
+    html += `<td style="padding:6px;border:1px solid var(--border);text-align:center;font-weight:700;">${mDays}</td>`;
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  html += `<p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Bấm cột/ô ngày để xem danh sách nghỉ theo phòng phía trên. Lọc phòng bằng menu góc phải.</p>`;
+
+  const el = document.getElementById('stats-content');
+  if (el) el.innerHTML = html;
+}
+
+
+// ============================================================
+//  NHẮC BÁO CƠM
+// ============================================================
+let _mealRemindTimer = null;
+let _mealRemindLastKey = '';
+
+function checkMealReminders() {
+  if (!currentUser) return;
+  const now = new Date();
+  const today = fmtDate(now);
+  const mins = now.getHours() * 60 + now.getMinutes();
+  const cutoff = MEAL_CUTOFF_H * 60 + MEAL_CUTOFF_M;
+  // Cửa sổ nhắc: 8:00 → 10:30
+  if (mins < 8 * 60 || mins >= cutoff) return;
+
+  const myEmp = typeof getMyEmployee === 'function' ? getMyEmployee() : null;
+  const canManage = currentUser.role === 'admin' || hasPerm('manage_meals');
+
+  // Nhân viên: chưa tự báo hôm nay
+  if (myEmp) {
+    const rec = getMealRecord(myEmp.id, today);
+    if (!rec || (rec.source !== 'self' && rec.source !== 'manual' && rec.source !== 'leave')) {
+      // chưa có báo cáo chủ động (mặc định chưa chốt)
+      if (!rec) {
+        const key = 'staff|' + today + '|' + Math.floor(mins / 15); // tối đa ~ mỗi 15 phút
+        if (key !== _mealRemindLastKey) {
+          _mealRemindLastKey = key;
+          showToast('⏰ Nhắc báo cơm: hãy xác nhận có/cắt cơm hôm nay trước 10:30.', 'warning');
+        }
+      }
+    }
+  }
+
+  // Admin: gần chốt (từ 10:00) — đếm người chưa báo
+  if (canManage && mins >= 10 * 60) {
+    const emps = (DB.get('med_employees') || []).filter(e => e.canMeal !== false);
+    let pending = 0;
+    emps.forEach(e => {
+      const r = getMealRecord(e.id, today);
+      if (!r) pending++;
+    });
+    if (pending > 0) {
+      const key = 'admin|' + today + '|' + Math.floor(mins / 10);
+      if (key !== _mealRemindLastKey) {
+        _mealRemindLastKey = key;
+        showToast(`🔔 Sắp chốt cơm (10:30): còn ${pending} NV chưa báo cơm hôm nay.`, 'warning');
+      }
+    }
+  }
+}
+
+function startMealReminders() {
+  if (_mealRemindTimer) clearInterval(_mealRemindTimer);
+  checkMealReminders();
+  _mealRemindTimer = setInterval(checkMealReminders, 60 * 1000);
+}
+
 // ============================================================
 //  CHẤM CƠM (báo cơm)
 // ============================================================
@@ -5431,19 +6452,24 @@ function employeeCanMeal(employeeId) {
 /** Có cơm theo ngày? Mặc định true nếu chưa có bản ghi (đi làm bình thường) */
 function hasMeal(employeeId, dateStr) {
   const r = getMealRecord(employeeId, dateStr);
-  if (!r) return true;
-  return !!r.meal;
+  if (r) return !!r.meal;
+  // Ngày nghỉ cả (chưa có bản ghi) → mặc định không cơm
+  if (typeof isHoliday === 'function' && isHoliday(dateStr)) return false;
+  return true;
 }
 
 function setMealMark(employeeId, employeeName, dateStr, meal, source, leaveId) {
   const list = getMeals();
   const idx = list.findIndex(m => m.employeeId === employeeId && m.date === dateStr);
+  const prev = idx >= 0 ? list[idx] : null;
+  const prevMeal = prev ? !!prev.meal : null; // null = chưa có bản ghi (mặc định có)
+  const nextMeal = !!meal;
   const rec = {
     id: idx >= 0 ? list[idx].id : genId(),
     employeeId,
     employeeName: employeeName || '',
     date: dateStr,
-    meal: !!meal,
+    meal: nextMeal,
     source: source || 'manual',
     leaveId: leaveId || (idx >= 0 ? list[idx].leaveId : '') || '',
     updatedAt: new Date().toISOString(),
@@ -5452,7 +6478,187 @@ function setMealMark(employeeId, employeeName, dateStr, meal, source, leaveId) {
   if (idx >= 0) list[idx] = rec;
   else list.push(rec);
   saveMeals(list);
+  // Audit log khi giá trị thay đổi (hoặc tạo mới khác mặc định true)
+  if (prevMeal !== nextMeal) {
+    pushMealLog({
+      employeeId,
+      employeeName: employeeName || '',
+      date: dateStr,
+      fromMeal: prevMeal === null ? true : prevMeal,
+      toMeal: nextMeal,
+      source: source || 'manual',
+      byUserId: currentUser?.id || '',
+      byName: currentUser?.fullname || '',
+    });
+  }
   return rec;
+}
+
+function getMealLogs() {
+  return DB.get('med_meal_logs') || [];
+}
+function pushMealLog(entry) {
+  const logs = getMealLogs();
+  logs.unshift({
+    id: genId(),
+    ...entry,
+    createdAt: new Date().toISOString(),
+  });
+  if (logs.length > 500) logs.length = 500;
+  DB.set('med_meal_logs', logs);
+}
+function openMealLogsModal() {
+  if (!hasPerm('manage_meals') && currentUser?.role !== 'admin') {
+    showToast('Bạn không có quyền xem lịch sử chấm cơm.', 'error');
+    return;
+  }
+  const logs = getMealLogs().slice(0, 100);
+  const body = document.getElementById('meal-logs-body');
+  if (!logs.length) {
+    body.innerHTML = emptyState('📋', 'Chưa có lịch sử', 'Mọi thay đổi chấm cơm sẽ được ghi lại tại đây.');
+  } else {
+    body.innerHTML = logs.map(l => {
+      const t = l.createdAt ? formatDateVN(l.createdAt.slice(0,10)) + ' ' + (l.createdAt.slice(11,19) || '') : '';
+      const from = l.fromMeal ? '✓' : '✗';
+      const to = l.toMeal ? '✓' : '✗';
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-weight:650;">${esc(l.employeeName || '')} · ${esc(formatDateVN(l.date))}</div>
+        <div style="color:var(--text-secondary);margin-top:2px;">${from} → ${to} · bởi ${esc(l.byName || '—')} · ${esc(l.source || '')}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${esc(t)}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('meal-logs-modal').classList.remove('hidden');
+}
+function closeMealLogsModal() {
+  document.getElementById('meal-logs-modal')?.classList.add('hidden');
+}
+
+
+// ============================================================
+//  NGHỈ CẢ (đóng cửa cả ngày) + NHẬT KÝ THAO TÁC
+// ============================================================
+function getHolidays() {
+  return DB.get('med_holidays') || [];
+}
+function isHoliday(dateStr) {
+  return getHolidays().some(h => h.date === dateStr);
+}
+function getHoliday(dateStr) {
+  return getHolidays().find(h => h.date === dateStr) || null;
+}
+
+/** Admin đánh dấu / bỏ nghỉ cả ngày — cắt cơm toàn bộ NV */
+function toggleFullDayOff(dateStr) {
+  if (currentUser?.role !== 'admin' && !hasPerm('day_assign')) {
+    showToast('Chỉ admin hoặc người được phân quyền mới đặt nghỉ cả.', 'error');
+    return;
+  }
+  const existing = getHoliday(dateStr);
+  if (existing) {
+    confirmDialog(
+      'Bỏ nghỉ cả ngày?',
+      'Ngày ' + formatDateVN(dateStr) + ' sẽ trở lại làm việc bình thường. Bản ghi cắt cơm do nghỉ cả vẫn giữ (có thể sửa tay).',
+      () => {
+        DB.set('med_holidays', getHolidays().filter(h => h.date !== dateStr));
+        pushAuditLog('holiday_off', 'Bỏ nghỉ cả ngày ' + formatDateVN(dateStr), { date: dateStr });
+        renderDayDetailContent(dateStr);
+        renderSchedule();
+        showToast('Đã bỏ nghỉ cả ngày ' + formatDateVN(dateStr), 'success');
+      }
+    );
+    return;
+  }
+  confirmDialog(
+    'Đặt nghỉ cả ngày?',
+    'Ngày ' + formatDateVN(dateStr) + ': toàn bộ nhân viên nghỉ + chấm cơm = cắt (✗). Tiếp tục?',
+    () => {
+      const list = getHolidays();
+      list.push({
+        id: genId(),
+        date: dateStr,
+        note: 'Nghỉ cả (admin)',
+        createdAt: new Date().toISOString(),
+        createdBy: currentUser?.id || '',
+        createdByName: currentUser?.fullname || '',
+      });
+      DB.set('med_holidays', list);
+      // Cắt cơm tất cả NV trong ngày
+      const emps = DB.get('med_employees') || [];
+      emps.forEach(emp => {
+        setMealMark(emp.id, emp.name || '', dateStr, false, 'holiday', '');
+      });
+      pushAuditLog('holiday_on', 'Đặt nghỉ cả ngày ' + formatDateVN(dateStr) + ' + cắt cơm toàn bộ', { date: dateStr, mealCut: emps.length });
+      notifyAllUsers(
+        'info',
+        '🏢 Nghỉ cả ngày ' + formatDateVN(dateStr),
+        'Admin đã đánh dấu nghỉ cả. Chấm cơm ngày này = không cơm.',
+        { date: dateStr }
+      );
+      renderDayDetailContent(dateStr);
+      renderSchedule();
+      if (typeof renderMealsPage === 'function' && currentPage === 'meals') renderMealsPage();
+      showToast('Đã đặt nghỉ cả + cắt cơm toàn bộ ngày ' + formatDateVN(dateStr), 'warning');
+    }
+  );
+}
+
+function getAuditLogs() {
+  return DB.get('med_audit_logs') || [];
+}
+function pushAuditLog(action, message, meta) {
+  try {
+    const logs = getAuditLogs();
+    logs.unshift({
+      id: genId(),
+      action: action || 'info',
+      message: message || '',
+      meta: meta || {},
+      userId: currentUser?.id || '',
+      userName: currentUser?.fullname || '',
+      username: currentUser?.username || '',
+      role: currentUser?.role || '',
+      createdAt: new Date().toISOString(),
+    });
+    if (logs.length > 1000) logs.length = 1000;
+    DB.set('med_audit_logs', logs);
+  } catch (e) {
+    console.warn('[audit]', e);
+  }
+}
+
+function renderAuditPage() {
+  if (currentUser?.role !== 'admin') {
+    document.getElementById('audit-list').innerHTML = emptyState('🔒', 'Chỉ admin', 'Nhật ký thao tác chỉ dành cho quản trị viên.');
+    return;
+  }
+  const logs = getAuditLogs();
+  const el = document.getElementById('audit-list');
+  if (!logs.length) {
+    el.innerHTML = emptyState('🧾', 'Chưa có nhật ký', 'Các thao tác đăng nhập, nghỉ phép, chấm cơm, phân phòng… sẽ hiện tại đây.');
+    return;
+  }
+  const iconMap = {
+    login: '🔓', logout: '🚪', holiday_on: '🏢', holiday_off: '📅',
+    leave_submit: '🗓️', leave_approve: '✅', leave_reject: '❌',
+    meal: '🍚', day_assign: '🏥', news: '📢', password: '🔑',
+    employee: '👥', profile: '👤', info: 'ℹ️',
+  };
+  el.innerHTML = logs.slice(0, 300).map(l => {
+    const t = l.createdAt
+      ? formatDateVN(l.createdAt.slice(0, 10)) + ' ' + (l.createdAt.slice(11, 19) || '')
+      : '';
+    const ic = iconMap[l.action] || '•';
+    return `<div style="padding:12px 14px;border-bottom:1px solid var(--border);background:#fff;">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <div style="font-weight:650;">${ic} ${esc(l.message)}</div>
+        <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;">${esc(t)}</div>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">
+        ${esc(l.userName || l.username || '—')} · ${esc(l.role || '')} · <code style="font-size:11px;">${esc(l.action)}</code>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function clearMealsForLeave(leaveId) {
@@ -5503,6 +6709,8 @@ function renderMealsPage() {
   const myEmpId = myEmp?.id || '';
   const exportBtn = document.getElementById('btn-export-meals');
   if (exportBtn) exportBtn.style.display = canEditAll ? '' : 'none';
+  const logsBtn = document.getElementById('btn-meal-logs');
+  if (logsBtn) logsBtn.style.display = canEditAll ? '' : 'none';
   updateMealLiveClock();
 
   const y = mealMonthCursor.getFullYear();
@@ -5632,12 +6840,33 @@ function toggleMealCell(employeeId, employeeName, dateStr) {
     }
   }
   const cur = hasMeal(employeeId, dateStr);
+  const nextMeal = !cur;
   const source = isSelf && !canEditAll ? 'self' : 'manual';
-  setMealMark(employeeId, employeeName, dateStr, !cur, source, '');
-  renderMealsPage();
-  if (isSelf && !canEditAll) {
-    showToast(!cur ? 'Đã báo có cơm ngày ' + formatDateVN(dateStr) : 'Đã báo cắt cơm ngày ' + formatDateVN(dateStr), !cur ? 'success' : 'warning');
+  const apply = () => {
+    setMealMark(employeeId, employeeName, dateStr, nextMeal, source, '');
+    if (typeof pushAuditLog === 'function') {
+      pushAuditLog('meal', (nextMeal ? 'Báo có cơm' : 'Cắt cơm') + ' · ' + (employeeName || '') + ' · ' + formatDateVN(dateStr), {
+        employeeId, date: dateStr, meal: nextMeal,
+      });
+    }
+    renderMealsPage();
+    showToast(
+      nextMeal ? 'Đã ghi có cơm · ' + (employeeName || '') + ' · ' + formatDateVN(dateStr)
+               : 'Đã ghi cắt cơm · ' + (employeeName || '') + ' · ' + formatDateVN(dateStr),
+      nextMeal ? 'success' : 'warning'
+    );
+  };
+  // Admin / quyền chấm cơm: phải xác nhận trước khi sửa
+  if (canEditAll) {
+    const action = nextMeal ? 'CÓ cơm (✓)' : 'CẮT cơm (✗)';
+    confirmDialog(
+      'Xác nhận sửa chấm cơm?',
+      `Bạn sắp đổi «${employeeName || 'NV'}» ngày ${formatDateVN(dateStr)} thành ${action}.\nTiếp tục?`,
+      apply
+    );
+    return;
   }
+  apply();
 }
 
 /** Nhân viên tự báo có/cắt cơm hôm nay — chỉ trước 10:30 */
@@ -5653,15 +6882,26 @@ function selfReportMeal(wantMeal) {
     return;
   }
   const today = todayStr();
-  setMealMark(myEmp.id, myEmp.name || '', today, !!wantMeal, canEditAll ? 'manual' : 'self', '');
-  mealMonthCursor = new Date();
-  renderMealsPage();
-  showToast(
-    wantMeal
-      ? 'Đã báo có cơm hôm nay (' + formatDateVN(today) + ').'
-      : 'Đã báo cắt cơm hôm nay (' + formatDateVN(today) + ').',
-    wantMeal ? 'success' : 'warning'
-  );
+  const doSave = () => {
+    setMealMark(myEmp.id, myEmp.name || '', today, !!wantMeal, canEditAll ? 'manual' : 'self', '');
+    mealMonthCursor = new Date();
+    renderMealsPage();
+    showToast(
+      wantMeal
+        ? 'Đã báo có cơm hôm nay (' + formatDateVN(today) + ').'
+        : 'Đã báo cắt cơm hôm nay (' + formatDateVN(today) + ').',
+      wantMeal ? 'success' : 'warning'
+    );
+  };
+  if (canEditAll) {
+    confirmDialog(
+      'Xác nhận sửa chấm cơm?',
+      `Bạn sắp đánh dấu ${wantMeal ? 'CÓ cơm (✓)' : 'CẮT cơm (✗)'} cho «${myEmp.name || 'bạn'}» hôm nay (${formatDateVN(today)}). Tiếp tục?`,
+      doSave
+    );
+    return;
+  }
+  doSave();
 }
 
 function exportMealsMonthExcel() {
@@ -5813,6 +7053,11 @@ function doApproveLeave(id) {
   renderApprovals();
   updateBadges();
   applyLeaveMeals(l);
+  if (typeof pushAuditLog === 'function') {
+    const leaves2 = DB.get('med_leaves');
+    const lx = leaves2.find(x => x.id === id);
+    pushAuditLog('leave_approve', 'Duyệt đơn nghỉ · ' + (lx?.employeeName || '') + ' · ' + (lx ? formatDateVN(lx.fromDate) : ''), { leaveId: id });
+  }
   showToast('✅ Đã phê duyệt đơn nghỉ!', 'success');
 }
 
@@ -5858,6 +7103,9 @@ function rejectLeave(id) {
 
     renderApprovals();
     updateBadges();
+    if (typeof pushAuditLog === 'function') {
+      pushAuditLog('leave_reject', 'Từ chối đơn nghỉ · id ' + id, { leaveId: id });
+    }
     showToast('❌ Đã từ chối đơn nghỉ.', 'error');
   });
 }
@@ -5950,7 +7198,7 @@ function openEmployeeModal(id) {
   document.getElementById('emp-id').value = id || '';
   document.getElementById('emp-username').value = '';
   document.getElementById('emp-password').value = '';
-  document.getElementById('emp-password').placeholder = 'Tối thiểu 6 ký tự';
+  document.getElementById('emp-password').placeholder = 'Ít nhất 8 ký tự, có chữ và số';
   document.getElementById('emp-group-custom').value = '';
   clearEmpAvatar();
 
@@ -5992,7 +7240,7 @@ function openEmployeeModal(id) {
 }
 function closeEmployeeModal() { document.getElementById('employee-modal').classList.add('hidden'); }
 
-function saveEmployee(e) {
+async function saveEmployee(e) {
   if (!hasPerm('manage_employees') && currentUser?.role !== 'admin') {
     e.preventDefault();
     showToast('Bạn không có quyền quản lý nhân viên.', 'error');
@@ -6025,9 +7273,12 @@ function saveEmployee(e) {
 
   // Validate account if provided
   if (username) {
-    if (password && password.length < 6) {
-      showToast('Mật khẩu phải có ít nhất 6 ký tự.', 'error');
-      return;
+    if (password) {
+      const strength = validatePasswordStrength(password);
+      if (strength) {
+        showToast(strength, 'error');
+        return;
+      }
     }
     const users = DB.get('med_users');
     const employees = DB.get('med_employees');
@@ -6068,7 +7319,7 @@ function saveEmployee(e) {
         users[uIdx].deptId = data.deptId;
         users[uIdx].role = 'staff';
         users[uIdx].status = 'active';
-        if (password) users[uIdx].password = password;
+        if (password) users[uIdx].password = await hashPassword(password, username);
       }
     } else {
       // Create new staff account
@@ -6076,7 +7327,7 @@ function saveEmployee(e) {
       users.push({
         id: newUserId,
         username,
-        password,
+        password: await hashPassword(password, username),
         fullname: data.name,
         role: 'staff',
         deptId: data.deptId,
@@ -6278,7 +7529,7 @@ function exportLeaveMonthSummary() {
 /** Xuất tài khoản + mật khẩu — chỉ admin */
 function exportAccountsExcel() {
   if (currentUser?.role !== 'admin') {
-    showToast('Chỉ admin mới được xuất tài khoản và mật khẩu.', 'error');
+    showToast('Chỉ admin mới được xuất danh sách tài khoản.', 'error');
     return;
   }
   const users = DB.get('med_users');
@@ -6287,7 +7538,11 @@ function exportAccountsExcel() {
     showToast('Không có tài khoản để xuất.', 'info');
     return;
   }
-  const headers = ['STT', 'Họ và tên', 'Tên đăng nhập', 'Mật khẩu', 'Vai trò', 'Trạng thái', 'Chức vụ', 'Phòng ban', 'Quyền', 'Ngày tạo'];
+  confirmDialog(
+    'Xuất danh sách tài khoản?',
+    'File CSV chỉ gồm tên đăng nhập và trạng thái mã hóa — KHÔNG xuất mật khẩu dạng đọc được (bảo mật).',
+    () => {
+  const headers = ['STT', 'Họ và tên', 'Tên đăng nhập', 'Mật khẩu (trạng thái)', 'Vai trò', 'Trạng thái', 'Chức vụ', 'Phòng ban', 'Quyền', 'Ngày tạo'];
   const rows = [...users]
     .sort((a, b) => (a.fullname || '').localeCompare(b.fullname || '', 'vi'))
     .map((u, i) => {
@@ -6297,7 +7552,7 @@ function exportAccountsExcel() {
         i + 1,
         u.fullname || '',
         u.username || '',
-        u.password || '',
+        isPasswordHashed(u.password) ? '[ĐÃ MÃ HÓA]' : '[CHƯA MÃ HÓA — cần đổi MK]',
         u.role === 'admin' ? 'Admin' : 'Nhân viên',
         u.status || '',
         u.position || '',
@@ -6307,8 +7562,10 @@ function exportAccountsExcel() {
       ];
     });
   const now = new Date();
-  downloadCsv(`TaiKhoan_MatKhau_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}_${String(now.getDate()).padStart(2,'0')}.csv`, headers, rows);
-  showToast(`Đã xuất ${rows.length} tài khoản (kèm mật khẩu). Chỉ admin được xem file này.`, 'success');
+  downloadCsv(`TaiKhoan_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}_${String(now.getDate()).padStart(2,'0')}.csv`, headers, rows);
+  showToast(`Đã xuất ${rows.length} tài khoản (không gồm mật khẩu đọc được).`, 'success');
+    }
+  );
 }
 
 function exportEmployeesExcel() {
@@ -6591,7 +7848,7 @@ function renderUsers() {
         <div class="user-card-info">
           <div class="user-card-name">${esc(u.fullname)} ${statusBadge}</div>
           <div class="user-card-meta">@${esc(u.username)} · ${esc(u.position || '')} · ${esc(dept?.name || '—')}</div>
-          <div class="user-card-pw">🔑 <code>${esc(u.password || '—')}</code> · ${esc(permLabels)}</div>
+          <div class="user-card-pw">🔑 ${isPasswordHashed(u.password) ? 'Đã mã hóa' : '⚠️ Chưa mã hóa (đăng nhập 1 lần để nâng cấp)'} · ${esc(permLabels)}</div>
         </div>
         <div class="user-card-actions">${actions}</div>
       </div>`;
@@ -6787,6 +8044,9 @@ document.getElementById('dept-staff-modal')?.addEventListener('click', function(
 });
 document.getElementById('news-modal')?.addEventListener('click', function(e) {
   if (e.target === this) closeNewsModal();
+});
+document.getElementById('meal-logs-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeMealLogsModal();
 });
 
 </script>
